@@ -152,6 +152,42 @@
   .qslot .youbadge{ background:var(--green); color:#14213d; font-size:.68rem; padding:2px 8px; border-radius:999px; }
   .searchdots::after{ content:''; animation:dots 1.2s steps(4) infinite; }
   @keyframes dots{ 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} }
+  /* ---------- AUTO PLAY hero button ---------- */
+  .autoplay{ margin:16px auto 4px; text-align:center; background:var(--card); border:3px solid var(--line);
+    border-radius:16px; padding:18px 16px; box-shadow:5px 5px 0 var(--line); }
+  .autoplay p{ margin:8px auto 0; font-weight:600; font-size:.95rem; max-width:520px; line-height:1.45; }
+  #btnAuto{ font-family:'Bungee',cursive; font-size:clamp(1.15rem,4vw,1.5rem); background:var(--red); color:#fff;
+    border:3px solid var(--line); border-radius:14px; padding:14px 26px; box-shadow:4px 4px 0 var(--line); width:100%; }
+  #btnAuto:active{ transform:translate(2px,2px); box-shadow:1px 1px 0 var(--line); }
+  /* ---------- ROTATE overlay (portrait phones) ---------- */
+  #rotateOverlay{ display:none; position:fixed; inset:0; z-index:60; background:#14213d; color:#fff;
+    align-items:center; justify-content:center; text-align:center; padding:24px; }
+  #rotateOverlay .inner{ max-width:420px; }
+  #rotateOverlay .phone{ font-size:4rem; display:block; animation:tilt 1.6s ease-in-out infinite; }
+  @keyframes tilt{ 0%,100%{ transform:rotate(0deg);} 50%{ transform:rotate(90deg);} }
+  @media (prefers-reduced-motion: reduce){ #rotateOverlay .phone{ animation:none; transform:rotate(90deg);} }
+  #rotateOverlay h2{ font-family:'Bungee',cursive; font-size:1.6rem; margin:14px 0 8px; color:var(--yellow); }
+  #rotateOverlay p{ font-weight:600; line-height:1.5; margin:0; }
+  body.touch.playing-now #rotateOverlay{ }
+  @media (orientation: portrait){
+    body.touch.playing-now #rotateOverlay{ display:flex; }
+  }
+  /* ---------- Bigger landscape-friendly touch controls ---------- */
+  #stick{ left:max(18px, env(safe-area-inset-left)); bottom:24px; width:138px; height:138px; }
+  #stickKnob{ width:60px; height:60px; }
+  #btnFire{ right:max(20px, env(safe-area-inset-right)); bottom:24px; width:118px; height:118px; font-size:1.15rem;
+    border-width:4px; box-shadow:0 0 0 4px rgba(255,255,255,.25); }
+  #btnJump{ right:152px; bottom:20px; width:68px; height:68px; }
+  #btnReload{ right:34px; bottom:158px; width:64px; height:64px; }
+  #btnGun{ right:112px; bottom:160px; width:64px; height:64px; }
+  #btnTaunt{ right:190px; bottom:104px; width:60px; height:60px; }
+  @media (orientation: landscape) and (max-height: 500px){
+    #stick{ width:124px; height:124px; bottom:16px; }
+    #btnFire{ width:108px; height:108px; bottom:16px; }
+    #btnReload{ bottom:136px; } #btnGun{ bottom:138px; } #btnTaunt{ bottom:92px; }
+    #minimap{ width:96px; height:96px; }
+    #bottomLeft{ bottom:170px; }
+  }
 </style>
 </head>
 <body>
@@ -170,6 +206,11 @@
   </div>
   <div id="menuMsg"></div>
 
+  <div class="autoplay">
+    <button id="btnAuto">▶ AUTO PLAY — QUICK MATCH</button>
+    <p>One tap and you are in: a 10-player match starts automatically in about 15–30 seconds. No room code, no setup. On phones, turn your phone sideways (landscape) for the big controls.</p>
+  </div>
+
   <div class="modes">
     <div class="mode">
       <span class="tag" style="background:var(--green)">ONLINE · 2–4 PLAYERS</span>
@@ -183,7 +224,7 @@
       <p>Got a code from a friend? Type it here and you are in their lobby in seconds. No account, no download.</p>
       <div class="joinrow">
         <input id="joinCode" maxlength="4" placeholder="CODE" autocomplete="off">
-        <button class="bigbtn blue" id="btnJoin">Join</button>
+        <button class="bigbtn blue" id="btnJoin">Join Room</button>
       </div>
     </div>
     <div class="mode">
@@ -223,7 +264,7 @@
           <li>First to <b>25 kills</b> wins, or most kills when the 5-minute timer ends</li>
           <li>Kill streaks (3, 5, 8…) get announced to everyone</li>
           <li>You respawn 3 seconds after being cubed</li>
-          <li>On mobile: left joystick to move, drag to aim, big FIRE button to shoot</li>
+          <li>On mobile: hold your phone <b>sideways (landscape)</b> — big left joystick to move, drag to aim, big FIRE button to shoot</li>
         </ul>
       </div>
       <div><b>Online rooms — the honest bits</b>
@@ -276,6 +317,16 @@
   <div id="quickSlots"></div>
   <div class="warn" style="text-align:left;margin-top:14px">🤖 Honest note: this game has no central server and no big player base yet, so <b>slots still waiting when the search ends are filled with bots — every bot is labelled BOT</b>. Real friends join with room codes from the main menu. Your match starts in about 15–30 seconds.</div>
   <div style="margin-top:16px"><button class="bigbtn ghost" id="btnCancelQuick">Cancel Search</button></div>
+</div>
+
+<!-- ================= ROTATE OVERLAY ================= -->
+<div id="rotateOverlay" role="alert">
+  <div class="inner">
+    <span class="phone" aria-hidden="true">📱</span>
+    <h2>ROTATE YOUR PHONE</h2>
+    <p>Cube Strike is played in <b>landscape</b>. Turn your phone sideways for the big joystick and FIRE button — portrait controls are too cramped for a shooter!</p>
+    <p style="margin-top:10px;opacity:.85">The game is still running behind this message — just rotate to keep playing.</p>
+  </div>
 </div>
 
 <!-- ================= GAME ================= -->
@@ -339,25 +390,103 @@ var PALETTE_CSS = ['#ef476f','#118ab2','#06d6a0','#ffd166','#fb8500','#9b5de5','
 var TAUNTS = ["😜 Too slow!","🧊 Stay frosty, cube!","☕ Chai break? You are out!","🚀 Sent you to orbit!","😎 Cubed in style!","🍕 That one was free!","🕺 Dance on your cube!","📦 Special delivery: one cube!"];
 var STREAKS = {3:"🔥 KILLING SPREE!",5:"⚡ RAMPAGE!",8:"👑 UNSTOPPABLE!",12:"💀 CUBE LEGEND!",18:"🌋 VOLCANO MODE!"};
 
-/* ================= tiny sound ================= */
-var AC=null;
-function beep(freq,dur,type,vol){
+/* ================= sound: procedural WebAudio (no files, no downloads) ================= */
+var AC=null, masterGain=null, echoSend=null, noiseBuf=null;
+function ensureAudio(){
   try{
-    if(!AC) AC = new (window.AudioContext||window.webkitAudioContext)();
+    if(!AC){
+      AC = new (window.AudioContext||window.webkitAudioContext)();
+      masterGain = AC.createGain(); masterGain.gain.value = 0.9; masterGain.connect(AC.destination);
+      // simple echo: delay + feedback through a lowpass, for that outdoor "tadaak + goonj" tail
+      var delay = AC.createDelay(1); delay.delayTime.value = 0.13;
+      var fb = AC.createGain(); fb.gain.value = 0.28;
+      var damp = AC.createBiquadFilter(); damp.type='lowpass'; damp.frequency.value = 1400;
+      echoSend = AC.createGain(); echoSend.gain.value = 1;
+      echoSend.connect(delay); delay.connect(damp); damp.connect(fb); fb.connect(delay);
+      var wet = AC.createGain(); wet.gain.value = 0.35; damp.connect(wet); wet.connect(masterGain);
+      // 1s of white noise, reused by every shot
+      noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate);
+      var d = noiseBuf.getChannelData(0);
+      for(var i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+    }
     if(AC.state==='suspended') AC.resume();
+    return AC;
+  }catch(e){ return null; }
+}
+// Browsers lock audio until a real tap/click — resume on the first gesture anywhere.
+['pointerdown','touchstart','keydown'].forEach(function(ev){
+  document.addEventListener(ev, function(){ ensureAudio(); }, {passive:true});
+});
+function beep(freq,dur,type,vol){
+  if(!ensureAudio()) return;
+  try{
     var o=AC.createOscillator(), g=AC.createGain();
     o.type=type||'square'; o.frequency.value=freq;
     g.gain.setValueAtTime(vol||0.06, AC.currentTime);
     g.gain.exponentialRampToValueAtTime(0.001, AC.currentTime+dur);
-    o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+dur);
+    o.connect(g); g.connect(masterGain); o.start(); o.stop(AC.currentTime+dur);
+  }catch(e){}
+}
+/* Realistic gunshot, synthesized: sharp crack (noise burst) + low thump (pitch-dropping sine)
+   + a little echo. Different recipe per weapon. dist = 0 for your own gun, 1 for far-away shots. */
+function playGunshot(weapon, dist){
+  if(!ensureAudio()) return;
+  try{
+    var t = AC.currentTime;
+    var cfg = {
+      rifle:  { crack:0.16, crackFreq:1800, thump:170, thumpEnd:42, vol:0.85, body:0.10 },
+      pistol: { crack:0.10, crackFreq:2400, thump:200, thumpEnd:55, vol:0.65, body:0.06 },
+      shotgun:{ crack:0.30, crackFreq:1100, thump:130, thumpEnd:30, vol:1.0,  body:0.22 }
+    }[weapon] || { crack:0.14, crackFreq:1800, thump:170, thumpEnd:42, vol:0.8, body:0.1 };
+    var v = cfg.vol * (dist ? 0.28 : 1);
+    // 1) CRACK — white-noise burst through a highpass, near-instant attack, fast decay
+    var src = AC.createBufferSource(); src.buffer = noiseBuf; src.playbackRate.value = rand(0.92,1.08);
+    var hp = AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = dist ? 700 : 900;
+    var bp = AC.createBiquadFilter(); bp.type='peaking'; bp.frequency.value = cfg.crackFreq; bp.gain.value = 6; bp.Q.value = 0.7;
+    var cg = AC.createGain();
+    cg.gain.setValueAtTime(v, t);
+    cg.gain.exponentialRampToValueAtTime(0.001, t + cfg.crack);
+    src.connect(hp); hp.connect(bp); bp.connect(cg); cg.connect(masterGain);
+    if(!dist) cg.connect(echoSend);
+    src.start(t, rand(0,0.4)); src.stop(t + cfg.crack + 0.02);
+    // 2) BODY — short filtered noise "chest" of the shot
+    var src2 = AC.createBufferSource(); src2.buffer = noiseBuf; src2.playbackRate.value = 0.5;
+    var lp = AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value = 900;
+    var bg = AC.createGain();
+    bg.gain.setValueAtTime(v*0.7, t);
+    bg.gain.exponentialRampToValueAtTime(0.001, t + cfg.body + cfg.crack*0.6);
+    src2.connect(lp); lp.connect(bg); bg.connect(masterGain);
+    src2.start(t, rand(0,0.4)); src2.stop(t + cfg.body + cfg.crack + 0.05);
+    // 3) THUMP — sine that dives from ~170Hz to ~40Hz
+    var o = AC.createOscillator(); o.type='sine';
+    o.frequency.setValueAtTime(cfg.thump, t);
+    o.frequency.exponentialRampToValueAtTime(cfg.thumpEnd, t + 0.11);
+    var og = AC.createGain();
+    og.gain.setValueAtTime(v*0.9, t);
+    og.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
+    o.connect(og); og.connect(masterGain);
+    if(!dist) og.connect(echoSend);
+    o.start(t); o.stop(t + 0.18);
+    // 4) MECH CLICK (rifle/pistol) — tiny metallic tick just after the shot
+    if(weapon!=='shotgun' && !dist){
+      var src3 = AC.createBufferSource(); src3.buffer = noiseBuf;
+      var hp3 = AC.createBiquadFilter(); hp3.type='highpass'; hp3.frequency.value = 3500;
+      var g3 = AC.createGain(); var t3 = t + (weapon==='rifle'?0.09:0.07);
+      g3.gain.setValueAtTime(0.0001, t3);
+      g3.gain.exponentialRampToValueAtTime(v*0.18, t3+0.008);
+      g3.gain.exponentialRampToValueAtTime(0.001, t3+0.045);
+      src3.connect(hp3); hp3.connect(g3); g3.connect(masterGain);
+      src3.start(t3, rand(0,0.4)); src3.stop(t3+0.06);
+    }
   }catch(e){}
 }
 var SFX = {
-  shoot:function(w){ beep(w==='shotgun'?120: w==='pistol'?300:220, .07,'square',.05); },
+  shoot:function(w){ playGunshot(w, 0); },
+  distant:function(w){ playGunshot(w, 1); },
   hit:function(){ beep(700,.05,'square',.05); },
   kill:function(){ beep(520,.09,'square',.06); setTimeout(function(){beep(880,.12,'square',.06);},80); },
   hurt:function(){ beep(140,.12,'sawtooth',.06); },
-  reload:function(){ beep(440,.06,'square',.04); }
+  reload:function(){ beep(440,.06,'square',.04); setTimeout(function(){beep(320,.05,'square',.04);},110); }
 };
 
 /* ================= weapons ================= */
@@ -407,6 +536,7 @@ function initThree(){
   var hemi = new THREE.HemisphereLight(0xffffff, 0x446644, 0.95); scene.add(hemi);
   var sun = new THREE.DirectionalLight(0xffffff, 0.55); sun.position.set(30,60,20); scene.add(sun);
   buildMap();
+  initFx();
   clock = new THREE.Clock();
   window.addEventListener('resize', onResize);
   return true;
@@ -429,14 +559,14 @@ function box(x,y,z,w,h,d,color, collidable){
   return m;
 }
 function buildMap(){
-  // ground
+  // ground (also a raycast surface, so shots leave bullet holes in it — but no collider)
   var g = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshLambertMaterial({color:0x7bc96f}));
-  g.rotation.x = -Math.PI/2; scene.add(g);
+  g.rotation.x = -Math.PI/2; scene.add(g); walls.push(g);
   // roads cross
   var r1 = new THREE.Mesh(new THREE.PlaneGeometry(100,10), new THREE.MeshLambertMaterial({color:0x5b6770}));
-  r1.rotation.x=-Math.PI/2; r1.position.y=0.01; scene.add(r1);
+  r1.rotation.x=-Math.PI/2; r1.position.y=0.01; scene.add(r1); walls.push(r1);
   var r2 = new THREE.Mesh(new THREE.PlaneGeometry(10,100), new THREE.MeshLambertMaterial({color:0x5b6770}));
-  r2.rotation.x=-Math.PI/2; r2.position.y=0.012; scene.add(r2);
+  r2.rotation.x=-Math.PI/2; r2.position.y=0.012; scene.add(r2); walls.push(r2);
   // boundary walls
   box(0,2,-50, 102,4,2, 0xffd166); box(0,2,50, 102,4,2, 0xffd166);
   box(-50,2,0, 2,4,102, 0xffd166); box(50,2,0, 2,4,102, 0xffd166);
@@ -546,6 +676,91 @@ function movePlayer(p, fwd, strafe, dt, speed){
 }
 function jump(p){ if(p.onGround && p.alive){ p.vel.y=8.2; p.onGround=false; } }
 
+/* ================= muzzle flash + bullet holes ================= */
+var muzzleSprite=null, muzzleLight=null, muzzleUntil=0, holeTex=null, holeGeo=null, decals=[];
+function flashTexture(){
+  var c=document.createElement('canvas'); c.width=c.height=128;
+  var x=c.getContext('2d');
+  var grd=x.createRadialGradient(64,64,2,64,64,62);
+  grd.addColorStop(0,'rgba(255,255,255,1)'); grd.addColorStop(0.25,'rgba(255,220,120,0.95)');
+  grd.addColorStop(0.55,'rgba(255,150,40,0.55)'); grd.addColorStop(1,'rgba(255,120,0,0)');
+  x.fillStyle=grd;
+  // star spikes
+  x.save(); x.translate(64,64);
+  for(var i=0;i<4;i++){ x.rotate(Math.PI/2); x.beginPath(); x.moveTo(0,-6); x.lineTo(62,0); x.lineTo(0,6); x.closePath(); x.fill(); }
+  x.restore();
+  x.beginPath(); x.arc(64,64,60,0,7); x.fill();
+  return new THREE.CanvasTexture(c);
+}
+function bulletHoleTexture(){
+  var c=document.createElement('canvas'); c.width=c.height=64;
+  var x=c.getContext('2d');
+  var grd=x.createRadialGradient(32,32,1,32,32,30);
+  grd.addColorStop(0,'rgba(8,8,8,0.95)'); grd.addColorStop(0.35,'rgba(15,15,15,0.9)');
+  grd.addColorStop(0.6,'rgba(35,30,25,0.55)'); grd.addColorStop(1,'rgba(40,35,30,0)');
+  x.fillStyle=grd; x.beginPath(); x.arc(32,32,30,0,7); x.fill();
+  x.strokeStyle='rgba(20,18,16,0.65)'; x.lineWidth=2;
+  for(var i=0;i<5;i++){ var a=i/5*Math.PI*2+0.5; x.beginPath(); x.moveTo(32+Math.cos(a)*7,32+Math.sin(a)*7); x.lineTo(32+Math.cos(a)*(20+((i*7)%9)),32+Math.sin(a)*(20+((i*7)%9))); x.stroke(); }
+  x.fillStyle='rgba(0,0,0,0.95)'; x.beginPath(); x.arc(32,32,6,0,7); x.fill();
+  return new THREE.CanvasTexture(c);
+}
+function initFx(){
+  if(muzzleSprite) return;
+  muzzleSprite = new THREE.Sprite(new THREE.SpriteMaterial({map:flashTexture(), transparent:true, blending:THREE.AdditiveBlending, depthWrite:false}));
+  muzzleSprite.visible=false; muzzleSprite.scale.set(0.85,0.85,1);
+  scene.add(muzzleSprite);
+  muzzleLight = new THREE.PointLight(0xffa640, 0, 13, 2);
+  scene.add(muzzleLight);
+  holeTex = bulletHoleTexture();
+  holeGeo = new THREE.CircleGeometry(0.11, 14);
+}
+function showMuzzleFlash(p){
+  if(!muzzleSprite) return;
+  var isLocalView = (p.id===localId && mode!=='split');
+  var pos, dir = new THREE.Vector3(-Math.sin(p.yaw)*Math.cos(p.pitch), Math.sin(p.pitch), -Math.cos(p.yaw)*Math.cos(p.pitch));
+  if(isLocalView){
+    // just in front of the camera, slightly low-right like a real viewmodel barrel
+    pos = eyeOf(p).add(dir.clone().multiplyScalar(0.85));
+    pos.y -= 0.14;
+    var right = new THREE.Vector3(Math.cos(p.yaw),0,-Math.sin(p.yaw));
+    pos.add(right.multiplyScalar(0.18));
+  } else {
+    pos = new THREE.Vector3(p.pos.x, p.pos.y+1.25, p.pos.z).add(dir.clone().multiplyScalar(0.75));
+  }
+  muzzleSprite.position.copy(pos);
+  muzzleLight.position.copy(pos);
+  var s = (p.weapon==='shotgun'?1.35:(p.weapon==='pistol'?0.65:0.9)) * rand(0.85,1.2);
+  muzzleSprite.scale.set(s,s,1);
+  muzzleSprite.material.rotation = rand(0,Math.PI*2);
+  muzzleSprite.visible = true;
+  muzzleLight.intensity = 2.6;
+  muzzleUntil = performance.now() + (p.weapon==='shotgun'?70:50);
+}
+function updateFx(now){
+  if(muzzleSprite && muzzleSprite.visible && now>muzzleUntil){ muzzleSprite.visible=false; if(muzzleLight) muzzleLight.intensity=0; }
+  // fade bullet holes after ~7s, gone by ~9.5s
+  for(var i=decals.length-1;i>=0;i--){
+    var d=decals[i], age=(now-d.born)/1000;
+    if(age>9.5){ scene.remove(d.mesh); d.mesh.material.dispose(); decals.splice(i,1); }
+    else if(age>7){ d.mesh.material.opacity = 0.92 * (1-(age-7)/2.5); }
+  }
+}
+function addBulletHole(hit){
+  if(!holeGeo || !hit.face) return;
+  try{
+    var normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
+    var mat = new THREE.MeshBasicMaterial({map:holeTex, transparent:true, opacity:0.92, depthWrite:false, polygonOffset:true, polygonOffsetFactor:-2});
+    var m = new THREE.Mesh(holeGeo, mat);
+    m.position.copy(hit.point).add(normal.clone().multiplyScalar(0.02));
+    m.lookAt(hit.point.clone().add(normal));
+    m.rotation.z = rand(0,Math.PI*2);
+    var s = rand(0.8,1.25); m.scale.set(s,s,1);
+    scene.add(m);
+    decals.push({mesh:m, born:performance.now()});
+    if(decals.length>60){ var old=decals.shift(); scene.remove(old.mesh); old.mesh.material.dispose(); }
+  }catch(e){}
+}
+
 /* ================= combat ================= */
 var raycaster = null;
 function shootables(){
@@ -559,8 +774,10 @@ function tryShoot(p, now){
   if(now - p.lastShot < w.rate) return;
   if(p.ammo[p.weapon]<=0){ reload(p); return; }
   p.lastShot = now; p.ammo[p.weapon]--;
+  showMuzzleFlash(p);
   if(p.id===localId || p.id===p2Id){ SFX.shoot(p.weapon); updateHUD(); }
-  if(mode==='online' && (p.id===localId)) netSend({t:'shot', gun:p.weapon});
+  else if(mode!=='online'){ SFX.distant(p.weapon); }
+  if(mode==='online' && (p.id===localId)) netSend({t:'shot', gun:p.weapon, id:localId});
   var eye = eyeOf(p);
   for(var i=0;i<w.pellets;i++){
     var dir = new THREE.Vector3(-Math.sin(p.yaw)*Math.cos(p.pitch), Math.sin(p.pitch), -Math.cos(p.yaw)*Math.cos(p.pitch));
@@ -570,6 +787,7 @@ function tryShoot(p, now){
     var hits = raycaster.intersectObjects(shootables(), false);
     if(!hits.length) continue;
     var h = hits[0];
+    if(!h.object.userData.pid){ addBulletHole(h); }
     if(h.object.userData.pid && h.object.userData.pid!==p.id){
       var target = players[h.object.userData.pid];
       if(!target || !target.alive) continue;
@@ -743,8 +961,12 @@ function showScreen(which){
   if(which==='game') $('endscreen').style.display='none';
   if(which!=='game'){ $('endscreen').style.display='none'; }
   document.body.classList.toggle('split', false);
+  document.body.classList.toggle('playing-now', which==='game');
   $('touchUI').classList.toggle('playing', which==='game');
   $('btnScore').classList.toggle('playing', which==='game');
+  if(which==='game' && isTouch){
+    try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function(){}); }catch(e){}
+  }
 }
 function clearPlayers(){ for(var id in players) removePlayer(id); players={}; }
 function startMatch(){
@@ -752,6 +974,8 @@ function startMatch(){
   raycaster = new THREE.Raycaster();
   highlights = { bestStreak:{name:'—',n:0}, headKing:{name:'—',n:0} };
   matchTime = 300; running = true;
+  decals.forEach(function(d){ scene.remove(d.mesh); d.mesh.material.dispose(); }); decals=[];
+  if(muzzleSprite) muzzleSprite.visible=false; if(muzzleLight) muzzleLight.intensity=0;
   $('feed').innerHTML='';
   showScreen('game');
   document.body.classList.toggle('split', mode==='split');
@@ -770,6 +994,7 @@ function startMatch(){
 function endMatch(winner){
   if(!running) return;
   running = false;
+  document.body.classList.remove('playing-now');
   if(document.pointerLockElement) document.exitPointerLock();
   var list = sortedPlayers();
   if(!winner) winner = list[0];
@@ -851,6 +1076,7 @@ function gameLoop(){
     stateTimer -= dt;
     if(stateTimer<=0){ stateTimer = 0.1; netSendState(); }
   }
+  updateFx(now);
   drawMinimap();
   render();
 }
@@ -953,6 +1179,10 @@ function handleNet(msg, fromPid){
       if(msg.victim!==localId) addFeed('💀 <b>'+esc(msg.killerName||'Enemy')+'</b> cubed <b>'+esc(v?v.name:'')+'</b>'+(msg.head?' 🎯 HEADSHOT!':''));
       if(k && STREAKS[k.streak] && msg.killer!==localId) showBanner(STREAKS[k.streak], esc(k.name)+' is on fire!');
       updateScore();
+      break; }
+    case 'shot': {
+      var sp = players[msg.id];
+      if(sp && msg.id!==localId){ showMuzzleFlash(sp); SFX.distant(msg.gun||sp.weapon); }
       break; }
     case 'taunt': addFeed('😜 <b>'+esc(msg.name)+':</b> '+esc(msg.text), 'taunt'); break;
     case 'end': if(running){ endRecvFlag=true; endMatch(null); } break;
@@ -1205,6 +1435,7 @@ function startOffline(kind){
 $('btnBots').addEventListener('click', function(){ startOffline('bots'); });
 $('btnSplit').addEventListener('click', function(){ startOffline('split'); });
 $('btnQuick').addEventListener('click', function(){ startQuick(); });
+$('btnAuto').addEventListener('click', function(){ ensureAudio(); startQuick(); });
 $('btnCancelQuick').addEventListener('click', function(){ clearQuickTimers(); mode='menu'; showScreen('menu'); });
 $('btnHost').addEventListener('click', function(){ menuMsg('Creating your room…'); startHost(); });
 $('btnJoin').addEventListener('click', function(){
