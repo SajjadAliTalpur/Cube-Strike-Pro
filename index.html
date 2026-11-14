@@ -556,26 +556,34 @@ function beep(freq,dur,type,vol){
   }catch(e){}
 }
 /* Realistic gunshot, synthesized: sharp crack (noise burst) + low thump (pitch-dropping sine)
-   + a little echo. Different recipe per weapon. dist = 0 for your own gun, 1 for far-away shots. */
+   + a little echo. Different recipe per weapon. */
+/* DISTANCE-BASED SOUND: gunshots fade with distance from the listener (the local
+   player). dist = distance in metres (0 = your own gun, full volume). Full volume
+   up close (<=6m), fading to a faint crack at ~70m. Far shots also lose their
+   high-end crack and echo, like real outdoor sound. Legacy calls passing `true`
+   are treated as ~45m. */
 function playGunshot(weapon, dist){
   if(!ensureAudio()) return;
   try{
+    var d = (typeof dist==='number') ? dist : (dist ? 45 : 0);
+    var att = d<=6 ? 1 : Math.max(0.04, 1 - (d-6)/64); // 6m -> 1.0, 70m -> 0.04
     var t = AC.currentTime;
     var cfg = {
       rifle:  { crack:0.16, crackFreq:1800, thump:170, thumpEnd:42, vol:0.85, body:0.10 },
       pistol: { crack:0.10, crackFreq:2400, thump:200, thumpEnd:55, vol:0.65, body:0.06 },
       shotgun:{ crack:0.30, crackFreq:1100, thump:130, thumpEnd:30, vol:1.0,  body:0.22 }
     }[weapon] || { crack:0.14, crackFreq:1800, thump:170, thumpEnd:42, vol:0.8, body:0.1 };
-    var v = cfg.vol * (dist ? 0.28 : 1);
+    var v = cfg.vol * att;
+    var far = d>6;
     // 1) CRACK — white-noise burst through a highpass, near-instant attack, fast decay
     var src = AC.createBufferSource(); src.buffer = noiseBuf; src.playbackRate.value = rand(0.92,1.08);
-    var hp = AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = dist ? 700 : 900;
+    var hp = AC.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = far ? 700 + Math.min(1600, d*22) : 900;
     var bp = AC.createBiquadFilter(); bp.type='peaking'; bp.frequency.value = cfg.crackFreq; bp.gain.value = 6; bp.Q.value = 0.7;
     var cg = AC.createGain();
     cg.gain.setValueAtTime(v, t);
     cg.gain.exponentialRampToValueAtTime(0.001, t + cfg.crack);
     src.connect(hp); hp.connect(bp); bp.connect(cg); cg.connect(masterGain);
-    if(!dist) cg.connect(echoSend);
+    if(!far) cg.connect(echoSend);
     src.start(t, rand(0,0.4)); src.stop(t + cfg.crack + 0.02);
     // 2) BODY — short filtered noise "chest" of the shot
     var src2 = AC.createBufferSource(); src2.buffer = noiseBuf; src2.playbackRate.value = 0.5;
@@ -593,10 +601,10 @@ function playGunshot(weapon, dist){
     og.gain.setValueAtTime(v*0.9, t);
     og.gain.exponentialRampToValueAtTime(0.001, t + 0.16);
     o.connect(og); og.connect(masterGain);
-    if(!dist) og.connect(echoSend);
+    if(!far) og.connect(echoSend);
     o.start(t); o.stop(t + 0.18);
     // 4) MECH CLICK (rifle/pistol) — tiny metallic tick just after the shot
-    if(weapon!=='shotgun' && !dist){
+    if(weapon!=='shotgun' && !far){
       var src3 = AC.createBufferSource(); src3.buffer = noiseBuf;
       var hp3 = AC.createBiquadFilter(); hp3.type='highpass'; hp3.frequency.value = 3500;
       var g3 = AC.createGain(); var t3 = t + (weapon==='rifle'?0.09:0.07);
@@ -610,7 +618,9 @@ function playGunshot(weapon, dist){
 }
 var SFX = {
   shoot:function(w){ playGunshot(w, 0); },
-  distant:function(w){ playGunshot(w, 1); },
+  // distant: pass the shooter's distance from the local player in metres;
+  // no distance given = ~45m (old flat 0.28 volume behaviour, now on the curve)
+  distant:function(w, dMeters){ playGunshot(w, (typeof dMeters==='number') ? dMeters : 45); },
   hit:function(){ beep(700,.05,'square',.05); },
   kill:function(){ beep(520,.09,'square',.06); setTimeout(function(){beep(880,.12,'square',.06);},80); },
   hurt:function(){ beep(140,.12,'sawtooth',.06); },
@@ -724,16 +734,51 @@ function buildMap(){
 }
 
 /* ================= players ================= */
-function makeNameSprite(name, css){
-  var c = document.createElement('canvas'); c.width=256; c.height=56;
-  var x = c.getContext('2d');
-  x.font='800 30px Rubik, sans-serif'; x.textAlign='center';
-  x.lineWidth=6; x.strokeStyle='rgba(0,0,0,.65)'; x.strokeText(name,128,38);
-  x.fillStyle=css; x.fillText(name,128,38);
-  var t = new THREE.CanvasTexture(c);
-  var s = new THREE.Sprite(new THREE.SpriteMaterial({map:t, transparent:true}));
-  s.scale.set(2.6,0.57,1); s.position.y=2.45;
-  return s;
+/* ---- floating name + HEALTH BAR above every player (scene-level sprite, so it
+   stays visible even when the player's own body mesh is hidden in first person) ---- */
+function makeHealthBar(p){
+  var c = document.createElement('canvas'); c.width=256; c.height=88;
+  var tex = new THREE.CanvasTexture(c);
+  var s = new THREE.Sprite(new THREE.SpriteMaterial({map:tex, transparent:true, depthWrite:false}));
+  s.scale.set(2.7,0.93,1);
+  scene.add(s);
+  return {sprite:s, canvas:c, ctx:c.getContext('2d'), tex:tex};
+}
+function drawHealthBar(p){
+  var hb=p.hpBar; if(!hb) return;
+  var x=hb.ctx, W=256;
+  x.clearRect(0,0,W,88);
+  // name (+ orange BOT chip, so bots stay honestly labelled)
+  x.font='800 25px Rubik, sans-serif'; x.textAlign='center'; x.textBaseline='alphabetic';
+  var label=p.name, nw=x.measureText(label).width;
+  x.lineWidth=5; x.strokeStyle='rgba(0,0,0,.7)';
+  var cx=W/2 - (p.isBot ? 26 : 0);
+  x.strokeText(label, cx, 28); x.fillStyle='#fff'; x.fillText(label, cx, 28);
+  if(p.isBot){
+    var bx=cx+nw/2+6, by=8, bw=48, bh=24;
+    x.fillStyle='#fb8500';
+    x.beginPath();
+    if(x.roundRect) x.roundRect(bx,by,bw,bh,12); else x.rect(bx,by,bw,bh);
+    x.fill();
+    x.fillStyle='#14213d'; x.font='800 15px Rubik, sans-serif';
+    x.fillText('BOT', bx+bw/2, by+17);
+  }
+  // health bar: dark backing, fill green -> yellow -> red as HP falls
+  var hp=clamp(p.hp,0,100), bx2=28, bw2=200, by2=42, bh2=20;
+  x.fillStyle='rgba(0,0,0,.6)';
+  x.beginPath();
+  if(x.roundRect) x.roundRect(bx2,by2,bw2,bh2,10); else x.rect(bx2,by2,bw2,bh2);
+  x.fill();
+  var col = hp>50 ? '#06d6a0' : (hp>25 ? '#ffd166' : '#ef476f');
+  if(hp>0){
+    x.fillStyle=col;
+    x.beginPath();
+    if(x.roundRect) x.roundRect(bx2+2,by2+2,Math.max(6,(bw2-4)*hp/100),bh2-4,8); else x.rect(bx2+2,by2+2,(bw2-4)*hp/100,bh2-4);
+    x.fill();
+  }
+  x.fillStyle='#fff'; x.font='800 15px Rubik, sans-serif';
+  x.fillText(Math.max(0,Math.ceil(hp))+'', W/2, by2+16);
+  hb.tex.needsUpdate = true;
 }
 function createPlayer(id, name, colorIdx, opts){
   opts = opts||{};
@@ -744,7 +789,7 @@ function createPlayer(id, name, colorIdx, opts){
     hp:100, alive:true, kills:0, deaths:0, streak:0, bestStreak:0, headshots:0,
     weapon:'rifle', ammo:{rifle:30,pistol:12,shotgun:6}, reloading:0, lastShot:0,
     respawnT:0, onGround:true, botT:0, botTarget:null, botStrafe:1, shootCd:0, retargetT:0, lastAttacker:null,
-    mesh:null, headMesh:null, bodyMesh:null
+    mesh:null, headMesh:null, bodyMesh:null, hpBar:null, _hpShown:-1
   };
   var grp = new THREE.Group();
   var col = PALETTE[colorIdx % PALETTE.length];
@@ -757,15 +802,16 @@ function createPlayer(id, name, colorIdx, opts){
   var gun = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.7), new THREE.MeshLambertMaterial({color:0x222831}));
   gun.position.set(0.3,1.25,-0.3);
   grp.add(body); grp.add(head); grp.add(cap); grp.add(gun);
-  grp.add(makeNameSprite(name, PALETTE_CSS[colorIdx % PALETTE_CSS.length]));
   scene.add(grp);
   p.mesh=grp; p.bodyMesh=body; p.headMesh=head;
+  p.hpBar = makeHealthBar(p); drawHealthBar(p); p._hpShown = Math.ceil(p.hp);
   players[id]=p;
   placeAtSpawn(p);
   return p;
 }
 function removePlayer(id){
   var p=players[id]; if(!p) return;
+  if(p.hpBar){ scene.remove(p.hpBar.sprite); if(p.hpBar.tex) p.hpBar.tex.dispose(); if(p.hpBar.sprite.material) p.hpBar.sprite.material.dispose(); }
   scene.remove(p.mesh); delete players[id];
 }
 function placeAtSpawn(p){
@@ -791,8 +837,16 @@ function syncMesh(p){
   p.mesh.position.copy(p.pos);
   p.mesh.rotation.y = p.yaw;
   p.mesh.visible = p.alive && !(p.id===localId && mode!=='split') && !(p.id===p2Id && false);
-  if(p.id===localId) p.mesh.visible = false; // never see yourself
+  if(p.id===localId) p.mesh.visible = false; // never see yourself (RENDER only — the
+  // body/head meshes are still raycast targets, see shootables(), so bots can hit you)
   if(p.id===p2Id && mode==='split') p.mesh.visible = p.alive;
+  // floating name + health bar: scene-level sprite, so it is visible to everyone
+  // except yourself (in split-screen both players see both bars).
+  if(p.hpBar){
+    p.hpBar.sprite.position.set(p.pos.x, p.pos.y+2.55, p.pos.z);
+    p.hpBar.sprite.visible = p.alive && (mode==='split' || p.id!==localId);
+    if(p._hpShown!==Math.ceil(p.hp)){ drawHealthBar(p); p._hpShown=Math.ceil(p.hp); }
+  }
 }
 function collide(p, nx, nz){
   // circle vs AABB, radius .45
@@ -912,7 +966,13 @@ function addBulletHole(hit){
 var raycaster = null;
 function shootables(){
   var arr = walls.slice();
-  for(var id in players){ var p=players[id]; if(p.alive && p.mesh.visible){ arr.push(p.bodyMesh); arr.push(p.headMesh); } }
+  // ROOT-CAUSE FIX (2026-11-15): hit-testing must NOT depend on render visibility.
+  // The local player's mesh is hidden in first person ("never see yourself"), so the
+  // old `p.mesh.visible` filter left the local player out of this list entirely —
+  // bot raycasts passed straight through them (bots shot, but no damage), while
+  // bot-vs-bot damage worked because bot meshes are visible. Every alive player's
+  // body/head is a target now; the shooter is skipped in tryShoot() instead.
+  for(var id in players){ var p=players[id]; if(p.alive){ arr.push(p.bodyMesh); arr.push(p.headMesh); } }
   return arr;
 }
 function tryShoot(p, now){
@@ -923,7 +983,11 @@ function tryShoot(p, now){
   p.lastShot = now; p.ammo[p.weapon]--;
   showMuzzleFlash(p);
   if(p.id===localId || p.id===p2Id){ SFX.shoot(p.weapon); updateHUD(); }
-  else if(mode!=='online'){ SFX.distant(p.weapon); }
+  else if(mode!=='online'){
+    // distance-attenuated: loud up close, faint far away (listener = local player)
+    var me0 = players[localId];
+    SFX.distant(p.weapon, me0 ? p.pos.distanceTo(me0.pos) : 45);
+  }
   if(mode==='online' && (p.id===localId)) netSend({t:'shot', gun:p.weapon, id:localId});
   var eye = eyeOf(p);
   for(var i=0;i<w.pellets;i++){
@@ -932,8 +996,11 @@ function tryShoot(p, now){
     dir.normalize();
     raycaster.set(eye, dir); raycaster.far = 120;
     var hits = raycaster.intersectObjects(shootables(), false);
-    if(!hits.length) continue;
-    var h = hits[0];
+    // take the nearest hit that is NOT the shooter's own body/head (the eye sits
+    // inside the shooter's head box, so own meshes must be skipped, not block)
+    var h = null;
+    for(var j=0;j<hits.length;j++){ if(hits[j].object.userData.pid!==p.id){ h=hits[j]; break; } }
+    if(!h) continue;
     if(!h.object.userData.pid){ addBulletHole(h); }
     if(h.object.userData.pid && h.object.userData.pid!==p.id){
       var target = players[h.object.userData.pid];
@@ -1584,7 +1651,11 @@ function handleNet(msg, fromPid){
       break; }
     case 'shot': {
       var sp = players[msg.id];
-      if(sp && msg.id!==localId){ showMuzzleFlash(sp); SFX.distant(msg.gun||sp.weapon); }
+      if(sp && msg.id!==localId){
+        showMuzzleFlash(sp);
+        var me1 = players[localId];
+        SFX.distant(msg.gun||sp.weapon, me1 ? sp.pos.distanceTo(me1.pos) : 45);
+      }
       break; }
     case 'taunt': addFeed('😜 <b>'+esc(msg.name)+':</b> '+esc(msg.text), 'taunt'); break;
     case 'chat': showChat(String(msg.name||'Player').slice(0,14), filterText(msg.text||''), {scope:msg.scope}); break;
