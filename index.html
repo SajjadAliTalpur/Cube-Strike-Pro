@@ -66,6 +66,14 @@
   #lobby{ display:none; max-width:640px; margin:0 auto; padding:26px 16px 40px; text-align:center; }
   .codebox{ background:var(--card); border:3px solid var(--line); border-radius:16px; padding:20px; box-shadow:5px 5px 0 var(--line); }
   .roomcode{ font-family:'Bungee',cursive; font-size:3rem; letter-spacing:10px; color:var(--blue); margin:6px 0; }
+  .invitebox{ margin-top:16px; border-top:2px dashed var(--line); padding-top:14px; }
+  .invitelink{ display:block; width:100%; box-sizing:border-box; font-family:inherit; font-weight:700; font-size:.82rem;
+    text-align:center; background:var(--paper); color:var(--ink); border:2px solid var(--line); border-radius:10px;
+    padding:10px 8px; margin:8px 0 10px; word-break:break-all; }
+  #inviteBanner{ display:none; max-width:640px; margin:14px auto 0; background:var(--card); border:3px solid var(--line);
+    border-radius:16px; padding:16px; box-shadow:5px 5px 0 var(--line); text-align:center; }
+  #inviteBanner .big{ font-family:'Bungee',cursive; font-size:1.15rem; margin-bottom:6px; }
+  #inviteBanner p{ font-weight:600; margin:0 0 12px; line-height:1.45; }
   #playerList{ list-style:none; padding:0; margin:14px 0; display:flex; flex-direction:column; gap:8px; }
   #playerList li{ background:var(--card); border:2px solid var(--line); border-radius:10px; padding:9px 12px;
     font-weight:700; display:flex; align-items:center; gap:10px; text-align:left; }
@@ -82,23 +90,27 @@
   #hitmark{ left:50%; top:50%; transform:translate(-50%,-50%); font-size:26px; color:var(--yellow);
     text-shadow:0 0 5px #000; opacity:0; }
   .split #hitmark{ top:25%; }
-  #topbar{ left:50%; top:10px; transform:translateX(-50%); background:rgba(10,15,30,.72); color:#fff;
-    border-radius:999px; padding:6px 18px; font-size:1rem; display:flex; gap:16px; white-space:nowrap; }
-  #feed{ right:10px; top:10px; width:min(300px,44vw); display:flex; flex-direction:column; gap:4px; align-items:flex-end; }
-  #feed div{ background:rgba(10,15,30,.72); color:#fff; border-radius:8px; padding:5px 10px; font-size:.8rem; line-height:1.35; }
-  #feed .taunt{ background:rgba(251,133,0,.85); color:#14213d; }
-  #banner{ left:50%; top:20%; transform:translateX(-50%); text-align:center; color:#fff; width:100%; }
-  #banner .big{ font-family:'Bungee',cursive; font-size:clamp(1.4rem,5vw,2.4rem); color:var(--yellow); text-shadow:3px 3px 0 #14213d; }
-  #banner .sub{ font-weight:800; text-shadow:0 1px 3px #000; }
+  #topbar{ left:50%; top:8px; transform:translateX(-50%); background:rgba(10,15,30,.55); color:#fff;
+    border-radius:999px; padding:4px 14px; font-size:.88rem; display:flex; gap:12px; white-space:nowrap; align-items:center; }
+  #teamScore{ font-weight:800; }
+  #teamScore .ta{ color:#7dd3fc; } #teamScore .tb{ color:#fda4af; }
+  #feed{ right:8px; top:44px; width:min(230px,36vw); display:flex; flex-direction:column; gap:3px; align-items:flex-end; }
+  #feed div{ background:rgba(10,15,30,.55); color:#fff; border-radius:8px; padding:4px 8px; font-size:.72rem; line-height:1.3; }
+  #feed .taunt{ background:rgba(251,133,0,.8); color:#14213d; }
+  #banner{ left:50%; top:13%; transform:translateX(-50%); text-align:center; color:#fff; width:100%; pointer-events:none; }
+  #banner .big{ font-family:'Bungee',cursive; font-size:clamp(1.05rem,3.5vw,1.6rem); color:var(--yellow); text-shadow:2px 2px 0 #14213d; }
+  #banner .sub{ font-weight:800; font-size:.85rem; text-shadow:0 1px 3px #000; }
   #bottomLeft{ left:12px; bottom:12px; color:#fff; }
-  .hpwrap{ width:min(240px,40vw); height:18px; background:rgba(10,15,30,.7); border:2px solid #fff; border-radius:8px; overflow:hidden; }
+  .hpwrap{ width:min(170px,30vw); height:13px; background:rgba(10,15,30,.55); border:2px solid rgba(255,255,255,.85); border-radius:8px; overflow:hidden; }
   #hpfill{ height:100%; width:100%; background:var(--green); transition:width .15s; }
-  #hptext{ text-shadow:0 1px 3px #000; margin-top:3px; }
+  #hptext{ text-shadow:0 1px 3px #000; margin-top:2px; font-size:.9rem; display:flex; align-items:center; gap:5px; }
   #bottomRight{ right:12px; bottom:12px; color:#fff; text-align:right; text-shadow:0 1px 3px #000; }
-  #weaponName{ font-family:'Bungee',cursive; font-size:1.1rem; color:var(--yellow); }
-  #ammo{ font-size:1.5rem; font-weight:800; }
-  #minimap{ position:absolute; left:12px; top:10px; width:132px; height:132px; border:3px solid #fff;
-    border-radius:10px; background:rgba(20,40,60,.8); pointer-events:none; }
+  #weaponName{ font-size:.62rem; font-weight:800; letter-spacing:.08em; color:#fff; opacity:.85; text-align:center; }
+  #weaponHud{ display:flex; align-items:center; gap:7px; justify-content:flex-end; }
+  #weaponIcon{ display:inline-flex; color:var(--yellow); } #weaponIcon svg{ width:34px; height:20px; }
+  #ammo{ font-size:1.35rem; font-weight:800; }
+  #minimap{ position:absolute; left:10px; top:8px; width:88px; height:88px; border:2px solid rgba(255,255,255,.85);
+    border-radius:10px; background:rgba(20,40,60,.65); pointer-events:none; }
   #scoreboard{ left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(10,15,30,.88); color:#fff;
     border:3px solid #fff; border-radius:14px; padding:16px 20px; min-width:min(420px,88vw); display:none; }
   #scoreboard h3{ margin:0 0 8px; text-align:center; }
@@ -113,23 +125,61 @@
   #clickToPlay{ position:absolute; inset:0; display:none; align-items:center; justify-content:center;
     background:rgba(10,15,30,.55); color:#fff; text-align:center; z-index:5; pointer-events:auto; cursor:pointer; }
   #clickToPlay .inner{ background:rgba(10,15,30,.85); border:3px solid #fff; border-radius:16px; padding:22px 28px; }
-  /* touch controls */
+  /* touch controls — joystick bottom-left, everything else in ONE transparent bottom bar */
   #touchUI{ display:none; }
   body.touch #touchUI.playing{ display:block; }
+  body:not(.touch) #touchUI, body:not(.touch) #btnScore{ display:none !important; }
   #stick{ position:absolute; left:18px; bottom:86px; width:118px; height:118px; border-radius:50%;
     border:3px solid rgba(255,255,255,.7); background:rgba(10,15,30,.35); pointer-events:auto; }
   #stickKnob{ position:absolute; left:50%; top:50%; width:52px; height:52px; border-radius:50%;
     background:rgba(255,255,255,.85); transform:translate(-50%,-50%); }
-  .tbtn{ position:absolute; pointer-events:auto; border:3px solid #fff; color:#fff; font-weight:800;
-    background:rgba(10,15,30,.55); border-radius:50%; }
-  #btnFire{ right:20px; bottom:86px; width:92px; height:92px; background:rgba(239,71,111,.75); font-size:1rem; }
-  #btnJump{ right:126px; bottom:70px; width:58px; height:58px; font-size:.75rem; }
-  #btnReload{ right:30px; bottom:192px; width:58px; height:58px; font-size:.75rem; }
-  #btnGun{ right:104px; bottom:196px; width:58px; height:58px; font-size:.75rem; }
-  #btnTaunt{ right:178px; bottom:150px; width:58px; height:58px; font-size:.75rem; }
-  #btnScore{ position:absolute; right:12px; top:150px; pointer-events:auto; border:2px solid #fff; color:#fff;
-    background:rgba(10,15,30,.55); border-radius:10px; padding:6px 10px; font-weight:800; display:none; }
-  body.touch #btnScore.playing{ display:block; }
+  #bottomBar{ position:absolute; right:12px; bottom:12px; display:flex; gap:6px; align-items:center;
+    background:rgba(10,15,30,.38); border:1.5px solid rgba(255,255,255,.35); border-radius:999px;
+    padding:6px 8px; pointer-events:auto; backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); }
+  .tbtn{ position:relative; pointer-events:auto; border:2px solid rgba(255,255,255,.75); color:#fff;
+    background:rgba(10,15,30,.35); border-radius:50%; width:50px; height:50px; min-height:50px;
+    display:flex; align-items:center; justify-content:center; padding:0; flex:none; }
+  .tbtn svg{ width:26px; height:26px; display:block; }
+  .tbtn:active{ background:rgba(255,209,102,.55); }
+  .tbtn .cap{ position:absolute; bottom:-13px; left:50%; transform:translateX(-50%); font-size:.52rem; font-weight:800; letter-spacing:.04em; color:#fff; text-shadow:0 1px 2px #000; }
+  #btnScore{ position:absolute; right:10px; top:86px; pointer-events:auto; border:2px solid rgba(255,255,255,.7); color:#fff;
+    background:rgba(10,15,30,.4); border-radius:50%; width:40px; height:40px; min-height:40px; padding:0;
+    align-items:center; justify-content:center; display:none; }
+  #btnScore svg{ width:20px; height:20px; }
+  body.touch #btnScore.playing{ display:flex; }
+  #tapHint{ position:absolute; left:50%; bottom:84px; transform:translateX(-50%); color:#fff; font-size:.72rem; font-weight:700;
+    background:rgba(10,15,30,.4); padding:4px 12px; border-radius:999px; pointer-events:none; opacity:0; transition:opacity .4s; white-space:nowrap; }
+  body.touch #tapHint.show{ opacity:1; }
+  /* ---------- CHAT (quick + free text, collapsible) ---------- */
+  #chatPanel{ position:absolute; right:12px; bottom:86px; width:min(330px,92vw); z-index:8; display:none;
+    background:rgba(10,15,30,.88); color:#fff; border:2px solid rgba(255,255,255,.6); border-radius:14px;
+    padding:10px; pointer-events:auto; font-weight:600; }
+  #chatPanel.open{ display:block; }
+  body.chat-open #clickToPlay{ display:none !important; }
+  #chatPanel .chead{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:6px; }
+  #chatPanel .ctitle{ font-weight:800; font-size:.9rem; }
+  #chatClose{ min-height:30px; width:30px; border-radius:50%; border:2px solid rgba(255,255,255,.7); background:transparent; color:#fff; font-weight:800; line-height:1; }
+  #chatScopeWrap{ display:none; gap:6px; margin-bottom:6px; }
+  #chatScopeWrap.show{ display:flex; }
+  .scopebtn{ flex:1; min-height:30px; border-radius:999px; border:2px solid rgba(255,255,255,.55); background:transparent; color:#fff; font-weight:800; font-size:.78rem; }
+  .scopebtn.on{ background:var(--yellow); color:#14213d; border-color:var(--yellow); }
+  #quickChat{ display:flex; flex-wrap:wrap; gap:5px; margin-bottom:7px; }
+  .qchip{ min-height:30px; border-radius:999px; border:2px solid rgba(255,255,255,.45); background:rgba(255,255,255,.12); color:#fff; font-weight:700; font-size:.76rem; padding:3px 9px; }
+  .qchip:active{ background:var(--yellow); color:#14213d; }
+  #chatLog{ max-height:128px; overflow-y:auto; display:flex; flex-direction:column; gap:3px; margin-bottom:7px; font-size:.8rem; line-height:1.35; }
+  #chatLog div{ background:rgba(255,255,255,.09); border-radius:7px; padding:4px 7px; overflow-wrap:anywhere; }
+  #chatLog .who{ font-weight:800; }
+  #chatLog .scope{ font-size:.6rem; font-weight:800; padding:0 5px; border-radius:999px; background:#118ab2; color:#fff; vertical-align:middle; }
+  #chatLog .scope.all{ background:#fb8500; color:#14213d; }
+  #chatRow{ display:flex; gap:6px; }
+  #chatText{ flex:1; min-width:0; border:2px solid rgba(255,255,255,.55); border-radius:9px; background:rgba(255,255,255,.95); color:#14213d; padding:6px 8px; font-weight:600; font-size:.85rem; min-height:36px; }
+  #chatSend{ min-height:36px; border-radius:9px; border:2px solid var(--line); background:var(--green); color:#14213d; font-weight:800; padding:6px 12px; }
+  #btnChatDesk{ position:absolute; right:12px; bottom:12px; z-index:7; width:46px; height:46px; min-height:46px; border-radius:50%;
+    border:2px solid rgba(255,255,255,.75); background:rgba(10,15,30,.45); color:#fff; display:none; align-items:center; justify-content:center; pointer-events:auto; }
+  #btnChatDesk svg{ width:24px; height:24px; }
+  body:not(.touch) #btnChatDesk.playing{ display:flex; }
+  .hasnew{ position:relative; }
+  .hasnew::after{ content:''; position:absolute; top:2px; right:2px; width:10px; height:10px; border-radius:50%; background:var(--red); border:2px solid #fff; }
 
   /* ---------- END SCREEN ---------- */
   #endscreen{ display:none; position:fixed; inset:0; background:rgba(10,15,30,.82); z-index:20;
@@ -142,6 +192,25 @@
   #endTable td.n,#endTable th.n{ text-align:right; }
   .hl{ background:var(--paper); border:2px solid var(--line); border-radius:10px; padding:10px; margin:8px 0; font-weight:700; }
   .endbtns{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+  /* ---------- END-GAME SCORE CARD ---------- */
+  #scoreCard{ display:none; margin-top:14px; background:#14213d; color:#fff; border:3px solid var(--line);
+    border-radius:16px; padding:18px 16px; box-shadow:5px 5px 0 var(--line); text-align:center; }
+  .sc-head{ display:flex; flex-direction:column; gap:2px; align-items:center; }
+  .sc-logo{ font-family:'Bungee',cursive; font-size:1.35rem; letter-spacing:1px; }
+  .sc-logo .a{ color:#ef476f; } .sc-logo .b{ color:#4cc9f0; }
+  .sc-map{ font-weight:800; font-size:.78rem; color:#ffd166; letter-spacing:2px; }
+  .sc-result{ font-family:'Bungee',cursive; font-size:2rem; margin:12px 0 4px; }
+  .sc-result.win{ color:#06d6a0; } .sc-result.loss{ color:#ef476f; } .sc-result.draw{ color:#ffd166; }
+  .sc-player{ display:flex; align-items:center; justify-content:center; gap:10px; font-weight:800; font-size:1.25rem; }
+  .sc-chip{ width:22px; height:22px; border-radius:6px; border:2px solid #fff; display:inline-block; flex:none; }
+  .sc-rank{ font-weight:700; color:#cfe3ff; margin-top:4px; }
+  .sc-stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0 12px; }
+  .sc-stat{ background:#1d2f52; border:2px solid rgba(255,255,255,.22); border-radius:12px; padding:10px 4px;
+    display:flex; flex-direction:column; gap:2px; }
+  .sc-num{ font-family:'Bungee',cursive; font-size:1.5rem; }
+  .sc-lab{ font-size:.62rem; font-weight:800; letter-spacing:1px; color:#9db8dd; }
+  .sc-url{ font-weight:800; font-size:.85rem; color:#ffd166; word-break:break-all; }
+  @media (max-width:520px){ .sc-stats{ grid-template-columns:repeat(2,1fr); } .sc-result{ font-size:1.6rem; } }
   /* quick match slots */
   #quickSlots{ display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:10px; margin-top:14px; }
   .qslot{ border:3px solid var(--line); border-radius:12px; padding:12px 8px; background:var(--card);
@@ -168,26 +237,27 @@
   @media (prefers-reduced-motion: reduce){ #rotateOverlay .phone{ animation:none; transform:rotate(90deg);} }
   #rotateOverlay h2{ font-family:'Bungee',cursive; font-size:1.6rem; margin:14px 0 8px; color:var(--yellow); }
   #rotateOverlay p{ font-weight:600; line-height:1.5; margin:0; }
-  body.touch.playing-now #rotateOverlay{ }
   @media (orientation: portrait){
     body.touch.playing-now #rotateOverlay{ display:flex; }
   }
-  /* ---------- Bigger landscape-friendly touch controls ---------- */
-  #stick{ left:max(18px, env(safe-area-inset-left)); bottom:24px; width:138px; height:138px; }
-  #stickKnob{ width:60px; height:60px; }
-  #btnFire{ right:max(20px, env(safe-area-inset-right)); bottom:24px; width:118px; height:118px; font-size:1.15rem;
-    border-width:4px; box-shadow:0 0 0 4px rgba(255,255,255,.25); }
-  #btnJump{ right:152px; bottom:20px; width:68px; height:68px; }
-  #btnReload{ right:34px; bottom:158px; width:64px; height:64px; }
-  #btnGun{ right:112px; bottom:160px; width:64px; height:64px; }
-  #btnTaunt{ right:190px; bottom:104px; width:60px; height:60px; }
-  @media (orientation: landscape) and (max-height: 500px){
-    #stick{ width:124px; height:124px; bottom:16px; }
-    #btnFire{ width:108px; height:108px; bottom:16px; }
-    #btnReload{ bottom:136px; } #btnGun{ bottom:138px; } #btnTaunt{ bottom:92px; }
-    #minimap{ width:96px; height:96px; }
-    #bottomLeft{ bottom:170px; }
+  @media (orientation: landscape){
+    body.touch.playing-now #rotateOverlay{ display:none !important; }
   }
+  /* ---------- Landscape-friendly touch layout ---------- */
+  #stick{ left:max(14px, env(safe-area-inset-left)); bottom:16px; width:132px; height:132px; }
+  #stickKnob{ width:58px; height:58px; }
+  #bottomBar{ right:max(12px, env(safe-area-inset-right)); bottom:14px; margin-bottom:10px; }
+  body.touch #bottomRight{ bottom:86px; }
+  @media (orientation: landscape) and (max-height: 500px){
+    #stick{ width:118px; height:118px; bottom:12px; }
+    #minimap{ width:72px; height:72px; }
+    #bottomLeft{ bottom:146px; }
+    .tbtn{ width:46px; height:46px; min-height:46px; }
+    #feed{ display:none; }
+  }
+  .botbadge{ background:var(--orange); color:#14213d; font-size:.62rem; font-weight:800; padding:1px 6px; border-radius:999px; vertical-align:middle; }
+  .teambadge{ font-size:.62rem; font-weight:800; padding:1px 6px; border-radius:999px; vertical-align:middle; color:#fff; }
+  .teambadge.a{ background:#118ab2; } .teambadge.b{ background:#ef476f; }
 </style>
 </head>
 <body>
@@ -206,6 +276,13 @@
   </div>
   <div id="menuMsg"></div>
 
+  <div id="inviteBanner">
+    <div class="big">🎉 YOU'RE INVITED!</div>
+    <p>A friend invited you to room <b id="inviteCodeLabel">····</b>. Tap below and you jump straight into their lobby — no code to type!</p>
+    <button class="bigbtn green" id="btnInviteJoin" style="font-size:1.1rem">▶ JOIN ROOM <span id="inviteCodeBtn">····</span></button>
+    <div style="margin-top:10px"><button class="bigbtn ghost" id="btnInviteDismiss">Not now</button></div>
+  </div>
+
   <div class="autoplay">
     <button id="btnAuto">▶ AUTO PLAY — QUICK MATCH</button>
     <p>One tap and you are in: a 10-player match starts automatically in about 15–30 seconds. No room code, no setup. On phones, turn your phone sideways (landscape) for the big controls.</p>
@@ -221,7 +298,7 @@
     <div class="mode">
       <span class="tag" style="background:var(--yellow)">ONLINE · JOIN A FRIEND</span>
       <h3>🔑 Join a Room</h3>
-      <p>Got a code from a friend? Type it here and you are in their lobby in seconds. No account, no download.</p>
+      <p>Got a code from a friend? Type it here and you are in their lobby in seconds. No account, no download. Or just open their <b>invite link</b> — it drops you straight into the lobby, no typing at all.</p>
       <div class="joinrow">
         <input id="joinCode" maxlength="4" placeholder="CODE" autocomplete="off">
         <button class="bigbtn blue" id="btnJoin">Join Room</button>
@@ -245,6 +322,12 @@
       <p>PUBG-style: tap Find Match and watch the lobby fill to 10 players. <b>Waiting slots are filled with bots (labelled BOT)</b> so your match starts in about 15–30 seconds instead of waiting forever.</p>
       <button class="bigbtn blue" id="btnQuick">Find Match</button>
     </div>
+    <div class="mode">
+      <span class="tag" style="background:#118ab2;color:#fff">TEAM DEATHMATCH · 5 v 5</span>
+      <h3>⚔️ Team Deathmatch</h3>
+      <p>Two teams — <b style="color:#118ab2">Alpha (blue)</b> vs <b style="color:#ef476f">Bravo (pink)</b>. You lead Alpha with 4 bot teammates against 5 enemy bots. <b>First team to 25 kills wins</b> (or most kills in 5 minutes). No friendly fire — spawn with your team and push together!</p>
+      <button class="bigbtn blue" id="btnTDM">Play TDM</button>
+    </div>
   </div>
 
   <div class="help">
@@ -264,14 +347,15 @@
           <li>First to <b>25 kills</b> wins, or most kills when the 5-minute timer ends</li>
           <li>Kill streaks (3, 5, 8…) get announced to everyone</li>
           <li>You respawn 3 seconds after being cubed</li>
-          <li>On mobile: hold your phone <b>sideways (landscape)</b> — big left joystick to move, drag to aim, big FIRE button to shoot</li>
+          <li>On mobile: hold your phone <b>sideways (landscape)</b> — left joystick to move, <b>drag on the right side to aim, tap the screen to shoot</b> (no FIRE button). Weapon, reload, jump and crouch are icon buttons in the transparent bar at the bottom</li>
+          <li><b>TDM:</b> first team to 25 kills wins — Alpha (blue) vs Bravo (pink), bots split across both teams</li>
         </ul>
       </div>
       <div><b>Online rooms — the honest bits</b>
         <ul>
           <li>Rooms hold 2–4 players and connect directly between browsers (PeerJS) — free, no server cost</li>
           <li><b>If the host closes the game, the match ends for everyone.</b> Guests leaving just drop out</li>
-          <li>Everyone needs the game open in their browser — share the room code with your friends</li>
+          <li>Everyone needs the game open in their browser — share the room code, or better: send the <b>invite link</b> from the lobby. Anyone who opens it lands straight in your lobby automatically, no code to type</li>
         </ul>
       </div>
       <div><b>Quick Match &amp; real matchmaking — the truth</b>
@@ -280,6 +364,7 @@
           <li>True random matchmaking with strangers needs a <b>dedicated game server</b> running 24/7 <b>plus</b> many players online at the same time</li>
           <li>Vercel is static hosting only — it serves this page but cannot run a game server, so it cannot match strangers</li>
           <li>For now, the <b>room-code mode above is the free way</b> to play with real friends</li>
+          <li><b>Chat is player-to-player:</b> tap the 💬 icon for Quick Chat presets or type your own message (Team / All in TDM). Messages in online rooms travel browser-to-browser via PeerJS — there is no chat server and nothing is stored. A simple filter replaces common abusive words with ***. In bot matches your typed messages show locally; bots never reply to free text, they only drop occasional quick-chat lines</li>
         </ul>
       </div>
     </div>
@@ -301,6 +386,12 @@
     <div class="roomcode" id="lobbyCode">····</div>
     <button class="bigbtn" id="btnCopyCode">📋 Copy Room Code</button>
     <div id="copyMsg" style="font-weight:700;margin-top:8px;min-height:1.3em"></div>
+    <div class="invitebox">
+      <div style="font-weight:800">🔗 Or send the invite link — friends tap it and land straight in this lobby, no code to type:</div>
+      <span class="invitelink" id="lobbyInvite">…</span>
+      <button class="bigbtn blue" id="btnCopyInvite">🔗 Copy Invite Link</button>
+      <div id="inviteMsg" style="font-weight:700;margin-top:8px;min-height:1.3em"></div>
+    </div>
     <div class="warn" style="margin-top:10px">⚠️ Host note: if you (the host) close or leave this page, the room closes and the match ends for everyone. Keep this tab open while you play!</div>
   </div>
   <ul id="playerList"></ul>
@@ -324,15 +415,15 @@
   <div class="inner">
     <span class="phone" aria-hidden="true">📱</span>
     <h2>ROTATE YOUR PHONE</h2>
-    <p>Cube Strike is played in <b>landscape</b>. Turn your phone sideways for the big joystick and FIRE button — portrait controls are too cramped for a shooter!</p>
+    <p>Cube Strike is played in <b>landscape</b>. Turn your phone sideways for the joystick and tap-to-shoot — portrait controls are too cramped for a shooter!</p>
     <p style="margin-top:10px;opacity:.85">The game is still running behind this message — just rotate to keep playing.</p>
   </div>
 </div>
 
 <!-- ================= GAME ================= -->
 <div id="game">
-  <canvas id="minimap" width="132" height="132"></canvas>
-  <div class="hud" id="topbar"><span>⏱ <span id="timer">5:00</span></span><span>🎯 First to 25</span><span id="myScore">0 kills</span></div>
+  <canvas id="minimap" width="88" height="88"></canvas>
+  <div class="hud" id="topbar"><span>⏱ <span id="timer">5:00</span></span><span id="teamScore" style="display:none"></span><span id="goalLabel">First to 25</span><span id="myScore">0 kills</span></div>
   <div class="hud" id="feed"></div>
   <div class="hud" id="crosshair">+</div>
   <div class="hud" id="crosshair2">+</div>
@@ -340,25 +431,38 @@
   <div class="hud" id="banner"></div>
   <div class="hud" id="bottomLeft">
     <div class="hpwrap"><div id="hpfill"></div></div>
-    <div id="hptext">❤ 100</div>
+    <div id="hptext"><svg width="15" height="15" viewBox="0 0 24 24" fill="#ef476f" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.2 5 5.7 5c2 0 3.4 1.1 4.3 2.4h4C15 6.1 16.4 5 18.4 5c3.5 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(.92) translate(1,0)"/></svg><span id="hpnum">100</span></div>
   </div>
   <div class="hud" id="bottomRight">
+    <div id="weaponHud"><span id="weaponIcon" aria-hidden="true"></span><span id="ammo">30</span></div>
     <div id="weaponName">RIFLE</div>
-    <div><span id="ammo">30</span> <span style="font-size:.85rem">/ ∞ · [1] [2] [3] switch · R reload</span></div>
   </div>
-  <div class="hud" id="scoreboard"><h3>🏆 SCOREBOARD</h3><table id="scoreTable"></table></div>
+  <div class="hud" id="scoreboard"><h3>SCOREBOARD</h3><div id="teamBoard" style="text-align:center;font-weight:800;margin-bottom:8px;display:none"></div><table id="scoreTable"></table></div>
   <div class="hud" id="respawn"><div class="big">YOU GOT CUBED!</div><div>Respawning in <span id="respawnN">3</span>…</div></div>
   <div id="dmgflash"></div>
   <div id="clickToPlay"><div class="inner"><div class="chunk" style="font-size:1.4rem">CLICK TO PLAY</div><div>Mouse look needs one click. WASD moves, click shoots!</div></div></div>
   <div id="touchUI">
     <div id="stick"><div id="stickKnob"></div></div>
-    <button class="tbtn" id="btnFire">FIRE</button>
-    <button class="tbtn" id="btnJump">JUMP</button>
-    <button class="tbtn" id="btnReload">RLD</button>
-    <button class="tbtn" id="btnGun">GUN</button>
-    <button class="tbtn" id="btnTaunt">😜</button>
+    <div id="tapHint">Drag to aim · Tap to shoot</div>
+    <div id="bottomBar" role="group" aria-label="Actions">
+      <button class="tbtn" id="btnGun" aria-label="Switch weapon" title="Switch weapon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M2 10h13l1-2h4v4h-5l-1 3h-3l-1-3H7l-1 4H4l1-4H2z" fill="currentColor" stroke="none"/><path d="M15 12h7"/></svg></button>
+      <button class="tbtn" id="btnReload" aria-label="Reload" title="Reload"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 3v5h-5" fill="none"/></svg></button>
+      <button class="tbtn" id="btnJump" aria-label="Jump" title="Jump"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6"/><path d="M5 12l7-7 7 7"/><path d="M4 21h16"/></svg></button>
+      <button class="tbtn" id="btnCrouch" aria-label="Crouch" title="Crouch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16"/><path d="M12 5v12"/><path d="M5 10l7 7 7-7"/></svg></button>
+      <button class="tbtn" id="btnChat" aria-label="Chat" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.3-2.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01" stroke-width="3" stroke-linecap="round"/></svg></button>
+      <button class="tbtn" id="btnTaunt" aria-label="Taunt" title="Taunt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8 14c1.2 1.8 2.6 2.6 4 2.6S14.8 15.8 16 14" stroke-linecap="round"/></svg></button>
+    </div>
   </div>
-  <button id="btnScore">🏆 Scores</button>
+  <div id="chatPanel" role="dialog" aria-label="Match chat">
+    <div class="chead"><span class="ctitle">💬 Match Chat</span><button id="chatClose" aria-label="Close chat">✕</button></div>
+    <div id="chatScopeWrap"><button class="scopebtn on" id="scopeAll" type="button">🌍 All</button><button class="scopebtn" id="scopeTeam" type="button">🛡️ Team</button></div>
+    <div id="quickChat"></div>
+    <div id="chatLog" aria-live="polite"></div>
+    <div id="chatRow"><input id="chatText" maxlength="120" placeholder="Type a message…" autocomplete="off"><button id="chatSend" type="button">Send</button></div>
+    <div style="font-size:.68rem;opacity:.8;margin-top:5px">Chat is player-to-player. In bot matches only your messages show — bots use quick-chat lines only.</div>
+  </div>
+  <button id="btnChatDesk" aria-label="Chat" title="Chat (Enter)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.3-2.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01" stroke-width="3" stroke-linecap="round"/></svg></button>
+  <button id="btnScore" aria-label="Scoreboard" title="Scoreboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 5H4a3 3 0 0 0 3 4M17 5h3a3 3 0 0 1-3 4"/><path d="M12 14v3M8 20h8M10 17h4l1 3H9z"/></svg></button>
 </div>
 
 <!-- ================= END ================= -->
@@ -367,7 +471,31 @@
     <h2 id="endTitle">🏆 MATCH OVER</h2>
     <div id="endWinner" style="font-weight:800;font-size:1.1rem"></div>
     <div id="highlights"></div>
+    <div id="scoreCard">
+      <div class="sc-head"><span class="sc-logo">CUBE <span class="a">STRIKE</span> <span class="b">ONLINE</span></span><span class="sc-map">NEON CHAI TOWN ☕🏙️</span></div>
+      <div class="sc-result" id="scResult">🏆 VICTORY</div>
+      <div class="sc-player"><span class="sc-chip" id="scChip"></span><span id="scName">Player</span></div>
+      <div class="sc-rank" id="scRank">#1 of 10 players</div>
+      <div class="sc-stats">
+        <div class="sc-stat"><span class="sc-num" id="scKills">0</span><span class="sc-lab">KILLS</span></div>
+        <div class="sc-stat"><span class="sc-num" id="scDeaths">0</span><span class="sc-lab">DEATHS</span></div>
+        <div class="sc-stat"><span class="sc-num" id="scHS">0</span><span class="sc-lab">🎯 HEADSHOTS</span></div>
+        <div class="sc-stat"><span class="sc-num" id="scStreak">0</span><span class="sc-lab">🔥 BEST STREAK</span></div>
+      </div>
+      <div class="sc-url">▶ Play free: sajjadalitalpur.github.io/Cube-Strike-Pro</div>
+    </div>
+    <div class="endbtns" style="margin-top:12px">
+      <button class="bigbtn blue" id="btnCardDownload">⬇ Download Score Card (PNG)</button>
+      <button class="bigbtn" id="btnCardShare">📤 Share My Score</button>
+    </div>
+    <div id="cardMsg" style="font-weight:700;margin-top:8px;min-height:1.3em;text-align:center"></div>
     <table id="endTable"></table>
+    <div class="invitebox" id="endInvite" style="display:none">
+      <div style="font-weight:800">🔗 Invite friends to the rematch — one tap on this link drops them straight into your lobby:</div>
+      <span class="invitelink" id="endInviteLink">…</span>
+      <button class="bigbtn blue" id="btnCopyInviteEnd">🔗 Copy Invite Link</button>
+      <div id="inviteMsgEnd" style="font-weight:700;margin-top:8px;min-height:1.3em"></div>
+    </div>
     <div class="endbtns">
       <button class="bigbtn green" id="btnAgain">↻ Play Again</button>
       <button class="bigbtn ghost" id="btnMenu">Main Menu</button>
@@ -513,10 +641,21 @@ var pointerLocked = false;
 var isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 if(isTouch) document.body.classList.add('touch');
 var joy = {x:0,y:0,active:false,id:null};
-var lookTouch = {id:null,lx:0,ly:0};
+var lookTouch = {id:null,lx:0,ly:0,sx:0,sy:0,st:0,moved:false,holdT:null};
 var fireTouch = false;
+var crouchHeld = false;
+var matchType = 'ffa';        // 'ffa' | 'tdm'
+var teamKills = [0,0];
+var TEAM_NAMES = ['Alpha','Bravo'];
+var TEAM_CSS = ['#118ab2','#ef476f'];
 var highlights = { bestStreak:{name:'—',n:0}, headKing:{name:'—',n:0} };
 var SPAWNS = [ [-38,-38],[38,-38],[-38,38],[38,38],[0,-40],[0,40],[-40,0],[40,0] ];
+var TEAM_SPAWNS = { 0:[[-38,34],[-30,38],[-38,26],[38,34],[30,38]], 1:[[-38,-34],[30,-38],[-30,-38],[38,-26],[38,-34]] };
+var WEAPON_ICONS = {
+  rifle:'<svg viewBox="0 0 40 20" fill="currentColor" aria-hidden="true"><path d="M1 8h22l2-3h9v5h-8l-1 4h-4l-1-4h-6l-1 5H9l1-5H5L4 13H1z"/></svg>',
+  pistol:'<svg viewBox="0 0 40 20" fill="currentColor" aria-hidden="true"><path d="M6 5h20l1 4H15l-1 6H9L8 9H6zM27 6h6v3h-6z"/></svg>',
+  shotgun:'<svg viewBox="0 0 40 20" fill="currentColor" aria-hidden="true"><path d="M1 8h26V5h4v6h-4v2H14l-1 3H9l1-3H1z"/></svg>'
+};
 
 /* ================= three setup ================= */
 function initThree(){
@@ -600,10 +739,11 @@ function createPlayer(id, name, colorIdx, opts){
   opts = opts||{};
   var p = {
     id:id, name:name, colorIdx:colorIdx, isBot:!!opts.bot, isP2:!!opts.p2, isRemote:!!opts.remote,
+    team:(opts.team===0||opts.team===1)?opts.team:null, crouch:false,
     pos:new THREE.Vector3(0,0,0), vel:new THREE.Vector3(), yaw:0, pitch:0,
-    hp:100, alive:true, kills:0, deaths:0, streak:0, headshots:0,
+    hp:100, alive:true, kills:0, deaths:0, streak:0, bestStreak:0, headshots:0,
     weapon:'rifle', ammo:{rifle:30,pistol:12,shotgun:6}, reloading:0, lastShot:0,
-    respawnT:0, onGround:true, botT:0, botTarget:null, botStrafe:1, shootCd:0,
+    respawnT:0, onGround:true, botT:0, botTarget:null, botStrafe:1, shootCd:0, retargetT:0, lastAttacker:null,
     mesh:null, headMesh:null, bodyMesh:null
   };
   var grp = new THREE.Group();
@@ -629,6 +769,13 @@ function removePlayer(id){
   scene.remove(p.mesh); delete players[id];
 }
 function placeAtSpawn(p){
+  if(matchType==='tdm' && (p.team===0||p.team===1)){
+    var ts = TEAM_SPAWNS[p.team];
+    var s2 = ts[Math.floor(Math.random()*ts.length)];
+    p.pos.set(s2[0]+rand(-1.5,1.5), 0, s2[1]+rand(-1.5,1.5));
+    p.vel.set(0,0,0);
+    return;
+  }
   var best=null, bestScore=-1;
   for(var i=0;i<SPAWNS.length;i++){
     var s=SPAWNS[i], score=Math.random()*10;
@@ -638,7 +785,7 @@ function placeAtSpawn(p){
   p.pos.set(best[0]+rand(-1,1), 0, best[1]+rand(-1,1));
   p.vel.set(0,0,0);
 }
-function eyeOf(p){ return new THREE.Vector3(p.pos.x, p.pos.y+1.62, p.pos.z); }
+function eyeOf(p){ return new THREE.Vector3(p.pos.x, p.pos.y+(p.crouch?1.05:1.62), p.pos.z); }
 function syncMesh(p){
   if(!p.mesh) return;
   p.mesh.position.copy(p.pos);
@@ -810,7 +957,12 @@ function switchWeapon(p, gun){
   p.weapon = gun; p.reloading = 0;
   if(p.id===localId||p.id===p2Id) updateHUD();
 }
+function isTeammate(a, b){
+  return matchType==='tdm' && a && b && a.team!==null && a.team!==undefined && a.team===b.team;
+}
 function applyHit(attacker, target, dmg, head){
+  if(isTeammate(attacker, target)) return; // TDM: no friendly fire
+  if(target) target.lastAttacker = attacker ? attacker.id : null;
   if(mode==='online'){
     if(target.id===localId){
       // I got hit — I am authoritative over my own HP
@@ -834,19 +986,25 @@ function damagePlayer(attacker, target, dmg, head){
 function killPlayer(attacker, target, head){
   target.hp = 0; target.alive=false; target.deaths++; target.streak=0; target.respawnT=3;
   attacker.kills++; attacker.streak++;
+  if(attacker.streak > (attacker.bestStreak||0)) attacker.bestStreak = attacker.streak;
   if(head) attacker.headshots++;
+  if(matchType==='tdm' && (attacker.team===0||attacker.team===1)) teamKills[attacker.team]++;
   if(attacker.streak > (highlights.bestStreak.n||0)) highlights.bestStreak = {name:attacker.name, n:attacker.streak};
   if(attacker.headshots > (highlights.headKing.n||0)) highlights.headKing = {name:attacker.name, n:attacker.headshots};
-  addFeed('💀 <b>'+esc(attacker.name)+'</b> cubed <b>'+esc(target.name)+'</b>'+(head?' 🎯 HEADSHOT!':''));
+  addFeed('💀 <b>'+esc(attacker.name)+'</b>'+(attacker.isBot?' <span class="botbadge">BOT</span>':'')+' cubed <b>'+esc(target.name)+'</b>'+(target.isBot?' <span class="botbadge">BOT</span>':'')+(head?' 🎯 HEADSHOT!':''));
   if(STREAKS[attacker.streak]) showBanner(STREAKS[attacker.streak], esc(attacker.name)+' is on fire!');
   if(attacker.id===localId || attacker.id===p2Id){ SFX.kill(); }
+  if(target.isBot && Math.random()<0.22) setTimeout(function(){ botQuickChat(target, 'Nice shot!'); }, 600);
+  else if(attacker.isBot && Math.random()<0.18) setTimeout(function(){ botQuickChat(attacker, pick(['Attack!','Enemy here!'])); }, 600);
   if(target.id===localId){ $('respawn').style.display='block'; }
   if(mode==='online'){
     if(target.id===localId) netSend({t:'death', victim:target.id, killer:attacker.id, killerName:attacker.name, head:!!head});
     netSendState();
   }
   updateScore();
-  if(attacker.kills>=25) endMatch(attacker);
+  if(matchType==='tdm'){
+    if(teamKills[0]>=25 || teamKills[1]>=25) endMatch(null);
+  } else if(attacker.kills>=25) endMatch(attacker);
 }
 function respawn(p){
   p.hp=100; p.alive=true; p.ammo={rifle:30,pistol:12,shotgun:6}; p.reloading=0;
@@ -855,35 +1013,71 @@ function respawn(p){
 }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
 
-/* ================= bots AI ================= */
+/* ================= bots AI — balanced: nearest opponent wins =================
+   Bots behave like real players: they chase the NEAREST opponent, whether that
+   is the human player or another bot. Bot-vs-bot fights happen naturally when
+   bots meet, and bots also push toward the player so the player takes real
+   damage — no standing at 100 HP all match. In TDM, teammates are never
+   targeted and there is no friendly fire. */
 var BOT_NAMES = ['BotBiryani','BotChai','BotRickshaw','BotLadoo','BotSignal','BotGully'];
+var BOT_FUN = ['ChotuGamer','SniperBhai','NoobKing','ChaiWala','RickshawRaja','GullyStar','MomoKing','ThandaCool','BiryaniBoss','SignalJam'];
+function botPickTarget(p){
+  var best=null, bestScore=1e9;
+  for(var id in players){
+    var q=players[id];
+    if(q===p || !q.alive) continue;
+    if(isTeammate(p,q)) continue;
+    var d = p.pos.distanceTo(q.pos);
+    var score = d;
+    // Revenge: whoever just shot me jumps the queue a little.
+    if(p.lastAttacker===q.id) score -= 14;
+    // Slight pull toward humans so the player is regularly in the fight,
+    // without ignoring a bot that is right next to me.
+    if(!q.isBot) score *= 0.82;
+    if(score<bestScore){ bestScore=score; best=q; }
+  }
+  return {target:best, dist: best ? p.pos.distanceTo(best.pos) : 1e9};
+}
 function botThink(p, dt, now){
   if(!p.alive) return;
-  p.botT -= dt;
-  // find nearest enemy
-  var best=null, bd=1e9;
-  for(var id in players){ var q=players[id]; if(q!==p && q.alive){ var d=p.pos.distanceTo(q.pos); if(d<bd){bd=d;best=q;} } }
-  if(!best) return;
-  var dx = best.pos.x-p.pos.x, dz = best.pos.z-p.pos.z;
+  p.botT -= dt; p.retargetT -= dt;
+  // Keep a target for a short while (feels human), re-pick when it dies,
+  // when someone shoots me, or every ~0.9s.
+  var cur = p.botTarget ? players[p.botTarget] : null;
+  if(!cur || !cur.alive || isTeammate(p,cur) || p.retargetT<=0){
+    var pickT = botPickTarget(p);
+    p.botTarget = pickT.target ? pickT.target.id : null;
+    cur = pickT.target;
+    p.retargetT = rand(0.7,1.1);
+  }
+  if(!cur) return;
+  var bd = p.pos.distanceTo(cur.pos);
+  var dx = cur.pos.x-p.pos.x, dz = cur.pos.z-p.pos.z;
   var targetYaw = Math.atan2(-dx, -dz);
   var dy = targetYaw - p.yaw;
   while(dy>Math.PI) dy-=Math.PI*2; while(dy<-Math.PI) dy+=Math.PI*2;
-  p.yaw += clamp(dy, -2.6*dt, 2.6*dt);
-  p.pitch = clamp((best.pos.y+1.4-(p.pos.y+1.62))/Math.max(4,bd), -0.4, 0.4);
-  if(p.botT<=0){ p.botT = rand(0.7,1.6); p.botStrafe = pick([-1,0,1]); }
-  var fwd = bd>9 ? 1 : (bd<4 ? -0.4 : 0.2);
-  movePlayer(p, fwd, p.botStrafe*0.6, dt, 6.4);
-  if(Math.random()<dt*0.25) jump(p);
-  // shoot if roughly facing + LOS
+  p.yaw += clamp(dy, -3.4*dt, 3.4*dt);
+  p.pitch = clamp(((cur.pos.y+(cur.crouch?1.0:1.4))-(p.pos.y+1.62))/Math.max(4,bd), -0.4, 0.4);
+  if(p.botT<=0){ p.botT = rand(0.6,1.3); p.botStrafe = pick([-1,0,1]); }
+  // Aggressive movement: close the distance, strafe in mid-range, back off only point-blank.
+  var fwd = bd>10 ? 1 : (bd<3.5 ? -0.5 : 0.35);
+  movePlayer(p, fwd, p.botStrafe*0.65, dt, bd>18 ? 7.0 : 6.6);
+  if(Math.random()<dt*0.3) jump(p);
+  // Shoot with line of sight. Full damage vs everyone — bot-vs-bot kills and
+  // player damage both count, exactly like a real lobby.
   p.shootCd -= dt;
-  if(bd<42 && Math.abs(dy)<0.25 && p.shootCd<=0){
-    raycaster.set(eyeOf(p), new THREE.Vector3(-Math.sin(p.yaw),0,-Math.cos(p.yaw))); raycaster.far=bd+2;
+  if(bd<46 && Math.abs(dy)<0.28 && p.shootCd<=0){
+    var dirTo = new THREE.Vector3(-Math.sin(p.yaw),0,-Math.cos(p.yaw));
+    raycaster.set(eyeOf(p), dirTo); raycaster.far=bd+2;
     var hits = raycaster.intersectObjects(walls,false);
-    if(!hits.length){
-      p.shootCd = rand(0.35,0.8);
-      // bot inaccuracy: wider spread handled by temporarily widening via pitch/yaw jitter in a direct shot
+    var blocked = hits.length && hits[0].distance < bd-1.2;
+    if(!blocked){
+      // vs the player: a touch more accurate + faster, so standing still hurts.
+      var vsHuman = !cur.isBot;
+      p.shootCd = vsHuman ? rand(0.28,0.6) : rand(0.35,0.8);
       var savedYaw=p.yaw, savedPitch=p.pitch;
-      p.yaw += rand(-0.09,0.09); p.pitch += rand(-0.05,0.05);
+      var jit = vsHuman ? 0.06 : 0.09;
+      p.yaw += rand(-jit,jit); p.pitch += rand(-0.04,0.04);
       if(p.ammo[p.weapon]<=0) reload(p);
       var savedLast = p.lastShot; p.lastShot = 0;
       tryShoot(p, now);
@@ -899,8 +1093,8 @@ function menuMsg(t){ $('menuMsg').textContent = t||''; }
 function addFeed(html, cls){
   var d=document.createElement('div'); if(cls) d.className=cls;
   d.innerHTML=html; $('feed').appendChild(d);
-  while($('feed').children.length>6) $('feed').removeChild($('feed').firstChild);
-  setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 5000);
+  while($('feed').children.length>4) $('feed').removeChild($('feed').firstChild);
+  setTimeout(function(){ if(d.parentNode) d.parentNode.removeChild(d); }, 4200);
 }
 var bannerTimer=null;
 function showBanner(big, sub){
@@ -920,35 +1114,61 @@ function updateHUD(){
   var me=players[localId]; if(!me) return;
   $('hpfill').style.width = clamp(me.hp,0,100)+'%';
   $('hpfill').style.background = me.hp>50 ? 'var(--green)' : (me.hp>25 ? 'var(--yellow)' : 'var(--red)');
-  $('hptext').textContent = '❤ ' + Math.max(0,Math.ceil(me.hp)) + (mode==='split' && players[p2Id] ? '   ·   P2 ❤ '+Math.max(0,Math.ceil(players[p2Id].hp)) : '');
-  $('weaponName').textContent = WEAPONS[me.weapon].label + (me.reloading>0 ? ' (RELOADING…)' : '');
+  var hn = $('hpnum'); if(hn) hn.textContent = Math.max(0,Math.ceil(me.hp)) + (mode==='split' && players[p2Id] ? ' · P2 '+Math.max(0,Math.ceil(players[p2Id].hp)) : '');
+  $('weaponName').textContent = WEAPONS[me.weapon].label + (me.reloading>0 ? ' · RELOADING' : '');
+  var wi = $('weaponIcon'); if(wi) wi.innerHTML = WEAPON_ICONS[me.weapon]||'';
   $('ammo').textContent = me.ammo[me.weapon];
   $('myScore').textContent = me.kills + ' kills';
+  var ts = $('teamScore');
+  if(matchType==='tdm'){
+    ts.style.display='inline';
+    ts.innerHTML = '<span class="ta">ALPHA '+teamKills[0]+'</span> – <span class="tb">'+teamKills[1]+' BRAVO</span>';
+    $('goalLabel').textContent = 'Team to 25';
+  } else {
+    ts.style.display='none';
+    $('goalLabel').textContent = 'First to 25';
+  }
 }
 function sortedPlayers(){
-  return Object.keys(players).map(function(k){return players[k];}).sort(function(a,b){ return b.kills-a.kills || a.deaths-b.deaths; });
+  return Object.keys(players).map(function(k){return players[k];}).sort(function(a,b){
+    if(matchType==='tdm' && a.team!==b.team) return (a.team||0)-(b.team||0);
+    return b.kills-a.kills || a.deaths-b.deaths;
+  });
+}
+function badgesFor(p){
+  var s='';
+  if(matchType==='tdm' && (p.team===0||p.team===1)) s += ' <span class="teambadge '+(p.team===0?'a':'b')+'">'+TEAM_NAMES[p.team].toUpperCase()+'</span>';
+  if(p.isBot) s += ' <span class="botbadge">BOT</span>';
+  return s;
 }
 function scoreRows(){
   return sortedPlayers().map(function(p){
-    return '<tr><td><span style="display:inline-block;width:11px;height:11px;border-radius:3px;background:'+PALETTE_CSS[p.colorIdx%8]+'"></span> '+esc(p.name)+(p.id===localId?' (you)':'')+(p.id===p2Id?' (P2)':'')+'</td><td class="n">'+p.kills+'</td><td class="n">'+p.deaths+'</td><td class="n">'+p.headshots+'</td></tr>';
+    return '<tr><td><span style="display:inline-block;width:11px;height:11px;border-radius:3px;background:'+PALETTE_CSS[p.colorIdx%8]+'"></span> '+esc(p.name)+(p.id===localId?' (you)':'')+(p.id===p2Id?' (P2)':'')+badgesFor(p)+'</td><td class="n">'+p.kills+'</td><td class="n">'+p.deaths+'</td><td class="n">'+p.headshots+'</td></tr>';
   }).join('');
 }
 function updateScore(){
+  var tb = $('teamBoard');
+  if(matchType==='tdm'){
+    tb.style.display='block';
+    tb.innerHTML = '<span style="color:#7dd3fc">ALPHA '+teamKills[0]+'</span> &nbsp;—&nbsp; <span style="color:#fda4af">'+teamKills[1]+' BRAVO</span><br><span style="font-size:.8rem;font-weight:700">First team to 25 kills wins</span>';
+  } else tb.style.display='none';
   $('scoreTable').innerHTML = '<tr><th>Player</th><th class="n">Kills</th><th class="n">Deaths</th><th class="n">🎯</th></tr>' + scoreRows();
   updateHUD();
 }
 function drawMinimap(){
-  var cv=$('minimap'), x=cv.getContext('2d');
-  x.clearRect(0,0,132,132);
-  x.fillStyle='rgba(90,140,90,.5)'; x.fillRect(0,0,132,132);
+  var cv=$('minimap'), S=cv.width||88, x=cv.getContext('2d');
+  x.clearRect(0,0,S,S);
+  x.fillStyle='rgba(90,140,90,.5)'; x.fillRect(0,0,S,S);
   x.fillStyle='rgba(0,0,0,.35)';
   colliders.forEach(function(c){
-    var x1=(c.minX+50)/100*132, z1=(c.minZ+50)/100*132, w=(c.maxX-c.minX)/100*132, h=(c.maxZ-c.minZ)/100*132;
-    if(w<100) x.fillRect(x1,z1,Math.max(2,w),Math.max(2,h));
+    var x1=(c.minX+50)/100*S, z1=(c.minZ+50)/100*S, w=(c.maxX-c.minX)/100*S, h=(c.maxZ-c.minZ)/100*S;
+    if(w<S-4) x.fillRect(x1,z1,Math.max(2,w),Math.max(2,h));
   });
+  var me=players[localId];
   for(var id in players){ var p=players[id]; if(!p.alive) continue;
-    x.fillStyle = p.id===localId ? '#ffffff' : PALETTE_CSS[p.colorIdx%8];
-    x.beginPath(); x.arc((p.pos.x+50)/100*132,(p.pos.z+50)/100*132, p.id===localId?4:3, 0, 7); x.fill();
+    if(matchType==='tdm') x.fillStyle = p.id===localId ? '#ffffff' : (isTeammate(me,p) ? '#7dd3fc' : '#fda4af');
+    else x.fillStyle = p.id===localId ? '#ffffff' : PALETTE_CSS[p.colorIdx%8];
+    x.beginPath(); x.arc((p.pos.x+50)/100*S,(p.pos.z+50)/100*S, p.id===localId?3.5:2.5, 0, 7); x.fill();
   }
 }
 
@@ -964,6 +1184,8 @@ function showScreen(which){
   document.body.classList.toggle('playing-now', which==='game');
   $('touchUI').classList.toggle('playing', which==='game');
   $('btnScore').classList.toggle('playing', which==='game');
+  $('btnChatDesk').classList.toggle('playing', which==='game');
+  if(which!=='game') setChatOpen(false);
   if(which==='game' && isTouch){
     try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function(){}); }catch(e){}
   }
@@ -973,6 +1195,10 @@ function startMatch(){
   if(!initThree()) return;
   raycaster = new THREE.Raycaster();
   highlights = { bestStreak:{name:'—',n:0}, headKing:{name:'—',n:0} };
+  teamKills = [0,0];
+  botChatT = rand(7,13);
+  var cl=$('chatLog'); if(cl) cl.innerHTML='';
+  setChatOpen(false);
   matchTime = 300; running = true;
   decals.forEach(function(d){ scene.remove(d.mesh); d.mesh.material.dispose(); }); decals=[];
   if(muzzleSprite) muzzleSprite.visible=false; if(muzzleLight) muzzleLight.intensity=0;
@@ -982,23 +1208,35 @@ function startMatch(){
   onResize();
   var me = players[localId];
   yaw = me ? me.yaw : 0; pitch = 0;
-  Object.keys(players).forEach(function(id){ var p=players[id]; p.kills=0;p.deaths=0;p.streak=0;p.headshots=0;p.hp=100;p.alive=true; respawn(p); });
+  Object.keys(players).forEach(function(id){ var p=players[id]; p.kills=0;p.deaths=0;p.streak=0;p.bestStreak=0;p.headshots=0;p.hp=100;p.alive=true; respawn(p); });
   updateScore(); updateHUD();
-  showBanner('FIGHT! 💥','First to 25 kills — or most kills in 5 minutes wins!');
+  if(matchType==='tdm') showBanner('TEAM DEATHMATCH','Alpha vs Bravo — first team to 25 kills wins!');
+  else showBanner('FIGHT!','First to 25 kills — or most kills in 5 minutes wins!');
   addFeed('🏁 Match started on <b>Neon Chai Town</b>!');
+  if(isTouch){ var th=$('tapHint'); if(th){ th.classList.add('show'); setTimeout(function(){ th.classList.remove('show'); }, 3400); } }
   if(!isTouch && mode!=='split') lockPointer();
   else if(!isTouch && mode==='split') lockPointer();
   clock.start();
   requestAnimationFrame(gameLoop);
 }
+var lastCard = null; // local player's end-game score card data (name, stats, rank, result)
 function endMatch(winner){
   if(!running) return;
   running = false;
   document.body.classList.remove('playing-now');
   if(document.pointerLockElement) document.exitPointerLock();
   var list = sortedPlayers();
-  if(!winner) winner = list[0];
-  $('endWinner').textContent = '🏆 ' + (winner ? winner.name : 'Nobody') + ' wins the match!';
+  if(matchType==='tdm'){
+    var winTeam = teamKills[0]===teamKills[1] ? null : (teamKills[0]>teamKills[1]?0:1);
+    $('endTitle').textContent = '⚔️ TDM — MATCH OVER';
+    $('endWinner').textContent = winTeam===null
+      ? '🤝 Draw! Alpha '+teamKills[0]+' — '+teamKills[1]+' Bravo'
+      : '🏆 Team '+TEAM_NAMES[winTeam]+' wins! Alpha '+teamKills[0]+' — '+teamKills[1]+' Bravo';
+  } else {
+    if(!winner) winner = list[0];
+    $('endTitle').textContent = '🏆 MATCH OVER';
+    $('endWinner').textContent = '🏆 ' + (winner ? winner.name : 'Nobody') + ' wins the match!';
+  }
   var hl = '';
   if(highlights.bestStreak.n>=3) hl += '<div class="hl">🔥 Best streak: '+esc(highlights.bestStreak.name)+' — '+highlights.bestStreak.n+' kills in a row!</div>';
   if(highlights.headKing.n>=1) hl += '<div class="hl">🎯 Headshot king: '+esc(highlights.headKing.name)+' — '+highlights.headKing.n+' headshots!</div>';
@@ -1006,11 +1244,153 @@ function endMatch(winner){
   if(top) hl += '<div class="hl">⭐ Top fragger: '+esc(top.name)+' with '+top.kills+' kills!</div>';
   $('highlights').innerHTML = hl || '<div class="hl">Good game, cubes!</div>';
   $('endTable').innerHTML = '<tr><th>Player</th><th class="n">Kills</th><th class="n">Deaths</th><th class="n">🎯 Headshots</th></tr>' +
-    list.map(function(p){ return '<tr><td>'+esc(p.name)+'</td><td class="n">'+p.kills+'</td><td class="n">'+p.deaths+'</td><td class="n">'+p.headshots+'</td></tr>'; }).join('');
+    list.map(function(p){ return '<tr><td>'+esc(p.name)+badgesFor(p)+'</td><td class="n">'+p.kills+'</td><td class="n">'+p.deaths+'</td><td class="n">'+p.headshots+'</td></tr>'; }).join('');
+  /* ---- fill the shareable score card with the local player's stats ---- */
+  var meP = players[localId];
+  if(meP){
+    var rank = list.length;
+    for(var ri=0; ri<list.length; ri++){ if(list[ri].id===localId){ rank = ri+1; break; } }
+    var result, resultText, resultClass;
+    if(matchType==='tdm'){
+      var wt = (typeof winTeam!=='undefined') ? winTeam : null;
+      if(wt===null){ result='🤝 DRAW'; resultText='DRAW'; resultClass='draw'; }
+      else if(meP.team===wt){ result='🏆 VICTORY'; resultText='VICTORY'; resultClass='win'; }
+      else { result='💀 DEFEAT'; resultText='DEFEAT'; resultClass='loss'; }
+    } else if(winner && winner.id===localId){ result='🏆 VICTORY'; resultText='VICTORY'; resultClass='win'; }
+    else { result='💀 DEFEAT'; resultText='DEFEAT'; resultClass='loss'; }
+    lastCard = { name:meP.name, color:PALETTE_CSS[meP.colorIdx%8], kills:meP.kills, deaths:meP.deaths,
+      hs:meP.headshots, streak:meP.bestStreak||0, rank:rank, total:list.length,
+      resultText:resultText, resultClass:resultClass,
+      teamLine:(matchType==='tdm' ? ('Alpha '+teamKills[0]+' — '+teamKills[1]+' Bravo') : '') };
+    $('scoreCard').style.display='block';
+    $('scResult').textContent = result;
+    $('scResult').className = 'sc-result ' + resultClass;
+    $('scName').textContent = meP.name;
+    $('scChip').style.background = lastCard.color;
+    $('scRank').textContent = '🏅 Rank #' + rank + ' of ' + list.length + ' players' + (lastCard.teamLine ? ' · '+lastCard.teamLine : '');
+    $('scKills').textContent = meP.kills;
+    $('scDeaths').textContent = meP.deaths;
+    $('scHS').textContent = meP.headshots;
+    $('scStreak').textContent = lastCard.streak;
+    $('cardMsg').textContent = '';
+  } else {
+    $('scoreCard').style.display='none';
+    lastCard = null;
+  }
+  var ei = $('endInvite');
+  if(mode==='online' && roomCode){
+    ei.style.display='block';
+    $('endInviteLink').textContent = inviteLink();
+    $('inviteMsgEnd').textContent = '';
+  } else {
+    ei.style.display='none';
+  }
   $('endscreen').style.display='flex';
   if(mode==='online' && !endRecvFlag) netSend({t:'end'});
 }
 function fmtTime(s){ s=Math.max(0,Math.ceil(s)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
+
+/* ================= end-game score card: PNG download + share ================= */
+function rrPath(x, px, py, w, h, r){
+  x.beginPath();
+  x.moveTo(px+r, py);
+  x.arcTo(px+w, py, px+w, py+h, r);
+  x.arcTo(px+w, py+h, px, py+h, r);
+  x.arcTo(px, py+h, px, py, r);
+  x.arcTo(px, py, px+w, py, r);
+  x.closePath();
+}
+function drawScoreCardPNG(){
+  if(!lastCard) return;
+  var S = 1080, cv = document.createElement('canvas');
+  cv.width = S; cv.height = S;
+  var x = cv.getContext('2d');
+  var C = lastCard;
+  // background + player-colour frame
+  x.fillStyle = '#14213d'; x.fillRect(0,0,S,S);
+  x.strokeStyle = C.color; x.lineWidth = 12; x.strokeRect(26,26,S-52,S-52);
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  // brand header
+  x.fillStyle = '#ffffff';
+  x.font = '82px Bungee, "Arial Black", sans-serif';
+  x.fillText('CUBE STRIKE', S/2, 128);
+  x.fillStyle = '#4cc9f0';
+  x.fillText('ONLINE', S/2, 222);
+  x.fillStyle = '#ffd166';
+  x.font = '700 38px Arial, sans-serif';
+  x.fillText('N E O N   C H A I   T O W N', S/2, 292);
+  // result
+  x.fillStyle = C.resultClass==='win' ? '#06d6a0' : (C.resultClass==='draw' ? '#ffd166' : '#ef476f');
+  x.font = '118px Bungee, "Arial Black", sans-serif';
+  x.fillText(C.resultText, S/2, 408);
+  // player colour chip + name
+  var nameFont = '800 64px Arial, sans-serif';
+  x.font = nameFont;
+  var nw = Math.min(x.measureText(C.name).width, S-260);
+  var chipW = 54, gap = 22, totalW = chipW + gap + nw;
+  var startX = (S - totalW)/2;
+  x.fillStyle = C.color;
+  rrPath(x, startX, 486, chipW, chipW, 12); x.fill();
+  x.lineWidth = 4; x.strokeStyle = '#ffffff'; x.stroke();
+  x.fillStyle = '#ffffff'; x.textAlign = 'left';
+  x.fillText(C.name, startX + chipW + gap, 486 + chipW/2 + 2, S-260);
+  x.textAlign = 'center';
+  // rank
+  x.fillStyle = '#cfe3ff';
+  x.font = '700 44px Arial, sans-serif';
+  x.fillText('RANK #' + C.rank + ' OF ' + C.total + ' PLAYERS', S/2, 606);
+  if(C.teamLine){
+    x.fillStyle = '#9db8dd'; x.font = '700 36px Arial, sans-serif';
+    x.fillText(C.teamLine.toUpperCase(), S/2, 656);
+  }
+  // stat boxes 2 x 2
+  var stats = [ ['KILLS', C.kills], ['DEATHS', C.deaths], ['HEADSHOTS', C.hs], ['BEST STREAK', C.streak] ];
+  var bw = 452, bh = 132, gx = 36, gy = 22, ox = (S - (bw*2 + gx))/2, oy = 690;
+  stats.forEach(function(st, i){
+    var bx = ox + (i%2)*(bw+gx), by = oy + Math.floor(i/2)*(bh+gy);
+    x.fillStyle = '#1d2f52';
+    rrPath(x, bx, by, bw, bh, 18); x.fill();
+    x.lineWidth = 3; x.strokeStyle = 'rgba(255,255,255,0.25)'; x.stroke();
+    x.fillStyle = '#ffffff';
+    x.font = '64px Bungee, "Arial Black", sans-serif';
+    x.fillText(String(st[1]), bx + bw/2, by + 52);
+    x.fillStyle = '#9db8dd';
+    x.font = '800 28px Arial, sans-serif';
+    x.fillText(st[0], bx + bw/2, by + 106);
+  });
+  // footer URL
+  x.fillStyle = '#ffd166';
+  x.font = '800 36px Arial, sans-serif';
+  x.fillText('PLAY FREE: sajjadalitalpur.github.io/Cube-Strike-Pro', S/2, 1012);
+  // download
+  function save(href){
+    var a = document.createElement('a');
+    a.download = 'cube-strike-score.png';
+    a.href = href;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ document.body.removeChild(a); }, 400);
+    $('cardMsg').textContent = '✅ Score card saved as a PNG! Post it on WhatsApp, Facebook, TikTok — anywhere.';
+  }
+  if(cv.toBlob){
+    cv.toBlob(function(b){
+      if(!b){ save(cv.toDataURL('image/png')); return; }
+      var url = URL.createObjectURL(b);
+      save(url);
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+    }, 'image/png');
+  } else {
+    save(cv.toDataURL('image/png'));
+  }
+}
+function scoreShareText(){
+  if(!lastCard) return '';
+  var C = lastCard;
+  return '🎮 CUBE STRIKE ONLINE — Neon Chai Town\n' +
+    (C.resultText==='VICTORY' ? '🏆' : (C.resultText==='DRAW' ? '🤝' : '💀')) + ' ' + C.resultText +
+    '! I ranked #' + C.rank + ' of ' + C.total + ' players\n' +
+    '🔫 Kills: ' + C.kills + ' · Deaths: ' + C.deaths + ' · 🎯 Headshots: ' + C.hs + ' · 🔥 Best streak: ' + C.streak + '\n' +
+    'Play free with me 👉 ' + GAME_URL;
+}
 
 /* ================= main loop ================= */
 var stateTimer = 0;
@@ -1030,10 +1410,11 @@ function gameLoop(){
     if(me.reloading>0){ me.reloading-=dt*1000; if(me.reloading<=0){ me.ammo[me.weapon]=WEAPONS[me.weapon].mag; me.reloading=0; updateHUD(); } }
     if(me.alive){
       me.yaw = yaw; me.pitch = pitch;
+      me.crouch = !!(keys['KeyC'] || keys['ControlLeft'] || crouchHeld);
       var fwd=0, str=0;
       if(keys['KeyW']) fwd+=1; if(keys['KeyS']) fwd-=1; if(keys['KeyA']) str-=1; if(keys['KeyD']) str+=1;
       if(joy.active){ fwd += -joy.y; str += joy.x; }
-      movePlayer(me, fwd, str, dt, 7.4);
+      movePlayer(me, fwd, str, dt, me.crouch ? 4.2 : 7.4);
       var wantFire = mouseDown || fireTouch;
       if(wantFire) tryShoot(me, now);
       else if(WEAPONS[me.weapon].auto===false){ /* semi handled on click */ }
@@ -1076,6 +1457,13 @@ function gameLoop(){
     stateTimer -= dt;
     if(stateTimer<=0){ stateTimer = 0.1; netSendState(); }
   }
+  // Bots occasionally drop a quick-chat line (presets only, never free text).
+  botChatT -= dt;
+  if(botChatT<=0){
+    botChatT = rand(8,16);
+    var botsAlive = Object.keys(players).map(function(k){return players[k];}).filter(function(q){return q.isBot && q.alive;});
+    if(botsAlive.length) botQuickChat(pick(botsAlive));
+  }
   updateFx(now);
   drawMinimap();
   render();
@@ -1102,6 +1490,19 @@ function render(){
 
 /* ================= networking (PeerJS) ================= */
 var peer=null, conns={}, hostConn=null, isHost=false, roomCode='', endRecvFlag=false;
+/* ---- invite links: full game URL + ?room=CODE. Anyone opening it auto-joins (see boot code at the bottom). ---- */
+var GAME_URL = 'https://sajjadalitalpur.github.io/Cube-Strike-Pro/';
+function inviteLink(){ return GAME_URL + '?room=' + roomCode; }
+function copyTextToClipboard(text, msgEl, okText){
+  function done(){ msgEl.textContent = okText; }
+  function fallback(){
+    var ta=document.createElement('textarea'); ta.value=text; document.body.appendChild(ta);
+    ta.select(); try{ document.execCommand('copy'); done(); }catch(e){ msgEl.textContent='Copy this link: '+text; }
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(done, fallback); }
+  else fallback();
+}
 var lobbyPlayers=[]; // {id,name,colorIdx}
 function netSend(msg){
   if(mode!=='online') return;
@@ -1122,6 +1523,7 @@ function relay(msg, exceptPid){
 }
 function renderLobby(){
   $('lobbyCode').textContent = roomCode || '····';
+  $('lobbyInvite').textContent = roomCode ? inviteLink() : '…';
   $('playerList').innerHTML = lobbyPlayers.map(function(lp){
     return '<li><span class="dot" style="background:'+PALETTE_CSS[lp.colorIdx%8]+'"></span>'+esc(lp.name)+(lp.id===localId?' (you)':'')+(lp.host?' 👑 Host':'')+'</li>';
   }).join('');
@@ -1175,7 +1577,7 @@ function handleNet(msg, fromPid){
     case 'death': {
       var v = players[msg.victim], k = players[msg.killer];
       if(v && msg.victim!==localId){ v.alive=false; v.deaths++; }
-      if(k && msg.killer!==localId){ k.kills++; k.streak++; if(msg.head) k.headshots++; }
+      if(k && msg.killer!==localId){ k.kills++; k.streak++; if(k.streak > (k.bestStreak||0)) k.bestStreak = k.streak; if(msg.head) k.headshots++; }
       if(msg.victim!==localId) addFeed('💀 <b>'+esc(msg.killerName||'Enemy')+'</b> cubed <b>'+esc(v?v.name:'')+'</b>'+(msg.head?' 🎯 HEADSHOT!':''));
       if(k && STREAKS[k.streak] && msg.killer!==localId) showBanner(STREAKS[k.streak], esc(k.name)+' is on fire!');
       updateScore();
@@ -1185,6 +1587,7 @@ function handleNet(msg, fromPid){
       if(sp && msg.id!==localId){ showMuzzleFlash(sp); SFX.distant(msg.gun||sp.weapon); }
       break; }
     case 'taunt': addFeed('😜 <b>'+esc(msg.name)+':</b> '+esc(msg.text), 'taunt'); break;
+    case 'chat': showChat(String(msg.name||'Player').slice(0,14), filterText(msg.text||''), {scope:msg.scope}); break;
     case 'end': if(running){ endRecvFlag=true; endMatch(null); } break;
   }
 }
@@ -1199,7 +1602,7 @@ function startHost(){
   if(typeof Peer==='undefined'){ menuMsg('Online library failed to load — check internet and refresh.'); return; }
   readName();
   roomCode = genCode();
-  isHost = true; mode='online'; endRecvFlag=false;
+  isHost = true; mode='online'; endRecvFlag=false; matchType='ffa';
   peer = new Peer('cso-'+roomCode);
   peer.on('open', function(id){
     localId = id;
@@ -1225,7 +1628,7 @@ function startHost(){
 function startJoin(code){
   if(typeof Peer==='undefined'){ menuMsg('Online library failed to load — check internet and refresh.'); return; }
   readName();
-  roomCode = code; isHost=false; mode='online'; endRecvFlag=false;
+  roomCode = code; isHost=false; mode='online'; endRecvFlag=false; matchType='ffa';
   menuMsg('Connecting to room '+code+'…');
   peer = new Peer();
   peer.on('open', function(id){
@@ -1251,7 +1654,7 @@ function genCode(){
 }
 
 /* ================= quick match ================= */
-var QUICK_BOTS = ['BotBiryani','BotChai','BotRickshaw','BotLadoo','BotSignal','BotGully','BotMomos','BotSamosa','BotThanda'];
+var QUICK_BOTS = ['ChotuGamer','SniperBhai','NoobKing','ChaiWala','RickshawRaja','GullyStar','MomoKing','ThandaCool','BiryaniBoss'];
 var quickTimers=[], quickRoster=[];
 function renderQuickSlots(){
   var html='';
@@ -1267,7 +1670,7 @@ function renderQuickSlots(){
 function clearQuickTimers(){ quickTimers.forEach(function(t){ clearTimeout(t); }); quickTimers=[]; }
 function startQuick(){
   readName();
-  mode='quick'; endRecvFlag=false;
+  mode='quick'; endRecvFlag=false; matchType='ffa';
   quickRoster=[{name:myName, colorIdx:0, you:true}];
   showScreen('quick');
   $('quickStatus').innerHTML='Searching for players<span class="searchdots"></span>';
@@ -1337,6 +1740,8 @@ document.addEventListener('mousedown', function(e){
 document.addEventListener('mouseup', function(){ mouseDown=false; });
 $('clickToPlay').addEventListener('click', function(){ lockPointer(); });
 document.addEventListener('keydown', function(e){
+  if(e.target && e.target.id==='chatText') return; // typing in chat is not gameplay
+  if(e.code==='Enter' && running && mode!=='split' && !chatOpen){ setChatOpen(true); if(!isTouch) setTimeout(function(){ var ct=$('chatText'); if(ct) ct.focus(); },30); return; }
   keys[e.code]=true;
   if(e.code==='Tab'){ e.preventDefault(); if(running) $('scoreboard').style.display='block'; }
   if(!running) return;
@@ -1354,6 +1759,7 @@ document.addEventListener('keydown', function(e){
   }
 });
 document.addEventListener('keyup', function(e){
+  if(e.target && e.target.id==='chatText') return;
   keys[e.code]=false;
   if(e.code==='Tab') $('scoreboard').style.display='none';
   if(e.code==='Enter') p2FireHeld=false;
@@ -1365,7 +1771,100 @@ function sendTaunt(){
   if(mode==='online') netSend({t:'taunt', name:nm, text:t});
   beep(980,.08,'square',.05);
 }
-/* ---- touch controls ---- */
+/* ================= chat: quick presets + free text ================= */
+var QUICK_CHAT = ["Enemy here!","Need help!","Attack!","Nice shot!","Follow me!","Thanks!"];
+var BAD_WORDS = ['fuck','fucking','shit','bitch','bastard','asshole','dickhead','pussy','whore','slut','nigger','nigga','faggot','bhenchod','madarchod','haramzada','harami','gandu','randi','kutti','kutta'];
+var chatScope = 'all';   // 'all' | 'team' (team only matters in TDM)
+var chatOpen = false;
+var botChatT = 9;
+function filterText(s){
+  var out = String(s||'');
+  BAD_WORDS.forEach(function(w){
+    out = out.replace(new RegExp('\\b'+w+'\\b','gi'), '***');
+  });
+  return out.slice(0,120);
+}
+function chatPanelEl(){ return $('chatPanel'); }
+function setChatOpen(open){
+  chatOpen = !!open;
+  chatPanelEl().classList.toggle('open', chatOpen);
+  document.body.classList.toggle('chat-open', chatOpen);
+  var b1=$('btnChat'), b2=$('btnChatDesk');
+  if(chatOpen){ if(b1) b1.classList.remove('hasnew'); if(b2) b2.classList.remove('hasnew'); }
+  if(chatOpen && !isTouch && document.pointerLockElement) document.exitPointerLock();
+  if(chatOpen) updateChatScopeUI();
+}
+function updateChatScopeUI(){
+  var wrap=$('chatScopeWrap'); if(!wrap) return;
+  wrap.classList.toggle('show', matchType==='tdm');
+  $('scopeAll').classList.toggle('on', chatScope==='all');
+  $('scopeTeam').classList.toggle('on', chatScope==='team');
+}
+function showChat(name, text, opts){
+  opts = opts||{};
+  var log=$('chatLog'); if(!log) return;
+  var scope = opts.scope==='team' ? 'team' : 'all';
+  var d=document.createElement('div');
+  d.innerHTML = '<span class="who">'+esc(name)+'</span>'+(opts.isBot?' <span class="botbadge">BOT</span>':'')+
+    ' <span class="scope'+(scope==='all'?' all':'')+'">'+(scope==='team'?'TEAM':'ALL')+'</span> '+esc(text);
+  log.appendChild(d);
+  while(log.children.length>30) log.removeChild(log.firstChild);
+  log.scrollTop = log.scrollHeight;
+  if(!chatOpen){
+    addFeed('💬 <b>'+esc(name)+'</b>'+(opts.isBot?' <span class="botbadge">BOT</span>':'')+': '+esc(text));
+    var b1=$('btnChat'), b2=$('btnChatDesk');
+    if(b1) b1.classList.add('hasnew'); if(b2) b2.classList.add('hasnew');
+  }
+}
+function sendChat(raw, isQuick){
+  var text = filterText(String(raw||'').trim());
+  if(!text || !running) return;
+  var me=players[localId];
+  var scope = (matchType==='tdm') ? chatScope : 'all';
+  showChat(me?me.name:myName, text, {scope:scope, self:true});
+  if(mode==='online') netSend({t:'chat', name:me?me.name:myName, text:text, scope:scope, quick:!!isQuick});
+  beep(760,.05,'square',.035);
+}
+function botQuickChat(bot, forced){
+  if(!bot || !bot.isBot || !running) return;
+  var line = forced || pick(QUICK_CHAT);
+  // In TDM, teammates mostly talk on team chat; enemies talk to everyone.
+  var scope = 'all';
+  var me=players[localId];
+  if(matchType==='tdm' && me && bot.team===me.team && Math.random()<0.7) scope='team';
+  if(scope==='team' && me && bot.team!==me.team) return; // never leak enemy team chat
+  showChat(bot.name, line, {scope:scope, isBot:true});
+}
+function initChat(){
+  var qc=$('quickChat');
+  qc.innerHTML='';
+  QUICK_CHAT.forEach(function(q){
+    var b=document.createElement('button');
+    b.type='button'; b.className='qchip'; b.textContent=q;
+    b.addEventListener('click', function(){ sendChat(q, true); });
+    qc.appendChild(b);
+  });
+  $('scopeAll').addEventListener('click', function(){ chatScope='all'; updateChatScopeUI(); });
+  $('scopeTeam').addEventListener('click', function(){ chatScope='team'; updateChatScopeUI(); });
+  $('chatClose').addEventListener('click', function(){ setChatOpen(false); });
+  $('chatSend').addEventListener('click', function(){ sendChat($('chatText').value,false); $('chatText').value=''; if(!isTouch) $('chatText').focus(); });
+  $('chatText').addEventListener('keydown', function(e){
+    e.stopPropagation();
+    if(e.key==='Enter'){ sendChat(this.value,false); this.value=''; }
+    if(e.key==='Escape'){ setChatOpen(false); this.blur(); }
+  });
+  $('chatText').addEventListener('keyup', function(e){ e.stopPropagation(); });
+  var openFn=function(e){ if(e) e.preventDefault(); if(running) setChatOpen(!chatOpen); };
+  var bc=$('btnChat'); if(bc){ bc.addEventListener('click', openFn); }
+  var bd=$('btnChatDesk'); if(bd){ bd.addEventListener('click', openFn); }
+}
+/* ---- touch controls: joystick moves, DRAG aims, TAP shoots ----
+   There is NO fire button. A touch that starts on the 3D view:
+   - moves more than ~14px  -> it is a drag: camera rotates, no shot on release
+   - stays put and lifts quickly (<400ms) -> it is a tap: FIRE
+   - stays put and is held (>200ms) -> auto-fire while held (rifle)
+   Touches starting on the joystick or the bottom bar never shoot, because
+   they never target the WebGL canvas. */
 function bindTouch(){
   var stick=$('stick'), knob=$('stickKnob');
   function stickMove(t){
@@ -1379,12 +1878,16 @@ function bindTouch(){
   stick.addEventListener('touchmove', function(e){ e.preventDefault(); for(var i=0;i<e.changedTouches.length;i++){ if(e.changedTouches[i].identifier===joy.id) stickMove(e.changedTouches[i]); } }, {passive:false});
   function stickEnd(e){ for(var i=0;i<e.changedTouches.length;i++){ if(e.changedTouches[i].identifier===joy.id){ joy.active=false; joy.x=0; joy.y=0; knob.style.transform='translate(-50%,-50%)'; } } }
   stick.addEventListener('touchend', stickEnd); stick.addEventListener('touchcancel', stickEnd);
-  // look: drag anywhere on the 3D view (right side)
   document.addEventListener('touchstart', function(e){
-    if(!running) return;
+    if(!running || !renderer) return;
     for(var i=0;i<e.changedTouches.length;i++){
       var t=e.changedTouches[i];
-      if(t.target===renderer.domElement && lookTouch.id===null){ lookTouch.id=t.identifier; lookTouch.lx=t.clientX; lookTouch.ly=t.clientY; }
+      if(t.target===renderer.domElement && lookTouch.id===null){
+        lookTouch.id=t.identifier; lookTouch.lx=t.clientX; lookTouch.ly=t.clientY;
+        lookTouch.sx=t.clientX; lookTouch.sy=t.clientY; lookTouch.st=performance.now(); lookTouch.moved=false;
+        clearTimeout(lookTouch.holdT);
+        lookTouch.holdT=setTimeout(function(){ if(lookTouch.id!==null && !lookTouch.moved) fireTouch=true; }, 200);
+      }
     }
   }, {passive:true});
   document.addEventListener('touchmove', function(e){
@@ -1392,20 +1895,47 @@ function bindTouch(){
     for(var i=0;i<e.changedTouches.length;i++){
       var t=e.changedTouches[i];
       if(t.identifier===lookTouch.id){
-        yaw -= (t.clientX-lookTouch.lx)*0.005;
-        pitch = clamp(pitch - (t.clientY-lookTouch.ly)*0.005, -1.35, 1.35);
+        if(Math.hypot(t.clientX-lookTouch.sx, t.clientY-lookTouch.sy) > 14){ lookTouch.moved=true; fireTouch=false; clearTimeout(lookTouch.holdT); }
+        if(lookTouch.moved){
+          yaw -= (t.clientX-lookTouch.lx)*0.0052;
+          pitch = clamp(pitch - (t.clientY-lookTouch.ly)*0.0052, -1.35, 1.35);
+        }
         lookTouch.lx=t.clientX; lookTouch.ly=t.clientY;
       }
     }
   }, {passive:true});
-  function lookEnd(e){ for(var i=0;i<e.changedTouches.length;i++){ if(e.changedTouches[i].identifier===lookTouch.id) lookTouch.id=null; } }
+  function lookEnd(e){
+    for(var i=0;i<e.changedTouches.length;i++){
+      var t=e.changedTouches[i];
+      if(t.identifier===lookTouch.id){
+        var wasHold = fireTouch;
+        clearTimeout(lookTouch.holdT); fireTouch=false; lookTouch.id=null;
+        // TAP = short + barely moved, and not already hold-firing: shoot once now.
+        if(running && !lookTouch.moved && !wasHold && (performance.now()-lookTouch.st)<400){
+          var me=players[localId];
+          if(me && me.alive) tryShoot(me, performance.now());
+        }
+        lookTouch.moved=false;
+      }
+    }
+  }
   document.addEventListener('touchend', lookEnd); document.addEventListener('touchcancel', lookEnd);
-  $('btnFire').addEventListener('touchstart', function(e){ e.preventDefault(); fireTouch=true; var me=players[localId]; if(me && !WEAPONS[me.weapon].auto) tryShoot(me, performance.now()); }, {passive:false});
-  $('btnFire').addEventListener('touchend', function(e){ e.preventDefault(); fireTouch=false; }, {passive:false});
-  $('btnJump').addEventListener('touchstart', function(e){ e.preventDefault(); var me=players[localId]; if(me) jump(me); }, {passive:false});
-  $('btnReload').addEventListener('touchstart', function(e){ e.preventDefault(); var me=players[localId]; if(me) reload(me); }, {passive:false});
-  $('btnGun').addEventListener('touchstart', function(e){ e.preventDefault(); var me=players[localId]; if(me) switchWeapon(me, GUN_ORDER[(GUN_ORDER.indexOf(me.weapon)+1)%3]); }, {passive:false});
-  $('btnTaunt').addEventListener('touchstart', function(e){ e.preventDefault(); if(running) sendTaunt(); }, {passive:false});
+  function barBtn(id, fn){
+    var el=$(id); if(!el) return;
+    var lastTouch=0;
+    el.addEventListener('touchstart', function(e){ e.preventDefault(); e.stopPropagation(); lastTouch=Date.now(); fn(); }, {passive:false});
+    el.addEventListener('click', function(e){ e.preventDefault(); if(Date.now()-lastTouch>500) fn(); });
+  }
+  barBtn('btnJump', function(){ var me=players[localId]; if(me) jump(me); });
+  barBtn('btnReload', function(){ var me=players[localId]; if(me) reload(me); });
+  barBtn('btnGun', function(){ var me=players[localId]; if(me) switchWeapon(me, GUN_ORDER[(GUN_ORDER.indexOf(me.weapon)+1)%3]); });
+  barBtn('btnTaunt', function(){ if(running) sendTaunt(); });
+  var bc=$('btnCrouch');
+  if(bc){
+    bc.addEventListener('touchstart', function(e){ e.preventDefault(); e.stopPropagation(); crouchHeld=true; }, {passive:false});
+    bc.addEventListener('touchend', function(e){ e.preventDefault(); crouchHeld=false; }, {passive:false});
+    bc.addEventListener('touchcancel', function(){ crouchHeld=false; });
+  }
 }
 $('btnScore').addEventListener('click', function(){
   var sb=$('scoreboard');
@@ -1417,23 +1947,36 @@ $('btnScore').addEventListener('click', function(){
 function startOffline(kind){
   readName();
   if(!initThree()) return;
-  clearPlayers(); localId='me'; endRecvFlag=false;
+  clearPlayers(); localId='me'; endRecvFlag=false; matchType='ffa';
   if(kind==='bots'){
     mode='bots';
     createPlayer('me', myName, 0, {});
-    for(var i=0;i<5;i++) createPlayer('bot'+i, BOT_NAMES[i], i+1, {bot:true});
+    for(var i=0;i<5;i++) createPlayer('bot'+i, BOT_FUN[i]||BOT_NAMES[i], i+1, {bot:true});
   } else {
     mode='split';
     createPlayer('me', myName+' (P1)', 0, {});
     createPlayer(p2Id, 'Player 2', 1, {p2:true});
     yaw2 = Math.PI;
-    createPlayer('bot0', BOT_NAMES[0], 2, {bot:true});
-    createPlayer('bot1', BOT_NAMES[1], 3, {bot:true});
+    createPlayer('bot0', BOT_FUN[0], 2, {bot:true});
+    createPlayer('bot1', BOT_FUN[1], 3, {bot:true});
   }
+  startMatch();
+}
+var TDM_ALPHA_COL = [1,2,6,1,2];   // blue / teal family
+var TDM_BRAVO_COL = [0,4,7,0,4];   // pink / orange family
+function startTDM(){
+  readName();
+  if(!initThree()) return;
+  clearPlayers(); localId='me'; endRecvFlag=false;
+  mode='tdm'; matchType='tdm';
+  createPlayer('me', myName, 1, {team:0});
+  for(var i=0;i<4;i++) createPlayer('abot'+i, BOT_FUN[i], TDM_ALPHA_COL[i+1], {bot:true, team:0});
+  for(var j=0;j<5;j++) createPlayer('bbot'+j, BOT_FUN[4+j], TDM_BRAVO_COL[j], {bot:true, team:1});
   startMatch();
 }
 $('btnBots').addEventListener('click', function(){ startOffline('bots'); });
 $('btnSplit').addEventListener('click', function(){ startOffline('split'); });
+$('btnTDM').addEventListener('click', function(){ ensureAudio(); startTDM(); });
 $('btnQuick').addEventListener('click', function(){ startQuick(); });
 $('btnAuto').addEventListener('click', function(){ ensureAudio(); startQuick(); });
 $('btnCancelQuick').addEventListener('click', function(){ clearQuickTimers(); mode='menu'; showScreen('menu'); });
@@ -1465,6 +2008,46 @@ $('btnCopyCode').addEventListener('click', function(){
     document.body.removeChild(ta);
   }
 });
+$('btnCopyInvite').addEventListener('click', function(){
+  if(!roomCode) return;
+  copyTextToClipboard(inviteLink(), $('inviteMsg'), '✅ Invite link copied! Send it to your friends — one tap and they are in your lobby.');
+});
+$('btnCopyInviteEnd').addEventListener('click', function(){
+  if(!roomCode) return;
+  copyTextToClipboard(inviteLink(), $('inviteMsgEnd'), '✅ Invite link copied! Send it to your friends for the rematch.');
+});
+$('btnCardDownload').addEventListener('click', function(){
+  if(!lastCard){ $('cardMsg').textContent = 'Play a match first — your score card appears here at the end!'; return; }
+  drawScoreCardPNG();
+});
+$('btnCardShare').addEventListener('click', function(){
+  if(!lastCard){ $('cardMsg').textContent = 'Play a match first — then share your score from here!'; return; }
+  copyTextToClipboard(scoreShareText(), $('cardMsg'), '✅ Your score + the game link are copied! Paste them anywhere to share.');
+});
+/* ---- invite link landing: opened with ?room=CODE -> banner + auto-fill + auto-join ---- */
+var inviteAutoTimer = null;
+(function(){
+  var code = '';
+  try{ code = (new URLSearchParams(window.location.search).get('room') || '').toUpperCase().replace(/[^A-Z]/g,'').slice(0,4); }catch(e){}
+  if(code.length !== 4) return;
+  $('joinCode').value = code;
+  $('inviteCodeLabel').textContent = code;
+  $('inviteCodeBtn').textContent = code;
+  $('inviteBanner').style.display = 'block';
+  menuMsg('🎉 Invite received! Joining room ' + code + '…');
+  inviteAutoTimer = setTimeout(function(){ if(mode === 'menu') startJoin(code); }, 1200);
+})();
+$('btnInviteJoin').addEventListener('click', function(){
+  if(inviteAutoTimer){ clearTimeout(inviteAutoTimer); inviteAutoTimer = null; }
+  $('inviteBanner').style.display = 'none';
+  var code = $('joinCode').value.trim().toUpperCase();
+  if(code.length === 4) startJoin(code);
+});
+$('btnInviteDismiss').addEventListener('click', function(){
+  if(inviteAutoTimer){ clearTimeout(inviteAutoTimer); inviteAutoTimer = null; }
+  $('inviteBanner').style.display = 'none';
+  menuMsg('');
+});
 $('btnAgain').addEventListener('click', function(){
   $('endscreen').style.display='none';
   if(mode==='online'){ // back to lobby; host can start again
@@ -1473,6 +2056,7 @@ $('btnAgain').addEventListener('click', function(){
     return;
   }
   if(mode==='quick'){ startQuick(); return; }
+  if(mode==='tdm'){ startTDM(); return; }
   startMatch();
 });
 $('btnMenu').addEventListener('click', function(){
@@ -1483,6 +2067,7 @@ $('btnMenu').addEventListener('click', function(){
 });
 window.addEventListener('beforeunload', function(){ if(mode==='online' && isHost) netSend({t:'end'}); });
 bindTouch();
+initChat();
 })();
 </script>
 </body>
