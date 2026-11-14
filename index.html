@@ -104,6 +104,8 @@
   .hpwrap{ width:min(170px,30vw); height:13px; background:rgba(10,15,30,.55); border:2px solid rgba(255,255,255,.85); border-radius:8px; overflow:hidden; }
   #hpfill{ height:100%; width:100%; background:var(--green); transition:width .15s; }
   #hptext{ text-shadow:0 1px 3px #000; margin-top:2px; font-size:.9rem; display:flex; align-items:center; gap:5px; }
+  #spawnProt{ animation:protPulse 1s infinite; }
+  @keyframes protPulse{ 0%,100%{opacity:1} 50%{opacity:.55} }
   #bottomRight{ right:12px; bottom:12px; color:#fff; text-align:right; text-shadow:0 1px 3px #000; }
   #weaponName{ font-size:.62rem; font-weight:800; letter-spacing:.08em; color:#fff; opacity:.85; text-align:center; }
   #weaponHud{ display:flex; align-items:center; gap:7px; justify-content:flex-end; }
@@ -270,11 +272,44 @@
     <span class="mapname">MAP: NEON CHAI TOWN ☕🏙️</span>
   </div>
 
+  <div id="shopCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:rgba(20,33,61,.08);border:2px solid #14213d;border-radius:14px;text-align:left">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div><b style="font-size:1.05rem">🛒 Premium Shop</b> <span id="shopBalance" style="font-weight:800;color:#b8860b"></span></div>
+      <div><button class="bigbtn" id="btnDonate" style="font-size:.9rem;padding:8px 14px">❤️ Donate</button>
+      <button class="bigbtn ghost" id="btnRealMoney" style="font-size:.9rem;padding:8px 14px">💳 Buy coins — coming soon</button></div>
+    </div>
+    <div id="shopMsg" style="font-weight:700;margin-top:6px;min-height:1.2em"></div>
+    <div style="margin-top:8px;font-weight:800">🎨 Weapon skins — change your fighter's colour in-game</div>
+    <div id="shopSkins" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+    <div style="margin-top:10px;font-weight:800">🔫 New guns — different damage &amp; fire-rate, usable once bought (keys 1–5 / gun button cycles owned guns)</div>
+    <div id="shopGuns" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
+    <div style="font-size:.8rem;color:#555;margin-top:8px">Coins are earned in matches: 10 per kill + 50 win bonus + 20 per match. Skins &amp; guns are bought with coins only — real-money purchase is coming soon, there is no checkout here yet.</div>
+  </div>
+
   <div class="namebar">
     <label for="playerName">Your fighter name:</label>
     <input id="playerName" maxlength="14" value="Player" autocomplete="off">
   </div>
   <div id="menuMsg"></div>
+
+  <div id="accountCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:rgba(20,33,61,.08);border:2px solid #14213d;border-radius:14px;text-align:left">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
+      <div><b style="font-size:1.05rem">👤 My Account</b> <span id="acctStatus" style="font-weight:700;color:#555">Guest — history saved on this device only</span></div>
+      <div><button class="bigbtn blue" id="btnAcct" style="font-size:.9rem;padding:8px 14px">Sign up / Log in</button>
+      <button class="bigbtn ghost" id="btnAcctOut" style="font-size:.9rem;padding:8px 14px;display:none">Log out</button></div>
+    </div>
+    <div id="acctStats" style="margin-top:8px;font-weight:700"></div>
+    <div id="acctHistory" style="margin-top:6px;font-size:.85rem"></div>
+    <div id="acctPanel" style="display:none;margin-top:10px">
+      <input id="acctEmail" type="email" placeholder="Email" autocomplete="email" style="padding:9px;border:2px solid #14213d;border-radius:9px;width:220px;max-width:100%">
+      <input id="acctPass" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="padding:9px;border:2px solid #14213d;border-radius:9px;width:180px;max-width:100%">
+      <input id="acctName" type="text" placeholder="Fighter name" maxlength="14" style="padding:9px;border:2px solid #14213d;border-radius:9px;width:150px;max-width:100%">
+      <div style="margin-top:8px"><button class="bigbtn green" id="btnAcctSignup" style="font-size:.9rem;padding:8px 14px">Create account</button>
+      <button class="bigbtn blue" id="btnAcctLogin" style="font-size:.9rem;padding:8px 14px">Log in</button></div>
+      <div id="acctMsg" style="margin-top:6px;font-weight:700;min-height:1.2em"></div>
+      <div style="font-size:.8rem;color:#555">Cloud account = your name, level and match history follow you to any device (free, Supabase). If the cloud is unreachable you keep playing as a local guest — nothing is faked.</div>
+    </div>
+  </div>
 
   <div id="inviteBanner">
     <div class="big">🎉 YOU'RE INVITED!</div>
@@ -347,8 +382,14 @@
           <li>First to <b>25 kills</b> wins, or most kills when the 5-minute timer ends</li>
           <li>Kill streaks (3, 5, 8…) get announced to everyone</li>
           <li>You respawn 3 seconds after being cubed</li>
+          <li><b>Spawn protection:</b> for 3 seconds after (re)spawning you cannot take damage — a 🛡️ shield shows on you. Shooting ends it early, so hold fire if you want the full 3s</li>
           <li>On mobile: hold your phone <b>sideways (landscape)</b> — left joystick to move, <b>drag on the right side to aim, tap the screen to shoot</b> (no FIRE button). Weapon, reload, jump and crouch are icon buttons in the transparent bar at the bottom</li>
           <li><b>TDM:</b> first team to 25 kills wins — Alpha (blue) vs Bravo (pink), bots split across both teams</li>
+          <li><b>Spawn protection:</b> 3s of no damage after (re)spawning — 🛡️ shield shows on you. Shooting ends it early</li>
+          <li><b>Account:</b> sign up (email + password) in the My Account card and your name, level and match history follow you to any device. Without an account, history stays on this device only</li>
+          <li><b>Premium Shop:</b> earn 🪙 coins in matches (10 per kill + 50 win bonus + 20 per match) and spend them on weapon skins and new guns (SMG, Sniper, LMG). Real-money coin purchase is coming soon — no checkout here yet</li>
+          <li><b>Donate:</b> the ❤️ Donate button opens the owner's donation link — the owner sets their own link in the DONATE_URL setting; no payment details are built into the game</li>
+          <li><b>Pause / return:</b> press <kbd>Esc</kbd> or <kbd>P</kbd> (or the ⏸ button) to pause — Resume, or Main Menu to quit to the menu. Your account stays logged in</li>
         </ul>
       </div>
       <div><b>Online rooms — the honest bits</b>
@@ -397,7 +438,7 @@
   <ul id="playerList"></ul>
   <div id="lobbyStatus" style="font-weight:700;margin:10px 0"></div>
   <button class="bigbtn green" id="btnStart" style="display:none;font-size:1.15rem">▶ Start Match</button>
-  <div style="margin-top:14px"><button class="bigbtn ghost" id="btnLeaveLobby">Leave Room</button></div>
+  <div style="margin-top:14px"><button class="bigbtn ghost" id="btnLeaveLobby">Leave Room</button> <button class="bigbtn ghost" id="btnLobbyMenu">← Main Menu</button></div>
 </div>
 
 <!-- ================= QUICK MATCH LOBBY ================= -->
@@ -407,7 +448,7 @@
   <p style="font-weight:800;font-size:1.15rem"><span id="quickCount">1</span> / 10 players</p>
   <div id="quickSlots"></div>
   <div class="warn" style="text-align:left;margin-top:14px">🤖 Honest note: this game has no central server and no big player base yet, so <b>slots still waiting when the search ends are filled with bots — every bot is labelled BOT</b>. Real friends join with room codes from the main menu. Your match starts in about 15–30 seconds.</div>
-  <div style="margin-top:16px"><button class="bigbtn ghost" id="btnCancelQuick">Cancel Search</button></div>
+  <div style="margin-top:16px"><button class="bigbtn ghost" id="btnCancelQuick">Cancel Search</button> <button class="bigbtn ghost" id="btnQuickMenu">← Main Menu</button></div>
 </div>
 
 <!-- ================= ROTATE OVERLAY ================= -->
@@ -423,7 +464,7 @@
 <!-- ================= GAME ================= -->
 <div id="game">
   <canvas id="minimap" width="88" height="88"></canvas>
-  <div class="hud" id="topbar"><span>⏱ <span id="timer">5:00</span></span><span id="teamScore" style="display:none"></span><span id="goalLabel">First to 25</span><span id="myScore">0 kills</span></div>
+  <div class="hud" id="topbar"><span>⏱ <span id="timer">5:00</span></span><span id="teamScore" style="display:none"></span><span id="goalLabel">First to 25</span><span id="myScore">0 kills</span><button id="btnPause" aria-label="Pause" title="Pause (Esc)" style="margin-left:8px;background:rgba(10,15,30,.55);color:#fff;border:2px solid #fff;border-radius:8px;padding:2px 9px;font-weight:800;cursor:pointer">⏸</button></div>
   <div class="hud" id="feed"></div>
   <div class="hud" id="crosshair">+</div>
   <div class="hud" id="crosshair2">+</div>
@@ -431,6 +472,7 @@
   <div class="hud" id="banner"></div>
   <div class="hud" id="bottomLeft">
     <div class="hpwrap"><div id="hpfill"></div></div>
+    <div id="spawnProt" style="display:none;margin-top:4px;font-weight:800;font-size:.8rem;color:#38e1ff;text-shadow:0 1px 3px #000">🛡️ SPAWN PROTECTION <span id="spawnProtN">3</span>s</div>
     <div id="hptext"><svg width="15" height="15" viewBox="0 0 24 24" fill="#ef476f" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.2 5 5.7 5c2 0 3.4 1.1 4.3 2.4h4C15 6.1 16.4 5 18.4 5c3.5 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(.92) translate(1,0)"/></svg><span id="hpnum">100</span></div>
   </div>
   <div class="hud" id="bottomRight">
@@ -440,6 +482,14 @@
   <div class="hud" id="scoreboard"><h3>SCOREBOARD</h3><div id="teamBoard" style="text-align:center;font-weight:800;margin-bottom:8px;display:none"></div><table id="scoreTable"></table></div>
   <div class="hud" id="respawn"><div class="big">YOU GOT CUBED!</div><div>Respawning in <span id="respawnN">3</span>…</div></div>
   <div id="dmgflash"></div>
+  <div id="pauseOverlay" style="display:none;position:absolute;inset:0;background:rgba(10,15,30,.72);z-index:6;align-items:center;justify-content:center;text-align:center;color:#fff">
+    <div style="background:rgba(10,15,30,.9);border:3px solid #fff;border-radius:16px;padding:24px 30px">
+      <div class="chunk" style="font-size:1.5rem">⏸ PAUSED</div>
+      <div style="margin:14px 0"><button class="bigbtn green" id="btnResume" style="font-size:1.05rem">▶ Resume</button></div>
+      <div><button class="bigbtn ghost" id="btnPauseMenu">← Main Menu</button></div>
+      <div style="font-size:.85rem;margin-top:10px;opacity:.85">Your account stays logged in — nothing is lost.</div>
+    </div>
+  </div>
   <div id="clickToPlay"><div class="inner"><div class="chunk" style="font-size:1.4rem">CLICK TO PLAY</div><div>Mouse look needs one click. WASD moves, click shoots!</div></div></div>
   <div id="touchUI">
     <div id="stick"><div id="stickKnob"></div></div>
@@ -489,6 +539,7 @@
       <button class="bigbtn" id="btnCardShare">📤 Share My Score</button>
     </div>
     <div id="cardMsg" style="font-weight:700;margin-top:8px;min-height:1.3em;text-align:center"></div>
+    <div id="coinEarned" style="font-weight:800;margin-top:4px;text-align:center;color:#b8860b"></div>
     <table id="endTable"></table>
     <div class="invitebox" id="endInvite" style="display:none">
       <div style="font-weight:800">🔗 Invite friends to the rematch — one tap on this link drops them straight into your lobby:</div>
@@ -505,6 +556,7 @@
 
 <script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 "use strict";
@@ -627,6 +679,9 @@ var SFX = {
   reload:function(){ beep(440,.06,'square',.04); setTimeout(function(){beep(320,.05,'square',.04);},110); }
 };
 
+/* ================= owner config ================= */
+var DONATE_URL = ''; // OWNER: paste your donation link here (e.g. Buy Me a Coffee / Ko-fi URL). Leave '' and the Donate button says the link is coming soon — never invent payment details.
+
 /* ================= weapons ================= */
 var WEAPONS = {
   rifle:  { label:'RIFLE',   dmg:18, head:2.2, rate:120, mag:30, reloadT:1200, spread:0.014, pellets:1, auto:true },
@@ -634,6 +689,27 @@ var WEAPONS = {
   shotgun:{ label:'SHOTGUN', dmg:9,  head:1.6, rate:850, mag:6,  reloadT:1700, spread:0.085, pellets:7, auto:false }
 };
 var GUN_ORDER = ['rifle','pistol','shotgun'];
+
+/* ================= PREMIUM SHOP (coins earned in matches — no real-money checkout) ================= */
+var SHOP_SKINS = [
+  {id:'gold',    name:'Golden Cube',  color:'#ffd700', price:500, desc:'Shiny gold body + gun'},
+  {id:'ice',     name:'Ice Blue',     color:'#4cc9f0', price:250, desc:'Cool ice-blue camo'},
+  {id:'pink',    name:'Bubblegum',    color:'#f15bb5', price:350, desc:'Bright bubblegum pink'},
+  {id:'shadow',  name:'Shadow Black', color:'#2b2d42', price:400, desc:'Stealthy dark camo'},
+  {id:'emerald', name:'Emerald',      color:'#06d6a0', price:300, desc:'Fresh emerald green'}
+];
+var SHOP_GUNS = [
+  {id:'smg',    label:'SMG',    name:'Chai Blaster SMG',      price:800,  desc:'Fast fire, 32-round mag',  w:{label:'SMG',    dmg:12, head:1.8, rate:90,   mag:32, reloadT:1000, spread:0.02,  pellets:1, auto:true}},
+  {id:'sniper', label:'SNIPER', name:'Long Chai Sniper',      price:1200, desc:'Huge damage, slow fire',    w:{label:'SNIPER', dmg:70, head:2.5, rate:1100, mag:5,  reloadT:1800, spread:0.002, pellets:1, auto:false}},
+  {id:'lmg',    label:'LMG',    name:'Rickshaw Ripper LMG',   price:1500, desc:'60-round mag, hold the lane',w:{label:'LMG',    dmg:15, head:1.8, rate:90,   mag:60, reloadT:2200, spread:0.03,  pellets:1, auto:true}}
+];
+SHOP_GUNS.forEach(function(g){ WEAPONS[g.id] = g.w; });
+function shopLoad(){ try{ var v = JSON.parse(localStorage.getItem('cso_shop')||'null'); if(v && typeof v.coins==='number') return v; }catch(e){} return {coins:0, owned:{}, equippedSkin:null}; }
+var shopState = shopLoad();
+function shopSave(){ try{ localStorage.setItem('cso_shop', JSON.stringify(shopState)); }catch(e){} }
+function shopAddCoins(n){ shopState.coins = Math.max(0, (shopState.coins||0) + n); shopSave(); acctRender(); }
+function ownedGuns(){ var g = ['rifle','pistol','shotgun']; SHOP_GUNS.forEach(function(x){ if(shopState.owned[x.id]) g.push(x.id); }); return g; }
+function skinById(id){ for(var i=0;i<SHOP_SKINS.length;i++) if(SHOP_SKINS[i].id===id) return SHOP_SKINS[i]; return null; }
 
 /* ================= global state ================= */
 var mode = 'menu';            // menu | lobby | bots | split | online
@@ -643,7 +719,7 @@ var colliders = [];           // {minX,maxX,minZ,maxZ}
 var players = {};             // id -> player object
 var localId = 'me', p2Id = 'p2';
 var myName = 'Player';
-var running = false, matchTime = 300, lastTick = 0;
+var running = false, matchTime = 300, lastTick = 0, paused = false;
 var keys = {};
 var mouseDown = false, p2FireHeld = false;
 var yaw = 0, pitch = 0, yaw2 = 0, pitch2 = 0;
@@ -666,6 +742,8 @@ var WEAPON_ICONS = {
   pistol:'<svg viewBox="0 0 40 20" fill="currentColor" aria-hidden="true"><path d="M6 5h20l1 4H15l-1 6H9L8 9H6zM27 6h6v3h-6z"/></svg>',
   shotgun:'<svg viewBox="0 0 40 20" fill="currentColor" aria-hidden="true"><path d="M1 8h26V5h4v6h-4v2H14l-1 3H9l1-3H1z"/></svg>'
 };
+// shop guns reuse base icons (defined here, after WEAPON_ICONS exists)
+WEAPON_ICONS['smg'] = WEAPON_ICONS['rifle']; WEAPON_ICONS['sniper'] = WEAPON_ICONS['rifle']; WEAPON_ICONS['lmg'] = WEAPON_ICONS['shotgun'];
 
 /* ================= three setup ================= */
 function initThree(){
@@ -780,6 +858,7 @@ function drawHealthBar(p){
   x.fillText(Math.max(0,Math.ceil(hp))+'', W/2, by2+16);
   hb.tex.needsUpdate = true;
 }
+function freshAmmo(){ var a={}; for(var k in WEAPONS) a[k]=WEAPONS[k].mag; return a; }
 function createPlayer(id, name, colorIdx, opts){
   opts = opts||{};
   var p = {
@@ -787,21 +866,26 @@ function createPlayer(id, name, colorIdx, opts){
     team:(opts.team===0||opts.team===1)?opts.team:null, crouch:false,
     pos:new THREE.Vector3(0,0,0), vel:new THREE.Vector3(), yaw:0, pitch:0,
     hp:100, alive:true, kills:0, deaths:0, streak:0, bestStreak:0, headshots:0,
-    weapon:'rifle', ammo:{rifle:30,pistol:12,shotgun:6}, reloading:0, lastShot:0,
-    respawnT:0, onGround:true, botT:0, botTarget:null, botStrafe:1, shootCd:0, retargetT:0, lastAttacker:null,
+    weapon:'rifle', ammo:freshAmmo(), reloading:0, lastShot:0,
+    respawnT:0, spawnProtUntil:0, shieldMesh:null, onGround:true, botT:0, botTarget:null, botStrafe:1, shootCd:0, retargetT:0, lastAttacker:null,
     mesh:null, headMesh:null, bodyMesh:null, hpBar:null, _hpShown:-1
   };
   var grp = new THREE.Group();
   var col = PALETTE[colorIdx % PALETTE.length];
-  var body = new THREE.Mesh(new THREE.BoxGeometry(0.72,1.05,0.42), new THREE.MeshLambertMaterial({color:col}));
+  var skin = (id===localId && shopState.equippedSkin) ? skinById(shopState.equippedSkin) : null;
+  var bodyCol = skin ? parseInt(skin.color.slice(1), 16) : col;
+  var body = new THREE.Mesh(new THREE.BoxGeometry(0.72,1.05,0.42), new THREE.MeshLambertMaterial({color:bodyCol}));
   body.position.y=0.95; body.userData.pid=id; body.userData.part='body';
   var head = new THREE.Mesh(new THREE.BoxGeometry(0.46,0.46,0.46), new THREE.MeshLambertMaterial({color:0xffd9b3}));
   head.position.y=1.78; head.userData.pid=id; head.userData.part='head';
-  var cap = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.14,0.5), new THREE.MeshLambertMaterial({color:col}));
+  var cap = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.14,0.5), new THREE.MeshLambertMaterial({color:bodyCol}));
   cap.position.y=2.05;
-  var gun = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.7), new THREE.MeshLambertMaterial({color:0x222831}));
+  var gun = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.7), new THREE.MeshLambertMaterial({color: skin ? bodyCol : 0x222831}));
   gun.position.set(0.3,1.25,-0.3);
   grp.add(body); grp.add(head); grp.add(cap); grp.add(gun);
+  var shield = new THREE.Mesh(new THREE.SphereGeometry(1.3, 18, 12), new THREE.MeshBasicMaterial({color:0x38e1ff, transparent:true, opacity:0.22, depthWrite:false}));
+  shield.position.y=1.2; shield.visible=false; grp.add(shield);
+  p.shieldMesh = shield;
   scene.add(grp);
   p.mesh=grp; p.bodyMesh=body; p.headMesh=head;
   p.hpBar = makeHealthBar(p); drawHealthBar(p); p._hpShown = Math.ceil(p.hp);
@@ -847,6 +931,9 @@ function syncMesh(p){
     p.hpBar.sprite.visible = p.alive && (mode==='split' || p.id!==localId);
     if(p._hpShown!==Math.ceil(p.hp)){ drawHealthBar(p); p._hpShown=Math.ceil(p.hp); }
   }
+  // spawn-protection shield bubble — visible on protected players (not on yourself in 1st person)
+  if(p.shieldMesh){ var prot = p.alive && p.spawnProtUntil && performance.now() < p.spawnProtUntil;
+    p.shieldMesh.visible = !!prot && (mode==='split' || p.id!==localId); }
 }
 function collide(p, nx, nz){
   // circle vs AABB, radius .45
@@ -981,6 +1068,7 @@ function tryShoot(p, now){
   if(now - p.lastShot < w.rate) return;
   if(p.ammo[p.weapon]<=0){ reload(p); return; }
   p.lastShot = now; p.ammo[p.weapon]--;
+  if(p.spawnProtUntil) p.spawnProtUntil = 0; // shooting ends your spawn protection early
   showMuzzleFlash(p);
   if(p.id===localId || p.id===p2Id){ SFX.shoot(p.weapon); updateHUD(); }
   else if(mode!=='online'){
@@ -990,9 +1078,10 @@ function tryShoot(p, now){
   }
   if(mode==='online' && (p.id===localId)) netSend({t:'shot', gun:p.weapon, id:localId});
   var eye = eyeOf(p);
+  var botSpread = p.isBot ? 1.6 : 1; // bots spray wider — more misses, still lethal up close
   for(var i=0;i<w.pellets;i++){
     var dir = new THREE.Vector3(-Math.sin(p.yaw)*Math.cos(p.pitch), Math.sin(p.pitch), -Math.cos(p.yaw)*Math.cos(p.pitch));
-    dir.x += rand(-w.spread,w.spread); dir.y += rand(-w.spread,w.spread); dir.z += rand(-w.spread,w.spread);
+    dir.x += rand(-w.spread*botSpread,w.spread*botSpread); dir.y += rand(-w.spread*botSpread,w.spread*botSpread); dir.z += rand(-w.spread*botSpread,w.spread*botSpread);
     dir.normalize();
     raycaster.set(eye, dir); raycaster.far = 120;
     var hits = raycaster.intersectObjects(shootables(), false);
@@ -1045,6 +1134,7 @@ function applyHit(attacker, target, dmg, head){
 }
 function damagePlayer(attacker, target, dmg, head){
   if(!target.alive || !running) return;
+  if(target.spawnProtUntil && performance.now() < target.spawnProtUntil) return; // spawn-protected: no damage
   target.hp -= dmg;
   if(target.id===localId){ flashDamage(); SFX.hurt(); updateHUD(); if(mode==='online') netSendState(); }
   if(target.hp<=0) killPlayer(attacker, target, head);
@@ -1074,7 +1164,8 @@ function killPlayer(attacker, target, head){
   } else if(attacker.kills>=25) endMatch(attacker);
 }
 function respawn(p){
-  p.hp=100; p.alive=true; p.ammo={rifle:30,pistol:12,shotgun:6}; p.reloading=0;
+  p.hp=100; p.alive=true; p.ammo=freshAmmo(); p.reloading=0;
+  p.spawnProtUntil = performance.now() + 3000; // SPAWN PROTECTION: 3s, no damage taken
   placeAtSpawn(p);
   if(p.id===localId){ $('respawn').style.display='none'; updateHUD(); if(mode==='online') netSendState(); }
 }
@@ -1143,8 +1234,12 @@ function botThink(p, dt, now){
       var vsHuman = !cur.isBot;
       p.shootCd = vsHuman ? rand(0.28,0.6) : rand(0.35,0.8);
       var savedYaw=p.yaw, savedPitch=p.pitch;
-      var jit = vsHuman ? 0.06 : 0.09;
-      p.yaw += rand(-jit,jit); p.pitch += rand(-0.04,0.04);
+      // BOT AIM SCATTER: bots miss like humans — scatter grows with range and
+      // while strafing, and is smallest up close, so the game feels fair, not laser-accurate.
+      var jit = bd<8 ? 0.07 : (bd<20 ? 0.10 : (bd<35 ? 0.12 : 0.15));
+      if(p.botStrafe!==0) jit += 0.02;
+      if(vsHuman) jit *= 0.9;
+      p.yaw += rand(-jit,jit); p.pitch += rand(-jit*0.55, jit*0.55);
       if(p.ammo[p.weapon]<=0) reload(p);
       var savedLast = p.lastShot; p.lastShot = 0;
       tryShoot(p, now);
@@ -1154,6 +1249,207 @@ function botThink(p, dt, now){
   }
   if(p.reloading<=0 && p.ammo[p.weapon]===0) reload(p);
 }
+
+
+/* ================= CLOUD ACCOUNT (Supabase Auth, free) =================
+   Project: WeekendTrend (gnzhaebfqhlfenrwhjjg) — anon/public key only, never a
+   service-role key. Tables used (create in Supabase SQL editor if missing):
+     cube_strike_profiles(user_id uuid PK, display_name text, matches int, kills int,
+       wins int, best_streak int, updated_at timestamptz)
+     cube_strike_matches(id bigint PK, user_id uuid, mode text, kills int, deaths int,
+       headshots int, best_streak int, result text, rank int, total_players int,
+       created_at timestamptz default now())
+   If the tables do not exist yet, cloud save fails openly and the game falls
+   back to a local profile (localStorage) — it never pretends a cloud login worked. */
+var SB_URL = 'https://gnzhaebfqhlfenrwhjjg.supabase.co';
+var SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduemhhZWJmcWhsZmVucndoampnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwNzExNjQsImV4cCI6MjEwOTY0NzE2NH0.C5NdupLRkyDiqdM9k8cI7ThZM8Rk86goDss8hqoTRc4';
+var sb = null, acctUser = null, acctCloud = false, acctProfile = null;
+try{ if(window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_ANON); }catch(e){ sb = null; }
+function acctLocalLoad(){
+  try{ var p = JSON.parse(localStorage.getItem('cso_profile')||'null'); return p || {display_name:'Player', matches:0, kills:0, wins:0, best_streak:0}; }
+  catch(e){ return {display_name:'Player', matches:0, kills:0, wins:0, best_streak:0}; }
+}
+function acctLocalSave(p){ try{ localStorage.setItem('cso_profile', JSON.stringify(p)); }catch(e){} }
+function acctLocalHist(){
+  try{ return JSON.parse(localStorage.getItem('cso_history')||'[]'); }catch(e){ return []; }
+}
+function acctLocalHistPush(m){ var h = acctLocalHist(); h.unshift(m); if(h.length>20) h.length=20; try{ localStorage.setItem('cso_history', JSON.stringify(h)); }catch(e){} return h; }
+function acctLevel(p){ var xp = (p.kills||0) + (p.wins||0)*15; return 1 + Math.floor(xp/50); }
+function acctRender(){
+  var st = $('acctStatus'), ss = $('acctStats'), sh = $('acctHistory');
+  if(!st) return;
+  var p = acctProfile || acctLocalLoad();
+  if(acctUser){
+    st.textContent = '☁️ Logged in as ' + acctUser.email + (acctCloud ? ' (cloud)' : ' (cloud unreachable — local only)');
+    $('btnAcctOut').style.display = 'inline-block';
+  } else {
+    st.textContent = 'Guest — history saved on this device only. Log in to take it to any device.';
+    $('btnAcctOut').style.display = 'none';
+  }
+  ss.textContent = '⭐ Level ' + acctLevel(p) + ' · ' + esc(p.display_name||'Player') + ' · Matches: ' + (p.matches||0) + ' · Kills: ' + (p.kills||0) + ' · Wins: ' + (p.wins||0) + ' · Best streak: ' + (p.best_streak||0) + ' · 🪙 ' + (shopState.coins||0) + ' coins';
+  var h = acctLocalHist();
+  sh.innerHTML = h.length ? ('<b>Recent matches:</b> ' + h.slice(0,5).map(function(m){
+    return esc(m.mode||'ffa') + ' ' + m.kills + 'K/' + m.deaths + 'D ' + esc(m.result||'') + ' (' + esc(m.date||'') + ')';
+  }).join(' · ')) : 'No matches yet — play your first match!';
+}
+async function acctLoadCloudProfile(uid){
+  if(!sb) return null;
+  try{
+    var r = await sb.from('cube_strike_profiles').select('*').eq('user_id', uid).maybeSingle();
+    if(r.error) return null;
+    return r.data;
+  }catch(e){ return null; }
+}
+async function acctInit(){
+  acctProfile = acctLocalLoad();
+  myName = acctProfile.display_name || 'Player';
+  var pn = $('playerName'); if(pn) pn.value = myName;
+  acctRender();
+  if(!sb){ acctCloud = false; return; }
+  try{
+    var s = await sb.auth.getSession();
+    var u = s && s.data && s.data.session ? s.data.session.user : null;
+    if(!u){ acctRender(); return; }
+    acctUser = u; acctCloud = true;
+    var cp = await acctLoadCloudProfile(u.id);
+    if(cp){ acctProfile = {display_name:cp.display_name, matches:cp.matches||0, kills:cp.kills||0, wins:cp.wins||0, best_streak:cp.best_streak||0}; acctLocalSave(acctProfile); }
+    else { acctProfile.display_name = acctProfile.display_name || 'Player'; }
+    myName = acctProfile.display_name || 'Player';
+    if(pn) pn.value = myName;
+    acctRender();
+  }catch(e){ acctCloud = false; acctRender(); }
+}
+async function acctAuth(mode){
+  var em = $('acctEmail').value.trim(), pw = $('acctPass').value, nm = ($('acctName').value.trim() || $('playerName').value.trim() || 'Player').slice(0,14);
+  var msg = $('acctMsg');
+  if(!sb){ msg.textContent = 'Cloud is unreachable right now — playing as a local guest.'; return; }
+  if(!em || !pw || pw.length<6){ msg.textContent = 'Enter an email and a password of at least 6 characters.'; return; }
+  msg.textContent = 'Working…';
+  try{
+    var res;
+    if(mode==='signup'){
+      res = await sb.auth.signUp({email:em, password:pw});
+      if(res.error){ msg.textContent = 'Sign up failed: ' + res.error.message; return; }
+      if(!res.data.session){ msg.textContent = 'Account created! Check your email to confirm, then log in here.'; return; }
+    } else {
+      res = await sb.auth.signInWithPassword({email:em, password:pw});
+      if(res.error){ msg.textContent = 'Log in failed: ' + res.error.message; return; }
+    }
+    acctUser = res.data.user; acctCloud = true;
+    var p = acctLocalLoad(); p.display_name = nm; acctProfile = p; acctLocalSave(p);
+    try{
+      await sb.from('cube_strike_profiles').upsert({user_id:acctUser.id, display_name:nm, matches:p.matches||0, kills:p.kills||0, wins:p.wins||0, best_streak:p.best_streak||0, updated_at:new Date().toISOString()}, {onConflict:'user_id'});
+    }catch(e){ acctCloud = false; }
+    myName = nm; $('playerName').value = nm;
+    msg.textContent = 'Welcome, ' + nm + '! Your name is saved — no need to type it again.';
+    $('acctPanel').style.display = 'none';
+    acctRender();
+  }catch(e){ msg.textContent = 'Cloud is unreachable right now — playing as a local guest.'; }
+}
+async function acctLogout(){
+  try{ if(sb) await sb.auth.signOut(); }catch(e){}
+  acctUser = null; acctCloud = false;
+  acctProfile = acctLocalLoad();
+  myName = acctProfile.display_name || 'Player';
+  $('playerName').value = myName;
+  acctRender();
+}
+async function acctRecordMatch(m){
+  // always save locally first (never lose the match), then try the cloud
+  var p = acctProfile || acctLocalLoad();
+  p.matches = (p.matches||0) + 1; p.kills = (p.kills||0) + (m.kills||0);
+  if(m.result==='VICTORY') p.wins = (p.wins||0) + 1;
+  p.best_streak = Math.max(p.best_streak||0, m.streak||0);
+  acctProfile = p; acctLocalSave(p);
+  var rec = {mode:m.mode, kills:m.kills, deaths:m.deaths, headshots:m.hs, best_streak:m.streak, result:m.result, rank:m.rank, total_players:m.total, date:new Date().toLocaleDateString()};
+  acctLocalHistPush(rec);
+  acctRender();
+  if(!sb || !acctUser) return;
+  try{
+    await sb.from('cube_strike_matches').insert({user_id:acctUser.id, mode:m.mode, kills:m.kills, deaths:m.deaths, headshots:m.hs, best_streak:m.streak, result:m.result, rank:m.rank, total_players:m.total});
+    await sb.from('cube_strike_profiles').upsert({user_id:acctUser.id, display_name:p.display_name, matches:p.matches, kills:p.kills, wins:p.wins, best_streak:p.best_streak, updated_at:new Date().toISOString()}, {onConflict:'user_id'});
+    acctCloud = true;
+  }catch(e){ acctCloud = false; acctRender(); }
+}
+document.addEventListener('DOMContentLoaded', function(){
+  acctInit();
+  var b = $('btnAcct'); if(b) b.addEventListener('click', function(){ var p=$('acctPanel'); p.style.display = p.style.display==='none' ? 'block' : 'none'; });
+  var so = $('btnAcctSignup'); if(so) so.addEventListener('click', function(){ acctAuth('signup'); });
+  var li = $('btnAcctLogin'); if(li) li.addEventListener('click', function(){ acctAuth('login'); });
+  var lo = $('btnAcctOut'); if(lo) lo.addEventListener('click', function(){ acctLogout(); });
+  var lm = $('btnLobbyMenu'); if(lm) lm.addEventListener('click', function(){ quitToMenu(); });
+  var qm = $('btnQuickMenu'); if(qm) qm.addEventListener('click', function(){ clearQuickTimers(); quitToMenu(); });
+});
+
+/* ================= PREMIUM SHOP UI ================= */
+function renderShop(){
+  var bal = $('shopBalance'); if(bal) bal.textContent = '🪙 ' + (shopState.coins||0) + ' coins';
+  var sk = $('shopSkins'); if(sk) sk.innerHTML = SHOP_SKINS.map(function(it){
+    var owned = !!shopState.owned['skin:'+it.id], eq = shopState.equippedSkin===it.id;
+    return '<div style="border:2px solid #14213d;border-radius:10px;padding:8px 10px;min-width:150px;background:#fff">'
+      + '<span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:'+it.color+';border:1px solid #14213d"></span> <b>'+esc(it.name)+'</b><br>'
+      + '<span style="font-size:.82rem">'+esc(it.desc)+'</span><br><b>🪙 '+it.price+'</b> '
+      + (eq ? '<button class="bigbtn green" disabled style="font-size:.8rem;padding:5px 10px">Equipped ✓</button>'
+        : owned ? '<button class="bigbtn blue" data-skin="'+it.id+'" style="font-size:.8rem;padding:5px 10px">Equip</button>'
+        : '<button class="bigbtn" data-buy-skin="'+it.id+'" style="font-size:.8rem;padding:5px 10px">Buy</button>') + '</div>';
+  }).join('');
+  var gn = $('shopGuns'); if(gn) gn.innerHTML = SHOP_GUNS.map(function(g){
+    var owned = !!shopState.owned[g.id];
+    return '<div style="border:2px solid #14213d;border-radius:10px;padding:8px 10px;min-width:170px;background:#fff">'
+      + '<b>'+esc(g.name)+'</b><br><span style="font-size:.82rem">'+esc(g.desc)+' · DMG '+g.w.dmg+' · MAG '+g.w.mag+(g.w.auto?' · AUTO':'')+'</span><br><b>🪙 '+g.price+'</b> '
+      + (owned ? '<button class="bigbtn green" disabled style="font-size:.8rem;padding:5px 10px">Owned ✓</button>'
+        : '<button class="bigbtn" data-buy-gun="'+g.id+'" style="font-size:.8rem;padding:5px 10px">Buy</button>') + '</div>';
+  }).join('');
+}
+function shopBuy(kind, id){
+  var msg = $('shopMsg');
+  var it = kind==='skin' ? skinById(id) : null;
+  if(kind==='gun'){ for(var i=0;i<SHOP_GUNS.length;i++) if(SHOP_GUNS[i].id===id) it = SHOP_GUNS[i]; }
+  if(!it){ return; }
+  var key = kind==='skin' ? 'skin:'+id : id;
+  if(shopState.owned[key]){ msg.textContent = 'You already own ' + it.name + '.'; return; }
+  if((shopState.coins||0) < it.price){ msg.textContent = 'Not enough coins for ' + it.name + ' — play more matches to earn 🪙!'; return; }
+  shopState.coins -= it.price; shopState.owned[key] = true; shopSave();
+  msg.textContent = '🎉 Bought ' + it.name + '! ' + (kind==='skin' ? 'Tap Equip to wear it next match.' : 'It is ready — cycle guns with the gun button or keys 1–5.');
+  renderShop(); acctRender();
+}
+function donate(){
+  var msg = $('shopMsg');
+  if(!DONATE_URL){ if(msg) msg.textContent = '❤️ Thanks for wanting to donate! The owner has not set the donation link yet — check back soon.'; return; }
+  window.open(DONATE_URL, '_blank');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  renderShop();
+  var sc = $('shopCard'); if(sc) sc.addEventListener('click', function(e){
+    var b = e.target.closest('[data-buy-skin],[data-buy-gun],[data-skin]'); if(!b) return;
+    if(b.hasAttribute('data-buy-skin')) shopBuy('skin', b.getAttribute('data-buy-skin'));
+    else if(b.hasAttribute('data-buy-gun')) shopBuy('gun', b.getAttribute('data-buy-gun'));
+    else if(b.hasAttribute('data-skin')){ shopState.equippedSkin = b.getAttribute('data-skin'); shopSave(); $('shopMsg').textContent = 'Equipped! Your fighter will wear it from your next match.'; renderShop(); }
+  });
+  var dn = $('btnDonate'); if(dn) dn.addEventListener('click', donate);
+  var rm = $('btnRealMoney'); if(rm) rm.addEventListener('click', function(){ $('shopMsg').textContent = 'Real-money coin purchase is coming soon — for now, earn coins by playing matches!'; });
+});
+
+/* ================= PAUSE + return to main menu ================= */
+function setPaused(v){
+  if(!running && v) return;
+  paused = v;
+  var o = $('pauseOverlay'); if(o) o.style.display = v ? 'flex' : 'none';
+  if(v && document.pointerLockElement) document.exitPointerLock();
+  if(!v && running && !isTouch) lockPointer();
+}
+function quitToMenu(){
+  paused = false; running = false;
+  var o = $('pauseOverlay'); if(o) o.style.display = 'none';
+  if(mode==='online') cleanupNet();
+  if(document.pointerLockElement) document.exitPointerLock();
+  mode='menu'; showScreen('menu'); menuMsg('');
+}
+document.addEventListener('DOMContentLoaded', function(){
+  var pb = $('btnPause'); if(pb) pb.addEventListener('click', function(){ setPaused(true); });
+  var rs = $('btnResume'); if(rs) rs.addEventListener('click', function(){ setPaused(false); });
+  var pm = $('btnPauseMenu'); if(pm) pm.addEventListener('click', quitToMenu);
+});
 
 /* ================= HUD / feed ================= */
 function menuMsg(t){ $('menuMsg').textContent = t||''; }
@@ -1176,6 +1472,13 @@ function showHitmark(){
 function flashDamage(){
   var f=$('dmgflash'); f.style.opacity='1';
   setTimeout(function(){ f.style.opacity='0'; }, 130);
+}
+function updateSpawnProt(){
+  var el=$('spawnProt'); if(!el) return;
+  var me=players[localId];
+  var left = (me && me.alive && me.spawnProtUntil) ? (me.spawnProtUntil - performance.now())/1000 : 0;
+  if(left>0){ el.style.display='block'; $('spawnProtN').textContent = Math.ceil(left); }
+  else el.style.display='none';
 }
 function updateHUD(){
   var me=players[localId]; if(!me) return;
@@ -1246,6 +1549,7 @@ function showScreen(which){
   $('game').style.display = which==='game' ? 'block':'none';
   $('quicklobby').style.display = which==='quick' ? 'block':'none';
   if(which==='game') $('endscreen').style.display='none';
+  if(which!=='game'){ paused=false; var po=$('pauseOverlay'); if(po) po.style.display='none'; }
   if(which!=='game'){ $('endscreen').style.display='none'; }
   document.body.classList.toggle('split', false);
   document.body.classList.toggle('playing-now', which==='game');
@@ -1344,6 +1648,9 @@ function endMatch(winner){
     $('scoreCard').style.display='none';
     lastCard = null;
   }
+  if(meP && lastCard){ acctRecordMatch({mode:matchType, kills:meP.kills, deaths:meP.deaths, hs:meP.headshots, streak:meP.bestStreak||0, result:lastCard.resultText, rank:lastCard.rank, total:lastCard.total});
+    var earned = meP.kills*10 + (lastCard.resultText==='VICTORY' ? 50 : 0) + 20; shopAddCoins(earned);
+    var ce=$('coinEarned'); if(ce) ce.textContent = '🪙 You earned ' + earned + ' coins! (' + meP.kills + ' kills × 10' + (lastCard.resultText==='VICTORY' ? ' + 50 win bonus' : '') + ' + 20 match bonus) — spend them in the Premium Shop.'; }
   var ei = $('endInvite');
   if(mode==='online' && roomCode){
     ei.style.display='block';
@@ -1467,8 +1774,10 @@ function gameLoop(){
   var dt = Math.min(clock.getDelta(), 0.05);
   var now = performance.now();
   if(!running) { render(); return; }
+  if(paused) { render(); return; }
   matchTime -= dt;
   $('timer').textContent = fmtTime(matchTime);
+  updateSpawnProt();
   if(matchTime<=0){ endMatch(null); render(); return; }
 
   var me = players[localId];
@@ -1814,12 +2123,11 @@ document.addEventListener('keydown', function(e){
   if(e.target && e.target.id==='chatText') return; // typing in chat is not gameplay
   if(e.code==='Enter' && running && mode!=='split' && !chatOpen){ setChatOpen(true); if(!isTouch) setTimeout(function(){ var ct=$('chatText'); if(ct) ct.focus(); },30); return; }
   keys[e.code]=true;
+  if((e.code==='Escape' || e.code==='KeyP') && running && !(e.target && e.target.id==='chatText')){ setPaused(!paused); return; }
   if(e.code==='Tab'){ e.preventDefault(); if(running) $('scoreboard').style.display='block'; }
   if(!running) return;
   var me=players[localId]; if(!me) return;
-  if(e.code==='Digit1') switchWeapon(me,'rifle');
-  if(e.code==='Digit2') switchWeapon(me,'pistol');
-  if(e.code==='Digit3') switchWeapon(me,'shotgun');
+  if(e.code.indexOf('Digit')===0){ var og2=ownedGuns(), n2=parseInt(e.code.slice(5),10)-1; if(og2[n2]) switchWeapon(me, og2[n2]); }
   if(e.code==='KeyR') reload(me);
   if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) jump(me); }
   if(e.code==='KeyT' && !e.repeat) sendTaunt();
@@ -1999,7 +2307,7 @@ function bindTouch(){
   }
   barBtn('btnJump', function(){ var me=players[localId]; if(me) jump(me); });
   barBtn('btnReload', function(){ var me=players[localId]; if(me) reload(me); });
-  barBtn('btnGun', function(){ var me=players[localId]; if(me) switchWeapon(me, GUN_ORDER[(GUN_ORDER.indexOf(me.weapon)+1)%3]); });
+  barBtn('btnGun', function(){ var me=players[localId]; if(me){ var og=ownedGuns(); switchWeapon(me, og[(og.indexOf(me.weapon)+1)%og.length]); } });
   barBtn('btnTaunt', function(){ if(running) sendTaunt(); });
   var bc=$('btnCrouch');
   if(bc){
