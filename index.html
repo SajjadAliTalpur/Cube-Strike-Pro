@@ -291,6 +291,28 @@
     #endscreen .panel{ padding:16px 12px; }
     .help{ padding:14px; }
   }
+  /* ---------- FIX 2026-11-15: pause button (was dead on mobile) ---------- */
+  /* ROOT CAUSE: #topbar inherits pointer-events:none from .hud, and #btnPause never
+     set pointer-events:auto (unlike #btnScore / #btnChatDesk). Taps on it passed
+     straight through to the canvas, so the pause handler never fired on touch. */
+  #btnPause{ pointer-events:auto !important; min-width:44px; min-height:36px; touch-action:manipulation; }
+  /* ---------- Fire button mode ---------- */
+  #btnFire{ position:absolute; right:18px; bottom:100px; width:84px; height:84px; min-height:84px; border-radius:50%;
+    border:3px solid #fff; background:rgba(239,71,111,.75); color:#fff; font-family:'Bungee',cursive; font-size:1rem;
+    display:none; align-items:center; justify-content:center; pointer-events:auto; z-index:4; touch-action:none; }
+  #btnFire:active{ background:rgba(255,209,102,.85); color:#14213d; }
+  body.touch.firebtn #btnFire.playing{ display:flex; }
+  /* ---------- Movable-button edit mode ---------- */
+  body.layout-editing #stick, body.layout-editing #bottomBar, body.layout-editing #btnFire,
+  body.layout-editing #btnScore, body.layout-editing #btnChatDesk{ outline:3px dashed #ffd166; outline-offset:4px; z-index:9; }
+  body.layout-editing #btnFire.playing{ display:flex; }
+  #layoutBar{ position:absolute; left:50%; bottom:12px; transform:translateX(-50%); z-index:30; display:none;
+    background:rgba(10,15,30,.9); color:#fff; border:2px solid #ffd166; border-radius:14px; padding:10px 14px;
+    text-align:center; font-weight:700; pointer-events:auto; max-width:94vw; }
+  #layoutBar .row{ display:flex; gap:8px; justify-content:center; margin-top:8px; flex-wrap:wrap; }
+  .seg{ display:flex; gap:6px; flex-wrap:wrap; }
+  .seg button{ border:3px solid var(--line); border-radius:10px; padding:8px 12px; font-weight:800; background:var(--card); color:var(--ink); }
+  .seg button.on{ background:var(--yellow); color:#14213d; }
   .botbadge{ background:var(--orange); color:#14213d; font-size:.62rem; font-weight:800; padding:1px 6px; border-radius:999px; vertical-align:middle; }
   .teambadge{ font-size:.62rem; font-weight:800; padding:1px 6px; border-radius:999px; vertical-align:middle; color:#fff; }
   .teambadge.a{ background:#118ab2; } .teambadge.b{ background:#ef476f; }
@@ -303,7 +325,7 @@
   <div class="hero">
     <h1>CUBE <span class="a">STRIKE</span> <span class="b">ONLINE</span></h1>
     <p>The blocky arena shooter you can play with friends anywhere — make a room, share the code, and race to 25 kills!</p>
-    <span class="mapname">MAP: NEON CHAI TOWN ☕🏙️</span>
+    <span class="mapname" id="mapNameLabel">MAP: NEON CHAI TOWN ☕🏙️</span>
   </div>
 
   <div id="shopCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:#14213d;color:#fff;border:2px solid #ffd166;border-radius:14px;text-align:left">
@@ -318,6 +340,28 @@
     <div style="margin-top:10px;font-weight:800">🔫 New guns — different damage &amp; fire-rate, usable once bought (keys 1–5 / gun button cycles owned guns)</div>
     <div id="shopGuns" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
     <div style="font-size:.8rem;color:#cfe3ff;margin-top:8px">Coins are earned in matches: 10 per kill + 50 win bonus + 20 per match. Skins &amp; guns are bought with coins only — real-money purchase is coming soon, there is no checkout here yet.</div>
+  </div>
+
+  <div id="controlsCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:#14213d;color:#fff;border:2px solid #ffd166;border-radius:14px;text-align:left">
+    <div style="font-weight:800;font-size:1.05rem">🎯 Controls &amp; Map</div>
+    <div style="margin-top:10px;font-weight:800">🔥 How do you want to shoot? (mobile)</div>
+    <div class="seg" style="margin-top:6px">
+      <button type="button" id="btnFireTouch">👆 Tap screen to shoot</button>
+      <button type="button" id="btnFireButton">🔥 FIRE button</button>
+    </div>
+    <div style="margin-top:10px;font-weight:800">🗺️ Map</div>
+    <div class="seg" style="margin-top:6px">
+      <button type="button" data-map="random" class="mapbtn">🎲 Random</button>
+      <button type="button" data-map="neon" class="mapbtn">☕ Neon Chai Town</button>
+      <button type="button" data-map="bazaar" class="mapbtn">🏜️ Desert Bazaar</button>
+      <button type="button" data-map="night" class="mapbtn">🌃 Night Rooftop</button>
+    </div>
+    <div style="margin-top:10px;font-weight:800">✏️ Button layout (mobile)</div>
+    <div class="seg" style="margin-top:6px">
+      <button type="button" id="btnEditLayoutMenu">✏️ Move Buttons</button>
+      <button type="button" id="btnResetLayoutMenu">↺ Reset Layout</button>
+    </div>
+    <div id="controlsMsg" style="font-size:.82rem;color:#cfe3ff;margin-top:8px;min-height:1.2em">Move Buttons opens a practice match in edit mode — drag the joystick, FIRE button, bottom bar, score &amp; chat buttons where you like, then tap Done. Positions are saved on this device.</div>
   </div>
 
   <div class="namebar">
@@ -417,7 +461,7 @@
           <li>Kill streaks (3, 5, 8…) get announced to everyone</li>
           <li>You respawn 3 seconds after being cubed</li>
           <li><b>Spawn protection:</b> for 3 seconds after (re)spawning you cannot take damage — a 🛡️ shield shows on you. Shooting ends it early, so hold fire if you want the full 3s</li>
-          <li>On mobile: hold your phone <b>sideways (landscape)</b> — left joystick to move, <b>drag on the right side to aim, tap the screen to shoot</b> (no FIRE button). Weapon, reload, jump and crouch are icon buttons in the transparent bar at the bottom</li>
+          <li>On mobile: hold your phone <b>sideways (landscape)</b> — left joystick to move, <b>drag on the right side to aim</b>. Shoot with <b>tap-to-shoot</b> or switch to the <b>🔥 FIRE button</b> in the Controls &amp; Map card on the main menu (or in Pause). You can also <b>move the buttons</b> — ✏️ Move Buttons in the same card, or Edit Layout in Pause</li>
           <li><b>TDM:</b> first team to 25 kills wins — Alpha (blue) vs Bravo (pink), bots split across both teams</li>
           <li><b>Spawn protection:</b> 3s of no damage after (re)spawning — 🛡️ shield shows on you. Shooting ends it early</li>
           <li><b>Account:</b> sign up (email + password) in the My Account card and your name, level and match history follow you to any device. Without an account, history stays on this device only</li>
@@ -521,12 +565,15 @@
       <div class="chunk" style="font-size:1.5rem">⏸ PAUSED</div>
       <div style="margin:14px 0"><button class="bigbtn green" id="btnResume" style="font-size:1.05rem">▶ Resume</button></div>
       <div><button class="bigbtn ghost" id="btnPauseMenu">← Main Menu</button></div>
+      <div style="margin:10px 0"><button class="bigbtn" id="btnPauseEdit" style="font-size:.95rem">✏️ Edit Button Layout</button></div>
+      <div><button class="bigbtn ghost" id="btnPauseFire" style="font-size:.9rem">🔥 Fire: Tap screen</button></div>
       <div style="font-size:.85rem;margin-top:10px;opacity:.85">Your account stays logged in — nothing is lost.</div>
     </div>
   </div>
   <div id="clickToPlay"><div class="inner"><div class="chunk" style="font-size:1.4rem">CLICK TO PLAY</div><div>Mouse look needs one click. WASD moves, click shoots!</div></div></div>
   <div id="touchUI">
     <div id="stick"><div id="stickKnob"></div></div>
+    <button id="btnFire" aria-label="Fire" title="Hold to fire">🔥 FIRE</button>
     <div id="tapHint">Drag to aim · Tap to shoot</div>
     <div id="bottomBar" role="group" aria-label="Actions">
       <button class="tbtn" id="btnGun" aria-label="Switch weapon" title="Switch weapon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M2 10h13l1-2h4v4h-5l-1 3h-3l-1-3H7l-1 4H4l1-4H2z" fill="currentColor" stroke="none"/><path d="M15 12h7"/></svg></button>
@@ -537,6 +584,7 @@
       <button class="tbtn" id="btnTaunt" aria-label="Taunt" title="Taunt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8 14c1.2 1.8 2.6 2.6 4 2.6S14.8 15.8 16 14" stroke-linecap="round"/></svg></button>
     </div>
   </div>
+  <div id="layoutBar"><div>✏️ EDIT LAYOUT — drag the joystick, FIRE button, bottom bar, score &amp; chat buttons anywhere you like</div><div class="row"><button class="bigbtn green" id="btnLayoutDone">✅ Done — Save</button><button class="bigbtn ghost" id="btnLayoutReset">↺ Reset Layout</button></div></div>
   <div id="chatPanel" role="dialog" aria-label="Match chat">
     <div class="chead"><span class="ctitle">💬 Match Chat</span><button id="chatClose" aria-label="Close chat">✕</button></div>
     <div id="chatScopeWrap"><button class="scopebtn on" id="scopeAll" type="button">🌍 All</button><button class="scopebtn" id="scopeTeam" type="button">🛡️ Team</button></div>
@@ -556,7 +604,7 @@
     <div id="endWinner" style="font-weight:800;font-size:1.1rem"></div>
     <div id="highlights"></div>
     <div id="scoreCard">
-      <div class="sc-head"><span class="sc-logo">CUBE <span class="a">STRIKE</span> <span class="b">ONLINE</span></span><span class="sc-map">NEON CHAI TOWN ☕🏙️</span></div>
+      <div class="sc-head"><span class="sc-logo">CUBE <span class="a">STRIKE</span> <span class="b">ONLINE</span></span><span class="sc-map" id="scMapName">NEON CHAI TOWN ☕🏙️</span></div>
       <div class="sc-result" id="scResult">🏆 VICTORY</div>
       <div class="sc-player"><span class="sc-chip" id="scChip"></span><span id="scName">Player</span></div>
       <div class="sc-rank" id="scRank">#1 of 10 players</div>
@@ -716,6 +764,135 @@ var SFX = {
 /* ================= owner config ================= */
 var DONATE_URL = ''; // OWNER: paste your donation link here (e.g. Buy Me a Coffee / Ko-fi URL). Leave '' and the Donate button says the link is coming soon — never invent payment details.
 
+/* ================= CONTROLS SETTINGS + MAPS (2026-11-15) ================= */
+function csoSettingsLoad(){ try{ var v=JSON.parse(localStorage.getItem('cso_settings')||'null'); if(v) return v; }catch(e){} return {fireMode:'touch', map:'random'}; }
+var csoSettings = csoSettingsLoad();
+function csoSettingsSave(){ try{ localStorage.setItem('cso_settings', JSON.stringify(csoSettings)); }catch(e){} }
+var MAPS = {
+  neon: { name:'NEON CHAI TOWN ☕🏙️', short:'Neon Chai Town', sky:0x8ecae6, ground:0x7bc96f, road:0x5b6770, wall:0xffd166, hemi:0.95, sun:0.55,
+    spawns:[[-38,-38],[38,-38],[-38,38],[38,38],[0,-40],[0,40],[-40,0],[40,0]],
+    teamSpawns:{0:[[-38,34],[-30,38],[-38,26],[38,34],[30,38]],1:[[-38,-34],[30,-38],[-30,-38],[38,-26],[38,-34]]},
+    buildings:[[-30,-30,10,14,10,0xef476f],[30,-30,12,18,12,0x118ab2],[-30,30,12,10,12,0x06d6a0],[30,30,10,16,10,0xfb8500],[-16,-14,8,8,8,0x9b5de5],[16,14,8,12,8,0x4cc9f0],[16,-16,7,7,7,0xffd166],[-16,16,7,9,7,0xf15bb5],[-34,0,8,6,14,0x118ab2],[34,0,8,6,14,0xef476f],[0,-34,14,6,8,0x06d6a0],[0,34,14,6,8,0xfb8500]],
+    crates:[[-8,-8],[8,8],[-8,30],[8,-30],[24,-6],[-24,6],[0,14],[0,-14],[14,26],[-14,-26],[26,26],[-26,-26],[6,0],[-6,0]], landmark:'chai' },
+  bazaar: { name:'DESERT BAZAAR 🏜️', short:'Desert Bazaar', sky:0xf2c078, ground:0xe0b070, road:0x8a6d3b, wall:0xc1440e, hemi:1.0, sun:0.7,
+    spawns:[[-36,-36],[36,-36],[-36,36],[36,36],[0,-38],[0,38],[-38,0],[38,0]],
+    teamSpawns:{0:[[-36,32],[-28,36],[-36,24],[36,32],[28,36]],1:[[-36,-32],[28,-36],[-28,-36],[36,-24],[36,-32]]},
+    buildings:[[-28,-28,12,10,10,0xc1440e],[28,-28,10,16,12,0x8a5a2b],[-28,28,12,12,10,0xd9a066],[28,28,10,9,10,0x118ab2],[-14,-12,8,7,8,0xef476f],[14,12,8,11,8,0x06d6a0],[14,-14,7,6,7,0xffd166],[-14,14,7,8,7,0xfb8500],[-32,0,8,5,12,0x9b5de5],[32,0,8,5,12,0xc1440e],[0,-32,12,5,8,0xd9a066],[0,32,12,5,8,0x8a5a2b]],
+    crates:[[-8,-8],[8,8],[-8,28],[8,-28],[22,-6],[-22,6],[0,12],[0,-12],[12,24],[-12,-24],[24,24],[-24,-24],[6,0],[-6,0]], landmark:'tent' },
+  night: { name:'NIGHT ROOFTOP 🌃', short:'Night Rooftop', sky:0x0b1026, ground:0x2b2d42, road:0x1a1a2e, wall:0x4cc9f0, hemi:0.75, sun:0.35,
+    spawns:[[-36,-36],[36,-36],[-36,36],[36,36],[0,-38],[0,38],[-38,0],[38,0]],
+    teamSpawns:{0:[[-36,32],[-28,36],[-36,24],[36,32],[28,36]],1:[[-36,-32],[28,-36],[-28,-36],[36,-24],[36,-32]]},
+    buildings:[[-28,-28,12,14,10,0x1d2f52],[28,-28,10,18,12,0x2b2d42],[-28,28,12,10,10,0x4cc9f0],[28,28,10,16,10,0x9b5de5],[-14,-12,8,8,8,0x118ab2],[14,12,8,12,8,0xef476f],[14,-14,7,7,7,0xffd166],[-14,14,7,9,7,0x06d6a0],[-32,0,8,6,12,0x2b2d42],[32,0,8,6,12,0x1d2f52],[0,-32,12,6,8,0x4cc9f0],[0,32,12,6,8,0x9b5de5]],
+    crates:[[-8,-8],[8,8],[-8,28],[8,-28],[22,-6],[-22,6],[0,12],[0,-12],[12,24],[-12,-24],[24,24],[-24,-24],[6,0],[-6,0]], landmark:'tower' }
+};
+var currentMapId = 'neon';
+function resolveMapId(){ if(csoSettings.map && csoSettings.map!=='random' && MAPS[csoSettings.map]) return csoSettings.map; var ks=Object.keys(MAPS); return ks[Math.floor(Math.random()*ks.length)]; }
+function mapName(){ return MAPS[currentMapId] ? MAPS[currentMapId].name : MAPS.neon.name; }
+function updateMapLabels(){ var l=$('mapNameLabel'); if(l) l.textContent='MAP: '+mapName(); var sc=$('scMapName'); if(sc) sc.textContent=mapName(); }
+function setFireMode(m){
+  csoSettings.fireMode = (m==='button') ? 'button' : 'touch'; csoSettingsSave();
+  document.body.classList.toggle('firebtn', csoSettings.fireMode==='button');
+  var ft=$('btnFireTouch'), fb=$('btnFireButton'); if(ft) ft.classList.toggle('on', csoSettings.fireMode==='touch'); if(fb) fb.classList.toggle('on', csoSettings.fireMode==='button');
+  var pf=$('btnPauseFire'); if(pf) pf.textContent = csoSettings.fireMode==='button' ? '🔥 Fire: FIRE button' : '🔥 Fire: Tap screen';
+  var th=$('tapHint'); if(th) th.textContent = csoSettings.fireMode==='button' ? 'Drag to aim · Hold 🔥 FIRE to shoot' : 'Drag to aim · Tap to shoot';
+  var cm=$('controlsMsg'); if(cm) cm.textContent = csoSettings.fireMode==='button' ? 'Fire mode: FIRE button — tapping the screen only aims, the big red FIRE button shoots. Saved on this device.' : 'Fire mode: tap screen to shoot — a quick tap fires, drag aims. Saved on this device.';
+}
+function setMapChoice(id){
+  csoSettings.map = MAPS[id] ? id : 'random'; csoSettingsSave();
+  document.querySelectorAll('.mapbtn').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-map')===csoSettings.map); });
+  if(csoSettings.map!=='random'){ currentMapId=csoSettings.map; updateMapLabels(); }
+  var cm=$('controlsMsg'); if(cm) cm.textContent = 'Map: ' + (csoSettings.map==='random' ? 'Random — a different map each match!' : MAPS[csoSettings.map].name) + ' — saved on this device.';
+}
+
+/* ================= MOVABLE BUTTON LAYOUT (2026-11-15) ================= */
+var LAYOUT_ITEMS = ['stick','bottomBar','btnFire','btnScore','btnChatDesk'];
+var layoutEditing = false, layoutFromMenu = false, layoutDrag = null;
+function loadLayout(){ try{ var v=JSON.parse(localStorage.getItem('cso_layout')||'null'); if(v) return v; }catch(e){} return {}; }
+function applyLayout(){
+  var lay = loadLayout();
+  LAYOUT_ITEMS.forEach(function(id){
+    var el=$(id); if(!el || !lay[id]) return;
+    var pos=lay[id];
+    el.style.left = (pos.left!=null) ? Math.max(0,Math.min(window.innerWidth-el.offsetWidth, pos.left))+'px' : '';
+    el.style.right = (pos.right!=null) ? Math.max(0, pos.right)+'px' : '';
+    el.style.top = (pos.top!=null) ? Math.max(0, pos.top)+'px' : '';
+    el.style.bottom = (pos.bottom!=null) ? Math.max(0, pos.bottom)+'px' : '';
+    if(pos.left!=null) el.style.right=''; if(pos.right!=null) el.style.left='';
+    if(pos.top!=null) el.style.bottom=''; if(pos.bottom!=null) el.style.top='';
+  });
+}
+function saveLayoutPos(id){
+  var el=$(id); if(!el) return;
+  var r=el.getBoundingClientRect(), lay=loadLayout();
+  var cs=getComputedStyle(el);
+  lay[id]={};
+  if(cs.left!=='auto' && el.style.left) lay[id].left=r.left;
+  else if(cs.right!=='auto' && el.style.right) lay[id].right=window.innerWidth-r.right;
+  else lay[id].left=r.left;
+  if(cs.top!=='auto' && el.style.top) lay[id].top=r.top;
+  else if(cs.bottom!=='auto' && el.style.bottom) lay[id].bottom=window.innerHeight-r.bottom;
+  else lay[id].bottom=window.innerHeight-r.bottom;
+  try{ localStorage.setItem('cso_layout', JSON.stringify(lay)); }catch(e){}
+}
+function resetLayout(){
+  try{ localStorage.removeItem('cso_layout'); }catch(e){}
+  LAYOUT_ITEMS.forEach(function(id){ var el=$(id); if(el){ el.style.left=''; el.style.right=''; el.style.top=''; el.style.bottom=''; } });
+  var cm=$('controlsMsg'); if(cm) cm.textContent='Layout reset to default — positions saved on this device.';
+}
+function enterLayoutEdit(fromMenu){
+  layoutFromMenu = !!fromMenu; layoutEditing = true;
+  document.body.classList.add('layout-editing');
+  var lb=$('layoutBar'); if(lb) lb.style.display='block';
+  var po=$('pauseOverlay'); if(po) po.style.display='none';
+  if(!running){ /* opened from the menu: practice match is already running (paused) */ }
+}
+function exitLayoutEdit(){
+  layoutEditing = false; layoutDrag = null;
+  document.body.classList.remove('layout-editing');
+  var lb=$('layoutBar'); if(lb) lb.style.display='none';
+  LAYOUT_ITEMS.forEach(saveLayoutPos);
+  if(layoutFromMenu){ quitToMenu(); }
+  else if(running){ setPaused(true); }
+}
+function layoutDragStart(e, id){
+  if(!layoutEditing) return false;
+  e.preventDefault(); e.stopPropagation();
+  var el=$(id); var r=el.getBoundingClientRect();
+  layoutDrag={id:id, dx:(e.clientX||0)-r.left, dy:(e.clientY||0)-r.top, w:r.width, h:r.height};
+  return true;
+}
+function layoutDragMove(e){
+  if(!layoutDrag) return;
+  var el=$(layoutDrag.id); if(!el) return;
+  var x=(e.clientX||0)-layoutDrag.dx, y=(e.clientY||0)-layoutDrag.dy;
+  x=Math.max(0,Math.min(window.innerWidth-layoutDrag.w, x));
+  y=Math.max(0,Math.min(window.innerHeight-layoutDrag.h, y));
+  el.style.left=x+'px'; el.style.right=''; el.style.top=y+'px'; el.style.bottom='';
+}
+document.addEventListener('DOMContentLoaded', function(){
+  LAYOUT_ITEMS.forEach(function(id){
+    var el=$(id); if(!el) return;
+    el.addEventListener('pointerdown', function(e){ layoutDragStart(e, id); });
+  });
+  document.addEventListener('pointermove', function(e){ layoutDragMove(e); });
+  document.addEventListener('pointerup', function(){ if(layoutDrag){ saveLayoutPos(layoutDrag.id); layoutDrag=null; } });
+  document.addEventListener('pointercancel', function(){ layoutDrag=null; });
+  var ld=$('btnLayoutDone'); if(ld) ld.addEventListener('click', exitLayoutEdit);
+  var lr=$('btnLayoutReset'); if(lr) lr.addEventListener('click', function(){ resetLayout(); });
+  var em=$('btnEditLayoutMenu'); if(em) em.addEventListener('click', function(){
+    // Open a paused practice match in edit mode so the real controls can be dragged.
+    layoutFromMenu = true;
+    startOffline('bots'); setPaused(true); enterLayoutEdit(true);
+  });
+  var rm=$('btnResetLayoutMenu'); if(rm) rm.addEventListener('click', resetLayout);
+  var ft=$('btnFireTouch'); if(ft) ft.addEventListener('click', function(){ setFireMode('touch'); });
+  var fb2=$('btnFireButton'); if(fb2) fb2.addEventListener('click', function(){ setFireMode('button'); });
+  document.querySelectorAll('.mapbtn').forEach(function(b){ b.addEventListener('click', function(){ setMapChoice(b.getAttribute('data-map')); }); });
+  setFireMode(csoSettings.fireMode||'touch');
+  setMapChoice(csoSettings.map||'random');
+  applyLayout();
+});
+
 /* ================= weapons ================= */
 var WEAPONS = {
   rifle:  { label:'RIFLE',   dmg:18, head:2.2, rate:120, mag:30, reloadT:1200, spread:0.014, pellets:1, auto:true },
@@ -747,7 +924,7 @@ function skinById(id){ for(var i=0;i<SHOP_SKINS.length;i++) if(SHOP_SKINS[i].id=
 
 /* ================= global state ================= */
 var mode = 'menu';            // menu | lobby | bots | split | online
-var scene, renderer, cam1, cam2, clock;
+var scene, renderer, cam1, cam2, clock, hemiLight=null, sunLight=null, mapGroup=null;
 var walls = [];               // meshes for raycast
 var colliders = [];           // {minX,maxX,minZ,maxZ}
 var players = {};             // id -> player object
@@ -794,8 +971,8 @@ function initThree(){
   $('game').insertBefore(renderer.domElement, $('game').firstChild);
   cam1 = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 300);
   cam2 = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 300);
-  var hemi = new THREE.HemisphereLight(0xffffff, 0x446644, 0.95); scene.add(hemi);
-  var sun = new THREE.DirectionalLight(0xffffff, 0.55); sun.position.set(30,60,20); scene.add(sun);
+  hemiLight = new THREE.HemisphereLight(0xffffff, 0x446644, 0.95); scene.add(hemiLight);
+  sunLight = new THREE.DirectionalLight(0xffffff, 0.55); sunLight.position.set(30,60,20); scene.add(sunLight);
   buildMap();
   initFx();
   clock = new THREE.Clock();
@@ -812,37 +989,36 @@ function onResize(){
 }
 function box(x,y,z,w,h,d,color, collidable){
   var m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshLambertMaterial({color:color}));
-  m.position.set(x,y,z); scene.add(m);
+  m.position.set(x,y,z); (mapGroup||scene).add(m);
   if(collidable !== false){
     walls.push(m);
     colliders.push({minX:x-w/2,maxX:x+w/2,minZ:z-d/2,maxZ:z+d/2});
   }
   return m;
 }
-function buildMap(){
-  // ground (also a raycast surface, so shots leave bullet holes in it — but no collider)
-  var g = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshLambertMaterial({color:0x7bc96f}));
-  g.rotation.x = -Math.PI/2; scene.add(g); walls.push(g);
-  // roads cross
-  var r1 = new THREE.Mesh(new THREE.PlaneGeometry(100,10), new THREE.MeshLambertMaterial({color:0x5b6770}));
-  r1.rotation.x=-Math.PI/2; r1.position.y=0.01; scene.add(r1); walls.push(r1);
-  var r2 = new THREE.Mesh(new THREE.PlaneGeometry(10,100), new THREE.MeshLambertMaterial({color:0x5b6770}));
-  r2.rotation.x=-Math.PI/2; r2.position.y=0.012; scene.add(r2); walls.push(r2);
-  // boundary walls
-  box(0,2,-50, 102,4,2, 0xffd166); box(0,2,50, 102,4,2, 0xffd166);
-  box(-50,2,0, 2,4,102, 0xffd166); box(50,2,0, 2,4,102, 0xffd166);
-  // bright cube-city buildings
-  var city = [
-    [-30,-30,10,14,10,0xef476f],[30,-30,12,18,12,0x118ab2],[-30,30,12,10,12,0x06d6a0],[30,30,10,16,10,0xfb8500],
-    [-16,-14,8,8,8,0x9b5de5],[16,14,8,12,8,0x4cc9f0],[16,-16,7,7,7,0xffd166],[-16,16,7,9,7,0xf15bb5],
-    [-34,0,8,6,14,0x118ab2],[34,0,8,6,14,0xef476f],[0,-34,14,6,8,0x06d6a0],[0,34,14,6,8,0xfb8500]
-  ];
-  city.forEach(function(b){ box(b[0], b[3]/2, b[1], b[2], b[3], b[4], b[5]); });
-  // crates & cover
-  var crates = [[-8,-8],[8,8],[-8,30],[8,-30],[24,-6],[-24,6],[0,14],[0,-14],[14,26],[-14,-26],[26,26],[-26,-26],[6,0],[-6,0]];
-  crates.forEach(function(c,i){ box(c[0],1,c[1],2,2,2, i%2?0xd9a066:0xb08968); box(c[0],3,c[1],2,2,2, 0xd9a066); });
-  // the giant chai cup landmark ☕ (just boxes, no emoji in 3D)
-  box(0,1.5,-22, 4,3,4, 0xffffff); box(2.6,1.5,-22, 1.2,1.6,0.6, 0xffffff);
+function buildMap(mapId){
+  var def = MAPS[mapId] || MAPS.neon;
+  currentMapId = MAPS[mapId] ? mapId : 'neon';
+  SPAWNS = def.spawns.slice(); TEAM_SPAWNS = {0:def.teamSpawns[0].slice(), 1:def.teamSpawns[1].slice()};
+  if(scene){ scene.background = new THREE.Color(def.sky); scene.fog = new THREE.Fog(def.sky, 60, 140); }
+  if(hemiLight) hemiLight.intensity = def.hemi; if(sunLight) sunLight.intensity = def.sun;
+  if(mapGroup && scene){ scene.remove(mapGroup); mapGroup.traverse(function(o){ if(o.geometry) o.geometry.dispose(); if(o.material){ if(o.material.map) o.material.map.dispose(); o.material.dispose(); } }); }
+  mapGroup = new THREE.Group(); scene.add(mapGroup);
+  walls = []; colliders = [];
+  var g = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshLambertMaterial({color:def.ground}));
+  g.rotation.x = -Math.PI/2; mapGroup.add(g); walls.push(g);
+  var r1 = new THREE.Mesh(new THREE.PlaneGeometry(100,10), new THREE.MeshLambertMaterial({color:def.road}));
+  r1.rotation.x=-Math.PI/2; r1.position.y=0.01; mapGroup.add(r1); walls.push(r1);
+  var r2 = new THREE.Mesh(new THREE.PlaneGeometry(10,100), new THREE.MeshLambertMaterial({color:def.road}));
+  r2.rotation.x=-Math.PI/2; r2.position.y=0.012; mapGroup.add(r2); walls.push(r2);
+  box(0,2,-50, 102,4,2, def.wall); box(0,2,50, 102,4,2, def.wall);
+  box(-50,2,0, 2,4,102, def.wall); box(50,2,0, 2,4,102, def.wall);
+  def.buildings.forEach(function(b){ box(b[0], b[3]/2, b[1], b[2], b[3], b[4], b[5]); });
+  def.crates.forEach(function(c,i){ box(c[0],1,c[1],2,2,2, i%2?0xd9a066:0xb08968); box(c[0],3,c[1],2,2,2, 0xd9a066); });
+  if(def.landmark==='chai'){ box(0,1.5,-22, 4,3,4, 0xffffff); box(2.6,1.5,-22, 1.2,1.6,0.6, 0xffffff); }
+  else if(def.landmark==='tent'){ box(0,2.5,-22, 8,5,8, 0xef476f); box(0,6,-22, 9,1,9, 0xffd166); box(0,7.5,-22, 1,3,1, 0xffd166); }
+  else if(def.landmark==='tower'){ box(0,6,-22, 5,12,5, 0x1d2f52); box(0,12.5,-22, 6,1,6, 0x4cc9f0); box(0,14,-22, 2,2,2, 0xffd166); }
+  updateMapLabels();
 }
 
 /* ================= players ================= */
@@ -1480,9 +1656,13 @@ function quitToMenu(){
   mode='menu'; showScreen('menu'); menuMsg('');
 }
 document.addEventListener('DOMContentLoaded', function(){
-  var pb = $('btnPause'); if(pb) pb.addEventListener('click', function(){ setPaused(true); });
+  var pb = $('btnPause');
+  if(pb){ var lastPauseTap=0; var pauseNow=function(e){ if(e) e.preventDefault(); var n=Date.now(); if(n-lastPauseTap<350) return; lastPauseTap=n; if(running) setPaused(true); };
+    pb.addEventListener('click', pauseNow); pb.addEventListener('touchstart', pauseNow, {passive:false}); }
   var rs = $('btnResume'); if(rs) rs.addEventListener('click', function(){ setPaused(false); });
   var pm = $('btnPauseMenu'); if(pm) pm.addEventListener('click', quitToMenu);
+  var pe = $('btnPauseEdit'); if(pe) pe.addEventListener('click', function(){ enterLayoutEdit(false); });
+  var pf2 = $('btnPauseFire'); if(pf2) pf2.addEventListener('click', function(){ setFireMode(csoSettings.fireMode==='button' ? 'touch' : 'button'); });
 });
 
 /* ================= HUD / feed ================= */
@@ -1589,6 +1769,7 @@ function showScreen(which){
   document.body.classList.toggle('playing-now', which==='game');
   $('touchUI').classList.toggle('playing', which==='game');
   $('btnScore').classList.toggle('playing', which==='game');
+  var bf=$('btnFire'); if(bf) bf.classList.toggle('playing', which==='game');
   $('btnChatDesk').classList.toggle('playing', which==='game');
   if(which!=='game') setChatOpen(false);
   if(which==='game' && isTouch){
@@ -1601,6 +1782,7 @@ function startMatch(){
   raycaster = new THREE.Raycaster();
   highlights = { bestStreak:{name:'—',n:0}, headKing:{name:'—',n:0} };
   teamKills = [0,0];
+  currentMapId = resolveMapId(); buildMap(currentMapId);
   botChatT = rand(7,13);
   var cl=$('chatLog'); if(cl) cl.innerHTML='';
   setChatOpen(false);
@@ -1617,7 +1799,7 @@ function startMatch(){
   updateScore(); updateHUD();
   if(matchType==='tdm') showBanner('TEAM DEATHMATCH','Alpha vs Bravo — first team to 25 kills wins!');
   else showBanner('FIGHT!','First to 25 kills — or most kills in 5 minutes wins!');
-  addFeed('🏁 Match started on <b>Neon Chai Town</b>!');
+  addFeed('🏁 Match started on <b>'+esc(mapName())+'</b>!');
   if(isTouch){ var th=$('tapHint'); if(th){ th.classList.add('show'); setTimeout(function(){ th.classList.remove('show'); }, 3400); } }
   if(!isTouch && mode!=='split') lockPointer();
   else if(!isTouch && mode==='split') lockPointer();
@@ -1663,7 +1845,7 @@ function endMatch(winner){
       else { result='💀 DEFEAT'; resultText='DEFEAT'; resultClass='loss'; }
     } else if(winner && winner.id===localId){ result='🏆 VICTORY'; resultText='VICTORY'; resultClass='win'; }
     else { result='💀 DEFEAT'; resultText='DEFEAT'; resultClass='loss'; }
-    lastCard = { name:meP.name, color:PALETTE_CSS[meP.colorIdx%8], kills:meP.kills, deaths:meP.deaths,
+    lastCard = { name:meP.name, color:PALETTE_CSS[meP.colorIdx%8], mapName:mapName(), kills:meP.kills, deaths:meP.deaths,
       hs:meP.headshots, streak:meP.bestStreak||0, rank:rank, total:list.length,
       resultText:resultText, resultClass:resultClass,
       teamLine:(matchType==='tdm' ? ('Alpha '+teamKills[0]+' — '+teamKills[1]+' Bravo') : '') };
@@ -1673,6 +1855,7 @@ function endMatch(winner){
     $('scName').textContent = meP.name;
     $('scChip').style.background = lastCard.color;
     $('scRank').textContent = '🏅 Rank #' + rank + ' of ' + list.length + ' players' + (lastCard.teamLine ? ' · '+lastCard.teamLine : '');
+    var sm=$('scMapName'); if(sm) sm.textContent = mapName();
     $('scKills').textContent = meP.kills;
     $('scDeaths').textContent = meP.deaths;
     $('scHS').textContent = meP.headshots;
@@ -1726,7 +1909,7 @@ function drawScoreCardPNG(){
   x.fillText('ONLINE', S/2, 222);
   x.fillStyle = '#ffd166';
   x.font = '700 38px Arial, sans-serif';
-  x.fillText('N E O N   C H A I   T O W N', S/2, 292);
+  x.fillText((C.mapName||'NEON CHAI TOWN').toUpperCase(), S/2, 292);
   // result
   x.fillStyle = C.resultClass==='win' ? '#06d6a0' : (C.resultClass==='draw' ? '#ffd166' : '#ef476f');
   x.font = '118px Bungee, "Arial Black", sans-serif';
@@ -1793,7 +1976,7 @@ function drawScoreCardPNG(){
 function scoreShareText(){
   if(!lastCard) return '';
   var C = lastCard;
-  return '🎮 CUBE STRIKE ONLINE — Neon Chai Town\n' +
+  return '🎮 CUBE STRIKE ONLINE — ' + (lastCard.mapName||'Neon Chai Town') + '\n' +
     (C.resultText==='VICTORY' ? '🏆' : (C.resultText==='DRAW' ? '🤝' : '💀')) + ' ' + C.resultText +
     '! I ranked #' + C.rank + ' of ' + C.total + ' players\n' +
     '🔫 Kills: ' + C.kills + ' · Deaths: ' + C.deaths + ' · 🎯 Headshots: ' + C.hs + ' · 🔥 Best streak: ' + C.streak + '\n' +
@@ -2287,19 +2470,23 @@ function bindTouch(){
     knob.style.transform='translate(calc(-50% + '+dx+'px), calc(-50% + '+dy+'px))';
     joy.x = dx/max; joy.y = dy/max;
   }
-  stick.addEventListener('touchstart', function(e){ e.preventDefault(); var t=e.changedTouches[0]; joy.id=t.identifier; joy.active=true; stickMove(t); }, {passive:false});
+  stick.addEventListener('touchstart', function(e){ if(layoutEditing) return; e.preventDefault(); var t=e.changedTouches[0]; joy.id=t.identifier; joy.active=true; stickMove(t); }, {passive:false});
   stick.addEventListener('touchmove', function(e){ e.preventDefault(); for(var i=0;i<e.changedTouches.length;i++){ if(e.changedTouches[i].identifier===joy.id) stickMove(e.changedTouches[i]); } }, {passive:false});
   function stickEnd(e){ for(var i=0;i<e.changedTouches.length;i++){ if(e.changedTouches[i].identifier===joy.id){ joy.active=false; joy.x=0; joy.y=0; knob.style.transform='translate(-50%,-50%)'; } } }
   stick.addEventListener('touchend', stickEnd); stick.addEventListener('touchcancel', stickEnd);
   document.addEventListener('touchstart', function(e){
     if(!running || !renderer) return;
+    if(layoutEditing) return;
     for(var i=0;i<e.changedTouches.length;i++){
       var t=e.changedTouches[i];
+      /* lookTouch tracks the drag for AIMING in both fire modes; shooting itself
+         is gated by fireMode in the hold timer and tap handler below, so in
+         FIRE-button mode a screen tap only aims and never shoots. */
       if(t.target===renderer.domElement && lookTouch.id===null){
         lookTouch.id=t.identifier; lookTouch.lx=t.clientX; lookTouch.ly=t.clientY;
         lookTouch.sx=t.clientX; lookTouch.sy=t.clientY; lookTouch.st=performance.now(); lookTouch.moved=false;
         clearTimeout(lookTouch.holdT);
-        lookTouch.holdT=setTimeout(function(){ if(lookTouch.id!==null && !lookTouch.moved) fireTouch=true; }, 200);
+        lookTouch.holdT=setTimeout(function(){ if(csoSettings.fireMode!=='button' && lookTouch.id!==null && !lookTouch.moved) fireTouch=true; }, 200);
       }
     }
   }, {passive:true});
@@ -2323,8 +2510,8 @@ function bindTouch(){
       if(t.identifier===lookTouch.id){
         var wasHold = fireTouch;
         clearTimeout(lookTouch.holdT); fireTouch=false; lookTouch.id=null;
-        // TAP = short + barely moved, and not already hold-firing: shoot once now.
-        if(running && !lookTouch.moved && !wasHold && (performance.now()-lookTouch.st)<400){
+        // TAP = short + barely moved, and not already hold-firing: shoot once now (touch mode only).
+        if(csoSettings.fireMode!=='button' && running && !lookTouch.moved && !wasHold && (performance.now()-lookTouch.st)<400){
           var me=players[localId];
           if(me && me.alive) tryShoot(me, performance.now());
         }
@@ -2333,10 +2520,22 @@ function bindTouch(){
     }
   }
   document.addEventListener('touchend', lookEnd); document.addEventListener('touchcancel', lookEnd);
+  // FIRE button (button mode): hold to fire, tap for one semi-auto shot. Touch on the
+  // canvas only aims in this mode, so this is the only way to shoot.
+  var fireEl=$('btnFire');
+  if(fireEl){
+    var fireLastTouch=0;
+    fireEl.addEventListener('touchstart', function(e){ if(layoutEditing) return; e.preventDefault(); e.stopPropagation(); fireLastTouch=Date.now(); fireTouch=true; var me=players[localId]; if(me && me.alive && !WEAPONS[me.weapon].auto) tryShoot(me, performance.now()); }, {passive:false});
+    fireEl.addEventListener('touchend', function(e){ e.preventDefault(); fireTouch=false; }, {passive:false});
+    fireEl.addEventListener('touchcancel', function(){ fireTouch=false; });
+    fireEl.addEventListener('mousedown', function(e){ if(layoutEditing) return; e.preventDefault(); fireTouch=true; var me2=players[localId]; if(me2 && me2.alive && !WEAPONS[me2.weapon].auto) tryShoot(me2, performance.now()); });
+    fireEl.addEventListener('mouseup', function(){ fireTouch=false; });
+    fireEl.addEventListener('mouseleave', function(){ fireTouch=false; });
+  }
   function barBtn(id, fn){
     var el=$(id); if(!el) return;
     var lastTouch=0;
-    el.addEventListener('touchstart', function(e){ e.preventDefault(); e.stopPropagation(); lastTouch=Date.now(); fn(); }, {passive:false});
+    el.addEventListener('touchstart', function(e){ if(layoutEditing) return; e.preventDefault(); e.stopPropagation(); lastTouch=Date.now(); fn(); }, {passive:false});
     el.addEventListener('click', function(e){ e.preventDefault(); if(Date.now()-lastTouch>500) fn(); });
   }
   barBtn('btnJump', function(){ var me=players[localId]; if(me) jump(me); });
@@ -2351,6 +2550,7 @@ function bindTouch(){
   }
 }
 $('btnScore').addEventListener('click', function(){
+  if(layoutEditing) return;
   var sb=$('scoreboard');
   sb.style.display = sb.style.display==='block' ? 'none':'block';
   if(sb.style.display==='block') setTimeout(function(){ sb.style.display='none'; }, 3500);
