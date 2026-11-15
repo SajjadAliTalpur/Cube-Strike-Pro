@@ -62,6 +62,42 @@
   footer{ margin-top:22px; font-size:.85rem; line-height:1.55; text-align:center; opacity:.9; }
   #menuMsg{ text-align:center; font-weight:800; color:var(--red); min-height:1.4em; margin-top:12px; }
 
+  /* ---------- PUBG-STYLE LOBBY STAGE (2026-11-15) ---------- */
+  #lobbyStage{ max-width:1060px; margin:0 auto; background:linear-gradient(160deg,#0f1b33 0%,#14213d 55%,#1d2f52 100%);
+    border:3px solid var(--line); border-radius:18px; box-shadow:6px 6px 0 var(--line); overflow:hidden; color:#fff; }
+  #lobbyTop{ display:flex; gap:0; align-items:stretch; flex-wrap:wrap; }
+  #lobby3d{ position:relative; flex:1 1 420px; min-height:300px; background:radial-gradient(circle at 50% 30%,#2b4a7a,#0f1b33 75%); }
+  #lobby3d canvas{ position:absolute; inset:0; width:100% !important; height:100% !important; display:block; }
+  #lobbyFallback{ position:absolute; inset:0; display:none; align-items:center; justify-content:center; font-size:7rem; }
+  #lobbyTag{ position:absolute; left:12px; top:10px; background:rgba(10,15,30,.7); border:2px solid #ffd166; color:#ffd166;
+    border-radius:999px; padding:4px 12px; font-weight:800; font-size:.75rem; letter-spacing:1px; }
+  #lobbySide{ flex:1 1 300px; padding:18px 18px 16px; display:flex; flex-direction:column; gap:10px; justify-content:center; }
+  #playerCard{ background:#1d2f52; border:2px solid #ffd166; border-radius:14px; padding:12px 14px; }
+  #playerCard .pc-name{ font-family:'Bungee',cursive; font-size:1.25rem; color:#fff; }
+  #playerCard .pc-row{ display:flex; gap:14px; flex-wrap:wrap; font-weight:800; font-size:.88rem; color:#cfe3ff; margin-top:4px; }
+  #playerCard .pc-row b{ color:#ffd166; }
+  #btnPlayLobby{ font-family:'Bungee',cursive; font-size:clamp(1.2rem,4vw,1.6rem); background:#ef476f; color:#fff;
+    border:3px solid #fff; border-radius:14px; padding:14px 18px; box-shadow:4px 4px 0 rgba(0,0,0,.45); width:100%; }
+  #btnPlayLobby:active{ transform:translate(2px,2px); box-shadow:1px 1px 0 rgba(0,0,0,.45); }
+  .lobbyNav{ display:flex; gap:8px; flex-wrap:wrap; }
+  .lobbyNav button{ flex:1 1 auto; border:2px solid rgba(255,255,255,.6); background:rgba(255,255,255,.1); color:#fff;
+    border-radius:999px; padding:7px 10px; font-weight:800; font-size:.85rem; }
+  .lobbyNav button:active{ background:#ffd166; color:#14213d; }
+  #lobbyModes,#lobbyMaps{ display:flex; gap:8px; flex-wrap:wrap; }
+  #lobbyModes button,#lobbyMaps button{ flex:1 1 110px; border:2px solid rgba(255,255,255,.55); background:rgba(255,255,255,.08); color:#fff;
+    border-radius:12px; padding:9px 8px; font-weight:800; font-size:.85rem; }
+  #lobbyModes button.on,#lobbyMaps button.on{ background:#ffd166; color:#14213d; border-color:#ffd166; }
+  #lobbyModes button small,#lobbyMaps button small{ display:block; font-weight:700; font-size:.72rem; opacity:.85; }
+  @media (max-width:520px){
+    #lobby3d{ min-height:230px; flex-basis:100%; }
+    #lobbySide{ padding:14px 12px; }
+  }
+  /* ---------- HEAL HUD ---------- */
+  #healWrap{ margin-top:6px; width:min(190px,34vw); pointer-events:auto; cursor:pointer; }
+  #healBarBg{ height:10px; background:rgba(10,15,30,.55); border:2px solid rgba(255,255,255,.85); border-radius:8px; overflow:hidden; }
+  #healFill{ height:100%; width:0%; background:#06d6a0; }
+  #healText{ text-shadow:0 1px 3px #000; margin-top:2px; font-size:.8rem; }
+  #healText.healing{ color:#06d6a0; animation:protPulse 1s infinite; }
   /* ---------- LOBBY ---------- */
   #lobby{ display:none; max-width:640px; margin:0 auto; padding:26px 16px 40px; text-align:center; }
   .codebox{ background:var(--card); border:3px solid var(--line); border-radius:16px; padding:20px; box-shadow:5px 5px 0 var(--line); }
@@ -328,6 +364,39 @@
     <span class="mapname" id="mapNameLabel">MAP: NEON CHAI TOWN ☕🏙️</span>
   </div>
 
+  <!-- PUBG-STYLE LOBBY: 3D character idles here; Play / mode / map / player card live in this screen -->
+  <div id="lobbyStage">
+    <div id="lobbyTop">
+      <div id="lobby3d"><div id="lobbyFallback">🧊</div><span id="lobbyTag">🏟️ LOBBY — <span id="lobbyMapTag">NEON CHAI TOWN</span></span></div>
+      <div id="lobbySide">
+        <div id="playerCard">
+          <div class="pc-name">🧊 <span id="lobbyName">Player</span></div>
+          <div class="pc-row"><span>⭐ Level <b id="lobbyLevel">1</b></span><span>🪙 <b id="lobbyCoins">0</b> coins</span><span>🗺️ <span id="lobbyMap">Neon Chai Town</span></span><span>👥 <b>10</b> players / match</span></div>
+        </div>
+        <button id="btnPlayLobby">▶ PLAY — QUICK MATCH</button>
+        <div style="font-weight:700;font-size:.85rem;color:#cfe3ff;text-align:center">10 players · real players + bots fill the lobby · first to 25 kills</div>
+        <div id="lobbyModes">
+          <button type="button" data-lobbymode="quick">🏟️ Quick Match<small>10 players</small></button>
+          <button type="button" data-lobbymode="tdm">⚔️ Team Deathmatch<small>5v5 · first to 25</small></button>
+          <button type="button" data-lobbymode="bots">🤖 Vs Bots<small>solo practice</small></button>
+          <button type="button" data-lobbymode="rooms">🌐 Rooms<small>2–4 friends</small></button>
+        </div>
+        <div id="lobbyMaps" style="margin-top:2px">
+          <button type="button" data-lobbymap="random">🎲 Random<small>any map</small></button>
+          <button type="button" data-lobbymap="neon">☕ Neon Chai Town<small>classic</small></button>
+          <button type="button" data-lobbymap="bazaar">🏜️ Desert Bazaar<small>desert</small></button>
+          <button type="button" data-lobbymap="night">🌃 Night Rooftop<small>night</small></button>
+        </div>
+        <div class="lobbyNav">
+          <button type="button" data-goto="shopCard">🛒 Shop</button>
+          <button type="button" data-goto="accountCard">👤 Account</button>
+          <button type="button" data-goto="controlsCard">🎯 Controls &amp; Map</button>
+          <button type="button" data-goto="helpCard">❓ Help</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div id="shopCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:#14213d;color:#fff;border:2px solid #ffd166;border-radius:14px;text-align:left">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <div><b style="font-size:1.05rem">🛒 Premium Shop</b> <span id="shopBalance" style="font-weight:800;color:#ffd166"></span></div>
@@ -398,7 +467,7 @@
 
   <div class="autoplay">
     <button id="btnAuto">▶ AUTO PLAY — QUICK MATCH</button>
-    <p>One tap and you are in: first it looks for a real player online (about 25 seconds) — found one, you play a <b>1v1 real match</b>; nobody around, a 10-player bot match starts instead. No room code, no setup. On phones, turn your phone sideways (landscape) for the big controls.</p>
+    <p>One tap and you are in: first it looks for real players online (about 25 seconds) — then <b>bots fill the lobby up to 10 players</b>, so every Quick Match is a full 10-player match (e.g. 2 real + 8 bots, or 1 real + 9 bots). Bots are simulated by the host only, so everyone sees the same bots. No room code, no setup. On phones, turn your phone sideways (landscape) for the big controls.</p>
   </div>
 
   <div class="modes">
@@ -432,7 +501,7 @@
     <div class="mode">
       <span class="tag" style="background:#4cc9f0">QUICK MATCH · REAL PLAYERS</span>
       <h3>🏟️ Quick Match Lobby</h3>
-      <p>PUBG-style: tap Find Match — first it searches for <b>real players</b> online (about 25 seconds). Found one? You play a <b>1v1 real match</b> together — online matches have no bots yet, just you two. Nobody around? <b>Bots (labelled BOT)</b> fill a 10-player lobby so your match still starts fast.</p>
+      <p>PUBG-style: tap Find Match — first it searches for <b>real players</b> online (about 25 seconds). Then <b>bots (labelled BOT)</b> fill the lobby to <b>10 players</b> — e.g. 2 real + 8 bots. Bots are simulated by the host only and synced to everyone, so all players see the same bots.</p>
       <button class="bigbtn blue" id="btnQuick">Find Match</button>
     </div>
     <div class="mode">
@@ -443,7 +512,7 @@
     </div>
   </div>
 
-  <div class="help">
+  <div class="help" id="helpCard">
     <h2>🎮 How to play</h2>
     <div class="help-grid">
       <div><b>Move &amp; aim</b>
@@ -479,7 +548,8 @@
       </div>
       <div><b>Quick Match &amp; real matchmaking — the truth</b>
         <ul>
-          <li>Quick Match first searches for <b>real players</b> online (about 25 seconds). If one is found you play a <b>1v1 real match</b> in the same room (online matches have no bots yet — bot fill for online matches is a later update); if not, a 10-player bot match starts instead, with <b>bots always labelled BOT</b> — never fake "real" strangers</li>
+          <li>Quick Match first searches for <b>real players</b> online (about 25 seconds), then <b>bots fill the match to 10 players</b> (e.g. 2 real + 8 bots). <b>Host-authoritative:</b> only the host simulates bots (movement, shooting, damage) and broadcasts bot state to everyone via PeerJS — all devices see the same bots. <b>Bots are always labelled BOT</b> — never fake "real" strangers</li>
+          <li><b>🩹 Healing:</b> press <kbd>H</kbd> (or tap the 🩹 button / the heal bar) to use a medkit — it takes <b>3 seconds</b> and restores <b>+50 HP</b>. You get <b>2 medkits per match</b>. Healing is interrupted if you <b>take damage or shoot</b> — the medkit is only used up when healing finishes. Bots get the same deal: 2 medkits each, they heal when hurt and far from a fight, and damage interrupts them too — no unfair advantage either way</li>
           <li>True random matchmaking with strangers needs a <b>dedicated game server</b> running 24/7 <b>plus</b> many players online at the same time</li>
           <li>Vercel is static hosting only — it serves this page but cannot run a game server, so it cannot match strangers</li>
           <li>For now, the <b>room-code mode above is the free way</b> to play with real friends</li>
@@ -525,7 +595,7 @@
   <p style="font-weight:700" id="quickStatus">Searching for players<span class="searchdots"></span></p>
   <p style="font-weight:800;font-size:1.15rem"><span id="quickCount">1</span> / 10 players</p>
   <div id="quickSlots"></div>
-  <div class="warn" style="text-align:left;margin-top:14px">🌐 Real matchmaking: Quick Match searches the Supabase queue for other real players first (about 25 seconds). If a real player is found you join the same PeerJS room automatically — no code to type — and play a <b>1v1 real match (no bots in online matches yet)</b>. If nobody is online, <b>bots fill a 10-player lobby — every bot is labelled BOT</b>. Real friends can also join with room codes from the main menu.</div>
+  <div class="warn" style="text-align:left;margin-top:14px">🌐 Real matchmaking: Quick Match searches the Supabase queue for other real players first (about 25 seconds). If real players are found you join the same PeerJS room automatically — no code to type. Then <b>bots fill the match to 10 players — every bot is labelled BOT</b>, simulated by the host only and synced to everyone. Real friends can also join with room codes from the main menu.</div>
   <div style="margin-top:16px"><button class="bigbtn ghost" id="btnCancelQuick">Cancel Search</button> <button class="bigbtn ghost" id="btnQuickMenu">← Main Menu</button></div>
 </div>
 
@@ -552,6 +622,7 @@
     <div class="hpwrap"><div id="hpfill"></div></div>
     <div id="spawnProt" style="display:none;margin-top:4px;font-weight:800;font-size:.8rem;color:#38e1ff;text-shadow:0 1px 3px #000">🛡️ SPAWN PROTECTION <span id="spawnProtN">3</span>s</div>
     <div id="hptext"><svg width="15" height="15" viewBox="0 0 24 24" fill="#ef476f" aria-hidden="true"><path d="M12 21s-7.5-4.9-10-9.3C.4 8.6 2.2 5 5.7 5c2 0 3.4 1.1 4.3 2.4h4C15 6.1 16.4 5 18.4 5c3.5 0 5.3 3.6 3.6 6.7C19.5 16.1 12 21 12 21z" transform="scale(.92) translate(1,0)"/></svg><span id="hpnum">100</span></div>
+    <div id="healWrap" title="Heal (H key) — 3 seconds, +50 HP, 2 medkits per match"><div id="healBarBg"><div id="healFill"></div></div><div id="healText">🩹 Medkits: 2 — press <b>H</b> to heal</div></div>
   </div>
   <div class="hud" id="bottomRight">
     <div id="weaponHud"><span id="weaponIcon" aria-hidden="true"></span><span id="ammo">30</span></div>
@@ -581,6 +652,7 @@
       <button class="tbtn" id="btnJump" aria-label="Jump" title="Jump"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V6"/><path d="M5 12l7-7 7 7"/><path d="M4 21h16"/></svg></button>
       <button class="tbtn" id="btnCrouch" aria-label="Crouch" title="Crouch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16"/><path d="M12 5v12"/><path d="M5 10l7 7 7-7"/></svg></button>
       <button class="tbtn" id="btnChat" aria-label="Chat" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.3-2.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01" stroke-width="3" stroke-linecap="round"/></svg></button>
+      <button class="tbtn" id="btnHeal" aria-label="Heal" title="Heal (H) — 3s, +50 HP"><span style="font-size:1.35rem;line-height:1">🩹</span><span class="cap">HEAL</span></button>
       <button class="tbtn" id="btnTaunt" aria-label="Taunt" title="Taunt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8 14c1.2 1.8 2.6 2.6 4 2.6S14.8 15.8 16 14" stroke-linecap="round"/></svg></button>
     </div>
   </div>
@@ -788,7 +860,9 @@ var MAPS = {
 var currentMapId = 'neon';
 function resolveMapId(){ if(csoSettings.map && csoSettings.map!=='random' && MAPS[csoSettings.map]) return csoSettings.map; var ks=Object.keys(MAPS); return ks[Math.floor(Math.random()*ks.length)]; }
 function mapName(){ return MAPS[currentMapId] ? MAPS[currentMapId].name : MAPS.neon.name; }
-function updateMapLabels(){ var l=$('mapNameLabel'); if(l) l.textContent='MAP: '+mapName(); var sc=$('scMapName'); if(sc) sc.textContent=mapName(); }
+function updateMapLabels(){ var l=$('mapNameLabel'); if(l) l.textContent='MAP: '+mapName(); var sc=$('scMapName'); if(sc) sc.textContent=mapName();
+  var lm=$('lobbyMap'); if(lm) lm.textContent = MAPS[currentMapId] ? MAPS[currentMapId].short : 'Neon Chai Town';
+  var lt=$('lobbyMapTag'); if(lt) lt.textContent = mapName(); }
 function setFireMode(m){
   csoSettings.fireMode = (m==='button') ? 'button' : 'touch'; csoSettingsSave();
   document.body.classList.toggle('firebtn', csoSettings.fireMode==='button');
@@ -941,6 +1015,11 @@ var joy = {x:0,y:0,active:false,id:null};
 var lookTouch = {id:null,lx:0,ly:0,sx:0,sy:0,st:0,moved:false,holdT:null};
 var fireTouch = false;
 var crouchHeld = false;
+var MAX_PLAYERS = 10;           // Quick Match + TDM are always 10 players total
+var TDM_TEAM_SIZE = 5;          // TDM: 5v5 (Alpha vs Bravo, 5 each)
+var HEAL_TIME = 3;              // medkit channel, seconds
+var HEAL_AMOUNT = 50;           // HP restored by one medkit
+var HEALS_PER_MATCH = 2;        // medkits per player per match (humans and bots alike)
 var matchType = 'ffa';        // 'ffa' | 'tdm'
 var teamKills = [0,0];
 var TEAM_NAMES = ['Alpha','Bravo'];
@@ -955,6 +1034,71 @@ var WEAPON_ICONS = {
 };
 // shop guns reuse base icons (defined here, after WEAPON_ICONS exists)
 WEAPON_ICONS['smg'] = WEAPON_ICONS['rifle']; WEAPON_ICONS['sniper'] = WEAPON_ICONS['rifle']; WEAPON_ICONS['lmg'] = WEAPON_ICONS['shotgun'];
+
+/* ================= PUBG LOBBY 3D — idle character in the main-menu lobby =================
+   A second, lightweight Three.js scene (own renderer/canvas in #lobby3d). The cube
+   fighter stands and idles — gentle bob + slow turn — while the player picks a
+   mode/map. It only renders while the main menu is showing; it never touches the
+   match renderer. If Three.js/WebGL is unavailable the 🧊 fallback emoji shows. */
+var lobbyRenderer=null, lobbyScene=null, lobbyCam=null, lobbyChar=null, lobbyRAF=null;
+function initLobby3D(){
+  var holder=$('lobby3d'); if(!holder || lobbyRenderer) return;
+  try{
+    if(typeof THREE==='undefined'){ var fb=$('lobbyFallback'); if(fb) fb.style.display='flex'; return; }
+    lobbyScene=new THREE.Scene();
+    lobbyScene.background=new THREE.Color(0x0f1b33);
+    lobbyScene.fog=new THREE.Fog(0x0f1b33, 8, 22);
+    lobbyRenderer=new THREE.WebGLRenderer({antialias:true, alpha:false});
+    lobbyRenderer.setPixelRatio(Math.min(window.devicePixelRatio||1, 1.5));
+    holder.insertBefore(lobbyRenderer.domElement, holder.firstChild);
+    lobbyCam=new THREE.PerspectiveCamera(42, 1, 0.1, 100);
+    lobbyCam.position.set(0, 2.1, 5.4); lobbyCam.lookAt(0, 1.15, 0);
+    lobbyScene.add(new THREE.HemisphereLight(0xffffff, 0x446644, 1.0));
+    var sun=new THREE.DirectionalLight(0xffe9a8, 0.9); sun.position.set(4,7,4); lobbyScene.add(sun);
+    var rim=new THREE.DirectionalLight(0x4cc9f0, 0.6); rim.position.set(-5,3,-4); lobbyScene.add(rim);
+    var ground=new THREE.Mesh(new THREE.CircleGeometry(3.4, 40), new THREE.MeshLambertMaterial({color:0x1d2f52}));
+    ground.rotation.x=-Math.PI/2; ground.position.y=0; lobbyScene.add(ground);
+    var ring=new THREE.Mesh(new THREE.RingGeometry(3.4, 3.65, 40), new THREE.MeshBasicMaterial({color:0xffd166, side:THREE.DoubleSide}));
+    ring.rotation.x=-Math.PI/2; ring.position.y=0.01; lobbyScene.add(ring);
+    // character: same blocky build as in-game (body/head/cap/gun), gold rim light
+    lobbyChar=new THREE.Group();
+    var col=PALETTE[1 % PALETTE.length];
+    var skin=(shopState && shopState.equippedSkin) ? skinById(shopState.equippedSkin) : null;
+    var bodyCol=skin ? parseInt(skin.color.slice(1),16) : col;
+    var body=new THREE.Mesh(new THREE.BoxGeometry(0.72,1.05,0.42), new THREE.MeshLambertMaterial({color:bodyCol}));
+    body.position.y=0.95; lobbyChar.add(body);
+    var head=new THREE.Mesh(new THREE.BoxGeometry(0.46,0.46,0.46), new THREE.MeshLambertMaterial({color:0xffd9b3}));
+    head.position.y=1.78; lobbyChar.add(head);
+    var cap=new THREE.Mesh(new THREE.BoxGeometry(0.5,0.14,0.5), new THREE.MeshLambertMaterial({color:bodyCol}));
+    cap.position.y=2.05; lobbyChar.add(cap);
+    var gun=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.7), new THREE.MeshLambertMaterial({color:0x222831}));
+    gun.position.set(0.3,1.25,-0.3); lobbyChar.add(gun);
+    lobbyScene.add(lobbyChar);
+    var sizeLobby=function(){
+      if(!lobbyRenderer) return;
+      var w=holder.clientWidth||420, h=holder.clientHeight||300;
+      lobbyRenderer.setSize(w,h,false); lobbyCam.aspect=w/h; lobbyCam.updateProjectionMatrix();
+    };
+    sizeLobby(); window.addEventListener('resize', sizeLobby);
+    var t0=performance.now();
+    var loop=function(){
+      lobbyRAF=requestAnimationFrame(loop);
+      if(mode!=='menu' || !$('menu') || $('menu').style.display==='none') return;
+      var t=(performance.now()-t0)/1000;
+      if(lobbyChar){ lobbyChar.position.y=Math.sin(t*1.6)*0.05; lobbyChar.rotation.y=Math.sin(t*0.45)*0.55; }
+      lobbyCam.position.x=Math.sin(t*0.18)*0.55; lobbyCam.lookAt(0,1.15,0);
+      lobbyRenderer.render(lobbyScene, lobbyCam);
+    };
+    loop();
+  }catch(e){ var fb2=$('lobbyFallback'); if(fb2) fb2.style.display='flex'; }
+}
+function lobbyRefreshSkin(){
+  // re-tint the lobby character after buying/equipping a skin (next menu visit rebuilds it)
+  if(lobbyChar){ try{ lobbyScene.remove(lobbyChar); }catch(e){} lobbyChar=null; }
+  if(lobbyRenderer){ try{ lobbyRenderer.dispose(); }catch(e){} lobbyRenderer=null; lobbyScene=null; }
+  initLobby3D();
+}
+document.addEventListener('DOMContentLoaded', function(){ initLobby3D(); });
 
 /* ================= three setup ================= */
 function initThree(){
@@ -1077,6 +1221,7 @@ function createPlayer(id, name, colorIdx, opts){
     pos:new THREE.Vector3(0,0,0), vel:new THREE.Vector3(), yaw:0, pitch:0,
     hp:100, alive:true, kills:0, deaths:0, streak:0, bestStreak:0, headshots:0,
     weapon:'rifle', ammo:freshAmmo(), reloading:0, lastShot:0,
+    heals:HEALS_PER_MATCH, healing:false, healProg:0,
     respawnT:0, spawnProtUntil:0, shieldMesh:null, onGround:true, botT:0, botTarget:null, botStrafe:1, shootCd:0, retargetT:0, lastAttacker:null,
     mesh:null, headMesh:null, bodyMesh:null, hpBar:null, _hpShown:-1
   };
@@ -1278,6 +1423,7 @@ function tryShoot(p, now){
   if(now - p.lastShot < w.rate) return;
   if(p.ammo[p.weapon]<=0){ reload(p); return; }
   p.lastShot = now; p.ammo[p.weapon]--;
+  if(p.healing) cancelHeal(p); // shooting interrupts healing
   if(p.spawnProtUntil) p.spawnProtUntil = 0; // shooting ends your spawn protection early
   showMuzzleFlash(p);
   if(p.id===localId || p.id===p2Id){ SFX.shoot(p.weapon); updateHUD(); }
@@ -1342,8 +1488,33 @@ function applyHit(attacker, target, dmg, head){
   }
   damagePlayer(attacker, target, dmg, head);
 }
+/* ================= HEALING (medkit) — fair for humans and bots =================
+   RULE (also in Help): H key / 🩹 button / tap the heal bar. 3s channel, +50 HP,
+   2 medkits per match. The medkit is spent ONLY when healing finishes. Taking
+   damage or shooting cancels the channel (and keeps the medkit). Bots get the
+   same 2 medkits, heal only when hurt (HP<50) and not in a close fight, and are
+   interrupted by damage exactly like a human. */
+function startHeal(p){
+  if(!p || !p.alive || p.healing || p.hp>=100 || p.heals<=0 || !running) return false;
+  p.healing=true; p.healProg=0;
+  if(p.id===localId){ updateHUD(); if(mode==='online') netSendState(); }
+  return true;
+}
+function cancelHeal(p){
+  if(!p || !p.healing) return;
+  p.healing=false; p.healProg=0;
+  if(p.id===localId) updateHUD();
+}
+function completeHeal(p){
+  if(!p) return;
+  p.healing=false; p.healProg=0; p.heals=Math.max(0,p.heals-1);
+  p.hp=Math.min(100, p.hp+HEAL_AMOUNT);
+  if(p.id===localId){ beep(660,.09,'sine',.05); setTimeout(function(){beep(880,.1,'sine',.05);},90); addFeed('🩹 You healed +'+HEAL_AMOUNT+' HP! ('+p.heals+' medkit'+(p.heals===1?'':'s')+' left)'); updateHUD(); if(mode==='online') netSendState(); }
+  else if(p.isBot && mode!=='online'){ /* bots heal silently in offline modes */ }
+}
 function damagePlayer(attacker, target, dmg, head){
   if(!target.alive || !running) return;
+  if(target.healing) cancelHeal(target); // taking damage interrupts healing
   if(target.spawnProtUntil && performance.now() < target.spawnProtUntil) return; // spawn-protected: no damage
   target.hp -= dmg;
   if(target.id===localId){ flashDamage(); SFX.hurt(); updateHUD(); if(mode==='online') netSendState(); }
@@ -1351,6 +1522,7 @@ function damagePlayer(attacker, target, dmg, head){
   else if(mode==='online' && target.id===localId){ /* hp synced via state */ }
 }
 function killPlayer(attacker, target, head){
+  if(target.healing) cancelHeal(target);
   target.hp = 0; target.alive=false; target.deaths++; target.streak=0; target.respawnT=3;
   attacker.kills++; attacker.streak++;
   if(attacker.streak > (attacker.bestStreak||0)) attacker.bestStreak = attacker.streak;
@@ -1375,6 +1547,7 @@ function killPlayer(attacker, target, head){
 }
 function respawn(p){
   p.hp=100; p.alive=true; p.ammo=freshAmmo(); p.reloading=0;
+  p.healing=false; p.healProg=0; // medkits are per-match, not per-life: count is NOT reset here
   p.spawnProtUntil = performance.now() + 3000; // SPAWN PROTECTION: 3s, no damage taken
   placeAtSpawn(p);
   if(p.id===localId){ $('respawn').style.display='none'; updateHUD(); if(mode==='online') netSendState(); }
@@ -1408,6 +1581,17 @@ function botPickTarget(p){
 }
 function botThink(p, dt, now){
   if(!p.alive) return;
+  // BOT HEALING (same rules as a human): hurt + not in a close fight -> channel
+  // a medkit. Standing still-ish while healing, no shooting; damage cancels it.
+  if(p.healing){
+    p.healProg += dt;
+    if(p.healProg>=HEAL_TIME){ completeHeal(p); }
+    else { movePlayer(p, 0.25, 0, dt, 3.0); return; }
+  }
+  if(p.hp<50 && p.heals>0){
+    var __bt = botPickTarget(p);
+    if(!__bt.target || __bt.dist>14){ startHeal(p); if(p.healing) return; }
+  }
   p.botT -= dt; p.retargetT -= dt;
   // Keep a target for a short while (feels human), re-pick when it dies,
   // when someone shoots me, or every ~0.9s.
@@ -1503,6 +1687,9 @@ function acctRender(){
     $('btnAcctOut').style.display = 'none';
   }
   ss.textContent = '⭐ Level ' + acctLevel(p) + ' · ' + esc(p.display_name||'Player') + ' · Matches: ' + (p.matches||0) + ' · Kills: ' + (p.kills||0) + ' · Wins: ' + (p.wins||0) + ' · Best streak: ' + (p.best_streak||0) + ' · 🪙 ' + (shopState.coins||0) + ' coins';
+  var ln=$('lobbyName'); if(ln) ln.textContent = p.display_name||'Player';
+  var ll=$('lobbyLevel'); if(ll) ll.textContent = acctLevel(p);
+  var lc=$('lobbyCoins'); if(lc) lc.textContent = (shopState.coins||0);
   var h = acctLocalHist();
   sh.innerHTML = h.length ? ('<b>Recent matches:</b> ' + h.slice(0,5).map(function(m){
     return esc(m.mode||'ffa') + ' ' + m.kills + 'K/' + m.deaths + 'D ' + esc(m.result||'') + ' (' + esc(m.date||'') + ')';
@@ -1600,6 +1787,7 @@ document.addEventListener('DOMContentLoaded', function(){
 /* ================= PREMIUM SHOP UI ================= */
 function renderShop(){
   var bal = $('shopBalance'); if(bal) bal.textContent = '🪙 ' + (shopState.coins||0) + ' coins';
+  var lc2=$('lobbyCoins'); if(lc2) lc2.textContent = (shopState.coins||0);
   var sk = $('shopSkins'); if(sk) sk.innerHTML = SHOP_SKINS.map(function(it){
     var owned = !!shopState.owned['skin:'+it.id], eq = shopState.equippedSkin===it.id;
     return '<div class="shopitem" style="border-radius:10px;padding:8px 10px">'
@@ -1653,6 +1841,7 @@ function setPaused(v){
   var o = $('pauseOverlay'); if(o) o.style.display = v ? 'flex' : 'none';
   if(v && document.pointerLockElement) document.exitPointerLock();
   if(!v && running && !isTouch) lockPointer();
+  setTimeout(updateClickToPlay, 120);
 }
 function quitToMenu(){
   cancelQuickSearch();
@@ -1706,6 +1895,14 @@ function updateHUD(){
   $('hpfill').style.width = clamp(me.hp,0,100)+'%';
   $('hpfill').style.background = me.hp>50 ? 'var(--green)' : (me.hp>25 ? 'var(--yellow)' : 'var(--red)');
   var hn = $('hpnum'); if(hn) hn.textContent = Math.max(0,Math.ceil(me.hp)) + (mode==='split' && players[p2Id] ? ' · P2 '+Math.max(0,Math.ceil(players[p2Id].hp)) : '');
+  var hw=$('healWrap'), hf=$('healFill'), ht=$('healText');
+  if(hw){ hw.style.display='block'; }
+  if(hf) hf.style.width = me.healing ? Math.min(100, (me.healProg/HEAL_TIME)*100)+'%' : '0%';
+  if(ht){
+    if(me.healing){ ht.textContent='🩹 Healing… '+Math.ceil(HEAL_TIME-me.healProg)+'s — don\'t shoot or take damage!'; ht.classList.add('healing'); }
+    else { ht.textContent='🩹 Medkits: '+me.heals+' — press H to heal (+'+HEAL_AMOUNT+' HP)'; ht.classList.remove('healing'); }
+  }
+  var hb=$('btnHeal'); if(hb) hb.style.opacity = (me.heals>0 && me.hp<100 && me.alive) ? '1' : '0.45';
   $('weaponName').textContent = WEAPONS[me.weapon].label + (me.reloading>0 ? ' · RELOADING' : '');
   var wi = $('weaponIcon'); if(wi) wi.innerHTML = WEAPON_ICONS[me.weapon]||'';
   $('ammo').textContent = me.ammo[me.weapon];
@@ -1802,14 +1999,16 @@ function startMatch(){
   onResize();
   var me = players[localId];
   yaw = me ? me.yaw : 0; pitch = 0;
-  Object.keys(players).forEach(function(id){ var p=players[id]; p.kills=0;p.deaths=0;p.streak=0;p.bestStreak=0;p.headshots=0;p.hp=100;p.alive=true; respawn(p); });
+  Object.keys(players).forEach(function(id){ var p=players[id]; p.kills=0;p.deaths=0;p.streak=0;p.bestStreak=0;p.headshots=0;p.hp=100;p.alive=true; p.heals=HEALS_PER_MATCH; p.healing=false; p.healProg=0; respawn(p); });
   updateScore(); updateHUD();
   if(matchType==='tdm') showBanner('TEAM DEATHMATCH','Alpha vs Bravo — first team to 25 kills wins!');
   else showBanner('FIGHT!','First to 25 kills — or most kills in 5 minutes wins!');
   addFeed('🏁 Match started on <b>'+esc(mapName())+'</b>!');
+  if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); // focused Play/Resume button must not eat Space/Enter in-game
   if(isTouch){ var th=$('tapHint'); if(th){ th.classList.add('show'); setTimeout(function(){ th.classList.remove('show'); }, 3400); } }
   if(!isTouch && mode!=='split') lockPointer();
   else if(!isTouch && mode==='split') lockPointer();
+  setTimeout(updateClickToPlay, 350); // auto-started matches have no click gesture: if the lock was rejected, show CLICK TO PLAY
   clock.start();
   requestAnimationFrame(gameLoop);
 }
@@ -2015,6 +2214,7 @@ function gameLoop(){
       if(keys['KeyW']) fwd+=1; if(keys['KeyS']) fwd-=1; if(keys['KeyA']) str-=1; if(keys['KeyD']) str+=1;
       if(joy.active){ fwd += -joy.y; str += joy.x; }
       movePlayer(me, fwd, str, dt, me.crouch ? 4.2 : 7.4);
+      if(me.healing){ me.healProg += dt; if(me.healProg>=HEAL_TIME) completeHeal(me); }
       var wantFire = mouseDown || fireTouch;
       if(wantFire) tryShoot(me, now);
       else if(WEAPONS[me.weapon].auto===false){ /* semi handled on click */ }
@@ -2039,10 +2239,16 @@ function gameLoop(){
       } else { p2.respawnT-=dt; if(p2.respawnT<=0) respawn(p2); }
     }
   }
-  /* --- bots & remotes --- */
+  /* --- bots & remotes ---
+     HOST-AUTHORITATIVE BOTS: in an online match only the host runs botThink /
+     bot respawns. Joiners NEVER simulate bots — they apply the host's bot state
+     from netSendState ('state' messages). This is what keeps every device
+     seeing the SAME bots instead of each device inventing its own. */
+  var botsHostSim = !(mode==='online' && !isHost);
   for(var id in players){
     var p = players[id];
     if(p.isBot){
+      if(!botsHostSim){ syncMesh(p); continue; }
       if(p.reloading>0){ p.reloading-=dt*1000; if(p.reloading<=0){ p.ammo[p.weapon]=WEAPONS[p.weapon].mag; p.reloading=0; } }
       if(p.alive) botThink(p, dt, now);
       else { p.respawnT-=dt; if(p.respawnT<=0) respawn(p); }
@@ -2113,9 +2319,20 @@ function netSend(msg){
 }
 function netSendState(){
   var me=players[localId]; if(!me) return;
-  netSend({t:'state', id:localId, x:+me.pos.x.toFixed(2), y:+me.pos.y.toFixed(2), z:+me.pos.z.toFixed(2),
+  var msg={t:'state', id:localId, x:+me.pos.x.toFixed(2), y:+me.pos.y.toFixed(2), z:+me.pos.z.toFixed(2),
     yaw:+me.yaw.toFixed(3), pitch:+me.pitch.toFixed(3), hp:Math.ceil(me.hp), alive:me.alive,
-    kills:me.kills, deaths:me.deaths, hs:me.headshots, gun:me.weapon});
+    kills:me.kills, deaths:me.deaths, hs:me.headshots, gun:me.weapon,
+    heal:me.healing?1:0, heals:me.heals};
+  if(isHost){
+    // HOST BOT SYNC: every state tick the host broadcasts every bot's full state.
+    msg.bots=[];
+    for(var bid in players){ var bp=players[bid];
+      if(bp.isBot) msg.bots.push({id:bp.id, x:+bp.pos.x.toFixed(2), y:+bp.pos.y.toFixed(2), z:+bp.pos.z.toFixed(2),
+        yaw:+bp.yaw.toFixed(3), pitch:+bp.pitch.toFixed(3), hp:Math.ceil(bp.hp), alive:bp.alive,
+        kills:bp.kills, deaths:bp.deaths, hs:bp.headshots, gun:bp.weapon, heal:bp.healing?1:0, heals:bp.heals});
+    }
+  }
+  netSend(msg);
 }
 function relay(msg, exceptPid){
   if(!isHost) return;
@@ -2127,8 +2344,13 @@ function renderLobby(){
   $('playerList').innerHTML = lobbyPlayers.map(function(lp){
     return '<li><span class="dot" style="background:'+PALETTE_CSS[lp.colorIdx%8]+'"></span>'+esc(lp.name)+(lp.id===localId?' (you)':'')+(lp.host?' 👑 Host':'')+'</li>';
   }).join('');
-  $('lobbyStatus').textContent = lobbyPlayers.length + ' / 4 players in room' +
-    (isHost ? (lobbyPlayers.length>=2 ? ' — ready when you are!' : ' — you can start solo, but 2+ is more fun!') : ' — waiting for the host to start…');
+  if(quickMatchHost){
+    var nBots = Math.max(0, MAX_PLAYERS - lobbyPlayers.length);
+    $('lobbyStatus').textContent = lobbyPlayers.length + ' real player' + (lobbyPlayers.length===1?'':'s') + ' — bots will fill the match to ' + MAX_PLAYERS + ' (' + nBots + ' bots, host-simulated) — starting soon…';
+  } else {
+    $('lobbyStatus').textContent = lobbyPlayers.length + ' / 4 players in room' +
+      (isHost ? (lobbyPlayers.length>=2 ? ' — ready when you are!' : ' — you can start solo, but 2+ is more fun!') : ' — waiting for the host to start…');
+  }
   $('btnStart').style.display = isHost ? 'inline-block':'none';
 }
 function cleanupNet(){
@@ -2148,7 +2370,8 @@ function handleNet(msg, fromPid){
   switch(msg.t){
     case 'join': {
       if(!isHost) break;
-      if(lobbyPlayers.length>=4){ try{ conns[fromPid].send({t:'full'}); }catch(e){} break; }
+      var maxReal = quickMatchHost ? 2 : 4; // Quick Match: 2 real max, bots fill to 10
+      if(lobbyPlayers.length>=maxReal){ try{ conns[fromPid].send({t:'full'}); }catch(e){} break; }
       if(!lobbyPlayers.some(function(l){return l.id===fromPid;})){
         lobbyPlayers.push({id:fromPid, name:String(msg.name||'Player').slice(0,14), colorIdx:lobbyPlayers.length});
       }
@@ -2160,8 +2383,12 @@ function handleNet(msg, fromPid){
           if(!isHost || mode!=='online' || running) return;
           var m = (typeof forcedMapId!=='undefined' && forcedMapId && MAPS[forcedMapId]) ? forcedMapId : resolveMapId();
           forcedMapId = m;
-          buildOnlinePlayers(lobbyPlayers);
-          netSend({t:'start', players:lobbyPlayers, map:m});
+          quickBots = botFillDescriptors(lobbyPlayers); // 2 real + 8 bots = 10
+          quickRoster = lobbyPlayers.map(function(lp,i){ return {name:lp.name, colorIdx:lp.colorIdx, you:lp.id===localId, real:true}; })
+            .concat(quickBots.map(function(b){ return {name:b.name, colorIdx:b.colorIdx, bot:true}; }));
+          renderQuickSlots();
+          buildOnlinePlayers(lobbyPlayers, quickBots);
+          netSend({t:'start', players:lobbyPlayers, bots:quickBots, map:m});
           startMatch();
         }, 4000);
         addFeed('🎮 Real player joined! Match starts in a few seconds…');
@@ -2172,20 +2399,40 @@ function handleNet(msg, fromPid){
     case 'start': {
       if(isHost) break;
       if(msg.map && MAPS[msg.map]) forcedMapId = msg.map;
-      buildOnlinePlayers(msg.players);
+      quickBots = msg.bots||[];
+      buildOnlinePlayers(msg.players, quickBots);
       startMatch();
       break; }
     case 'state': {
       var p = players[msg.id]; if(!p || msg.id===localId) break;
       p.pos.x=msg.x; p.pos.y=msg.y; p.pos.z=msg.z; p.yaw=msg.yaw; p.pitch=msg.pitch;
       p.hp=msg.hp; p.alive=msg.alive; p.kills=msg.kills; p.deaths=msg.deaths; p.headshots=msg.hs; p.weapon=msg.gun;
+      if(typeof msg.heal!=='undefined'){ p.healing=!!msg.heal; p.heals=(typeof msg.heals==='number')?msg.heals:p.heals; }
       syncMesh(p); updateScore();
+      // HOST BOT STATE: apply each bot exactly as the host sent it. If a bot id
+      // is missing locally (e.g. joiner missed the 'start' bots list), create it.
+      if(msg.bots && msg.bots.length){
+        msg.bots.forEach(function(bs){
+          var bp=players[bs.id];
+          if(!bp){ bp=createPlayer(bs.id, 'Bot', 0, {bot:true, remote:true}); }
+          bp.pos.x=bs.x; bp.pos.y=bs.y; bp.pos.z=bs.z; bp.yaw=bs.yaw; bp.pitch=bs.pitch;
+          bp.hp=bs.hp; bp.alive=bs.alive; bp.kills=bs.kills; bp.deaths=bs.deaths; bp.headshots=bs.hs; bp.weapon=bs.gun;
+          bp.healing=!!bs.heal; bp.heals=(typeof bs.heals==='number')?bs.heals:bp.heals;
+          syncMesh(bp);
+        });
+      }
       break; }
     case 'hit': {
       var tgt = players[msg.target];
       if(msg.target===localId && players[localId]){
         var atk = players[msg.from] || {id:msg.from, name:msg.fromName||'Enemy', kills:0, streak:0, headshots:0};
         damagePlayer(atk, players[localId], msg.dmg, msg.head);
+      } else if(isHost && tgt && tgt.isBot){
+        // HOST-AUTHORITATIVE BOT DAMAGE: a joiner shot one of my bots — I apply
+        // the damage here and broadcast the new bot HP in my next state tick.
+        var atk2 = players[msg.from] || {id:msg.from, name:msg.fromName||'Enemy', kills:0, streak:0, headshots:0};
+        damagePlayer(atk2, tgt, msg.dmg, msg.head);
+        netSendState();
       } else if(tgt){ tgt.hp = Math.max(0, tgt.hp - 0); /* victim is authoritative; visual only via state */ }
       break; }
     case 'death': {
@@ -2209,11 +2456,28 @@ function handleNet(msg, fromPid){
     case 'end': if(running){ endRecvFlag=true; endMatch(null); } break;
   }
 }
-function buildOnlinePlayers(list){
+/* QUICK MATCH BOT FILL (host-authoritative): fill real players up to 10 total.
+   Bots get stable ids (qbot0..), fun names and colours. Only the host ever
+   simulates them; joiners create the same ids as remote bots and drive them
+   purely from the host's 'state' broadcasts (see netSendState / handleNet). */
+var quickBots = []; // bot descriptors for the current online Quick Match
+function botFillDescriptors(realList){
+  var bots=[];
+  var need = MAX_PLAYERS - (realList ? realList.length : 0);
+  for(var i=0;i<need;i++){
+    bots.push({id:'qbot'+i, name:QUICK_BOTS[i % QUICK_BOTS.length], colorIdx:(realList.length+i) % 8, bot:true});
+  }
+  return bots;
+}
+function buildOnlinePlayers(list, bots){
   if(!initThree()) return;
   clearPlayers();
   list.forEach(function(lp){
     createPlayer(lp.id, lp.name, lp.colorIdx, {remote: lp.id!==localId});
+  });
+  (bots||[]).forEach(function(b){
+    // host: remote=false (host simulates); joiner: remote=true (host drives me)
+    createPlayer(b.id, b.name, b.colorIdx, {bot:true, remote: !isHost});
   });
 }
 function startHost(code){
@@ -2450,14 +2714,29 @@ function readName(){
   var v = $('playerName').value.trim();
   myName = v ? v.slice(0,14) : 'Player';
 }
+function updateClickToPlay(){
+  var c=$('clickToPlay'); if(!c) return;
+  c.style.display = (running && !pointerLocked && !isTouch && !paused && !chatOpen && mode!=='menu') ? 'flex':'none';
+}
 function lockPointer(){
   if(!renderer || isTouch) return;
   var el = renderer.domElement;
-  if(el.requestPointerLock) el.requestPointerLock();
+  try{
+    var r = el.requestPointerLock ? el.requestPointerLock() : null;
+    // requestPointerLock returns a Promise in Chrome: a rejection (no gesture
+    // on auto-start, or the Esc re-lock cooldown) used to fail silently and
+    // leave mouse look dead with no prompt. Catch it and SHOW the prompt.
+    if(r && r.catch) r.catch(function(){ setTimeout(updateClickToPlay, 50); });
+    setTimeout(updateClickToPlay, 120);
+  }catch(e){ updateClickToPlay(); }
 }
 document.addEventListener('pointerlockchange', function(){
   pointerLocked = document.pointerLockElement === (renderer && renderer.domElement);
-  $('clickToPlay').style.display = (running && !pointerLocked && !isTouch) ? 'flex':'none';
+  updateClickToPlay();
+});
+document.addEventListener('pointerlockerror', function(){
+  pointerLocked = false;
+  updateClickToPlay();
 });
 document.addEventListener('mousemove', function(e){
   if(!pointerLocked || !running) return;
@@ -2467,6 +2746,12 @@ document.addEventListener('mousemove', function(e){
 });
 document.addEventListener('mousedown', function(e){
   if(!running || mode==='menu') return;
+  // MOUSE-STUCK FIX: unlocked + click anywhere inside the game (except on a
+  // real button/panel) re-locks the pointer instead of being swallowed.
+  if(!isTouch && !pointerLocked && e.target && e.target.closest && e.target.closest('#game')
+     && !e.target.closest('button,input,textarea,#chatPanel,#pauseOverlay,#layoutBar,#scoreboard')){
+    lockPointer(); return;
+  }
   if(e.target!==renderer.domElement && e.target.id!=='clickToPlay' && !e.target.closest('#clickToPlay')) return;
   if(!isTouch && !pointerLocked){ lockPointer(); return; }
   mouseDown = true;
@@ -2477,6 +2762,12 @@ document.addEventListener('mouseup', function(){ mouseDown=false; });
 $('clickToPlay').addEventListener('click', function(){ lockPointer(); });
 document.addEventListener('keydown', function(e){
   if(e.target && e.target.id==='chatText') return; // typing in chat is not gameplay
+  // MOUSE-STUCK FIX (focus steal): a button clicked to start/resume keeps focus;
+  // Space/Enter would re-click it (e.g. Pause) instead of jumping/chatting.
+  if(running && e.target && e.target.tagName==='BUTTON'){
+    if(['KeyW','KeyA','KeyS','KeyD','Space','Enter','KeyH','KeyR','KeyT','Tab'].indexOf(e.code)>=0) e.target.blur();
+    if(e.code==='Space') e.preventDefault();
+  }
   if(e.code==='Enter' && running && mode!=='split' && !chatOpen){ setChatOpen(true); if(!isTouch) setTimeout(function(){ var ct=$('chatText'); if(ct) ct.focus(); },30); return; }
   keys[e.code]=true;
   if((e.code==='Escape' || e.code==='KeyP') && running && !(e.target && e.target.id==='chatText')){ setPaused(!paused); return; }
@@ -2485,6 +2776,7 @@ document.addEventListener('keydown', function(e){
   var me=players[localId]; if(!me) return;
   if(e.code.indexOf('Digit')===0){ var og2=ownedGuns(), n2=parseInt(e.code.slice(5),10)-1; if(og2[n2]) switchWeapon(me, og2[n2]); }
   if(e.code==='KeyR') reload(me);
+  if(e.code==='KeyH' && !e.repeat) startHeal(me);
   if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) jump(me); }
   if(e.code==='KeyT' && !e.repeat) sendTaunt();
   if(mode==='split'){
@@ -2528,6 +2820,7 @@ function setChatOpen(open){
   if(chatOpen){ if(b1) b1.classList.remove('hasnew'); if(b2) b2.classList.remove('hasnew'); }
   if(chatOpen && !isTouch && document.pointerLockElement) document.exitPointerLock();
   if(chatOpen) updateChatScopeUI();
+  setTimeout(updateClickToPlay, 60);
 }
 function updateChatScopeUI(){
   var wrap=$('chatScopeWrap'); if(!wrap) return;
@@ -2681,6 +2974,8 @@ function bindTouch(){
   barBtn('btnReload', function(){ var me=players[localId]; if(me) reload(me); });
   barBtn('btnGun', function(){ var me=players[localId]; if(me){ var og=ownedGuns(); switchWeapon(me, og[(og.indexOf(me.weapon)+1)%og.length]); } });
   barBtn('btnTaunt', function(){ if(running) sendTaunt(); });
+  barBtn('btnHeal', function(){ var mh=players[localId]; if(mh) startHeal(mh); });
+  var hw2=$('healWrap'); if(hw2) hw2.addEventListener('click', function(){ var mh2=players[localId]; if(mh2) startHeal(mh2); });
   var bc=$('btnCrouch');
   if(bc){
     bc.addEventListener('touchstart', function(e){ e.preventDefault(); e.stopPropagation(); crouchHeld=true; }, {passive:false});
@@ -2721,11 +3016,37 @@ function startTDM(){
   if(!initThree()) return;
   clearPlayers(); localId='me'; endRecvFlag=false;
   mode='tdm'; matchType='tdm';
+  // ENFORCED: 10 total, 5v5 — you + 4 Alpha bots vs 5 Bravo bots.
   createPlayer('me', myName, 1, {team:0});
-  for(var i=0;i<4;i++) createPlayer('abot'+i, BOT_FUN[i], TDM_ALPHA_COL[i+1], {bot:true, team:0});
-  for(var j=0;j<5;j++) createPlayer('bbot'+j, BOT_FUN[4+j], TDM_BRAVO_COL[j], {bot:true, team:1});
+  for(var i=0;i<TDM_TEAM_SIZE-1;i++) createPlayer('abot'+i, BOT_FUN[i], TDM_ALPHA_COL[i+1], {bot:true, team:0});
+  for(var j=0;j<TDM_TEAM_SIZE;j++) createPlayer('bbot'+j, BOT_FUN[4+j], TDM_BRAVO_COL[j], {bot:true, team:1});
   startMatch();
 }
+/* ---- PUBG lobby wiring: big PLAY, mode cards, map chips, nav jumps ---- */
+$('btnPlayLobby').addEventListener('click', function(){ ensureAudio(); startQuick(); });
+document.querySelectorAll('[data-lobbymode]').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('[data-lobbymode]').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    var m=b.getAttribute('data-lobbymode');
+    if(m==='quick'){ ensureAudio(); startQuick(); }
+    else if(m==='tdm'){ ensureAudio(); startTDM(); }
+    else if(m==='bots'){ startOffline('bots'); }
+    else if(m==='rooms'){ var modes=document.querySelector('.modes'); if(modes) modes.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+});
+document.querySelectorAll('[data-lobbymap]').forEach(function(b){
+  b.addEventListener('click', function(){
+    document.querySelectorAll('[data-lobbymap]').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    setMapChoice(b.getAttribute('data-lobbymap'));
+  });
+});
+document.querySelectorAll('[data-goto]').forEach(function(b){
+  b.addEventListener('click', function(){
+    var el=$(b.getAttribute('data-goto')); if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  });
+});
 $('btnBots').addEventListener('click', function(){ startOffline('bots'); });
 $('btnSplit').addEventListener('click', function(){ startOffline('split'); });
 $('btnTDM').addEventListener('click', function(){ ensureAudio(); startTDM(); });
@@ -2741,8 +3062,9 @@ $('btnJoin').addEventListener('click', function(){
 $('joinCode').addEventListener('input', function(){ this.value=this.value.toUpperCase().replace(/[^A-Z]/g,''); });
 $('btnStart').addEventListener('click', function(){
   if(!isHost) return;
-  buildOnlinePlayers(lobbyPlayers);
-  netSend({t:'start', players:lobbyPlayers});
+  quickBots = quickMatchHost ? botFillDescriptors(lobbyPlayers) : [];
+  buildOnlinePlayers(lobbyPlayers, quickBots);
+  netSend({t:'start', players:lobbyPlayers, bots:quickBots});
   startMatch();
 });
 $('btnLeaveLobby').addEventListener('click', function(){
