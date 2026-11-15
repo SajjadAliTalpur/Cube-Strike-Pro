@@ -257,6 +257,40 @@
     .tbtn{ width:46px; height:46px; min-height:46px; }
     #feed{ display:none; }
   }
+
+  /* ---------- FIX 2026-11-15: shop/account cards — always dark, high contrast (both colour modes) ---------- */
+  #shopCard,#accountCard{ background:#14213d !important; color:#fff !important; border:2px solid #ffd166 !important; }
+  #shopBalance{ color:#ffd166 !important; }
+  #acctStatus{ color:#cfe3ff !important; }
+  #shopCard input,#accountCard input{ background:#fff; color:#14213d; }
+  .shopitem{ background:#1d2f52 !important; color:#fff !important; border:2px solid #ffd166 !important; flex:1 1 150px; min-width:0; }
+  .shopitem .sub{ color:#cfe3ff; }
+  .shopitem .price{ color:#ffd166; }
+  @media (prefers-color-scheme: dark){ #coinEarned{ color:#ffd166; } }
+  /* ---------- FIX 2026-11-15: portrait phone menu (was no portrait layout at all) ---------- */
+  @media (max-width:520px){
+    #menu{ padding:14px 10px 32px; overflow-x:hidden; }
+    .hero{ padding:10px 4px 2px; }
+    .hero h1{ font-size:clamp(1.55rem,9vw,2.1rem); text-shadow:3px 3px 0 var(--yellow); }
+    .hero p{ font-size:.95rem; }
+    .modes{ grid-template-columns:1fr; gap:12px; }
+    .mode{ padding:14px; }
+    .autoplay{ padding:14px 10px; }
+    #btnAuto{ font-size:1rem; padding:12px 10px; line-height:1.3; white-space:normal; }
+    #shopCard,#accountCard{ padding:12px 10px; max-width:100%; }
+    #shopCard>div:first-child,#accountCard>div:first-child{ flex-direction:column; align-items:stretch; }
+    #shopCard>div:first-child>div,#accountCard>div:first-child>div{ width:100%; }
+    #shopCard .bigbtn,#accountCard .bigbtn{ width:100%; margin-top:6px; }
+    .shopitem{ flex:1 1 100%; }
+    #acctPanel input{ width:100% !important; margin-bottom:6px; }
+    .namebar{ flex-direction:column; gap:6px; }
+    .namebar input{ width:100%; }
+    .joinrow{ flex-wrap:wrap; }
+    .joinrow .bigbtn{ flex:1 1 100%; }
+    #quickSlots{ grid-template-columns:repeat(auto-fill,minmax(100px,1fr)); }
+    #endscreen .panel{ padding:16px 12px; }
+    .help{ padding:14px; }
+  }
   .botbadge{ background:var(--orange); color:#14213d; font-size:.62rem; font-weight:800; padding:1px 6px; border-radius:999px; vertical-align:middle; }
   .teambadge{ font-size:.62rem; font-weight:800; padding:1px 6px; border-radius:999px; vertical-align:middle; color:#fff; }
   .teambadge.a{ background:#118ab2; } .teambadge.b{ background:#ef476f; }
@@ -272,9 +306,9 @@
     <span class="mapname">MAP: NEON CHAI TOWN ☕🏙️</span>
   </div>
 
-  <div id="shopCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:rgba(20,33,61,.08);border:2px solid #14213d;border-radius:14px;text-align:left">
+  <div id="shopCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:#14213d;color:#fff;border:2px solid #ffd166;border-radius:14px;text-align:left">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div><b style="font-size:1.05rem">🛒 Premium Shop</b> <span id="shopBalance" style="font-weight:800;color:#b8860b"></span></div>
+      <div><b style="font-size:1.05rem">🛒 Premium Shop</b> <span id="shopBalance" style="font-weight:800;color:#ffd166"></span></div>
       <div><button class="bigbtn" id="btnDonate" style="font-size:.9rem;padding:8px 14px">❤️ Donate</button>
       <button class="bigbtn ghost" id="btnRealMoney" style="font-size:.9rem;padding:8px 14px">💳 Buy coins — coming soon</button></div>
     </div>
@@ -283,7 +317,7 @@
     <div id="shopSkins" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
     <div style="margin-top:10px;font-weight:800">🔫 New guns — different damage &amp; fire-rate, usable once bought (keys 1–5 / gun button cycles owned guns)</div>
     <div id="shopGuns" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
-    <div style="font-size:.8rem;color:#555;margin-top:8px">Coins are earned in matches: 10 per kill + 50 win bonus + 20 per match. Skins &amp; guns are bought with coins only — real-money purchase is coming soon, there is no checkout here yet.</div>
+    <div style="font-size:.8rem;color:#cfe3ff;margin-top:8px">Coins are earned in matches: 10 per kill + 50 win bonus + 20 per match. Skins &amp; guns are bought with coins only — real-money purchase is coming soon, there is no checkout here yet.</div>
   </div>
 
   <div class="namebar">
@@ -292,22 +326,22 @@
   </div>
   <div id="menuMsg"></div>
 
-  <div id="accountCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:rgba(20,33,61,.08);border:2px solid #14213d;border-radius:14px;text-align:left">
+  <div id="accountCard" style="max-width:760px;margin:14px auto;padding:14px 16px;background:#14213d;color:#fff;border:2px solid #ffd166;border-radius:14px;text-align:left">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
-      <div><b style="font-size:1.05rem">👤 My Account</b> <span id="acctStatus" style="font-weight:700;color:#555">Guest — history saved on this device only</span></div>
+      <div><b style="font-size:1.05rem">👤 My Account</b> <span id="acctStatus" style="font-weight:700;color:#cfe3ff">Guest — history saved on this device only</span></div>
       <div><button class="bigbtn blue" id="btnAcct" style="font-size:.9rem;padding:8px 14px">Sign up / Log in</button>
       <button class="bigbtn ghost" id="btnAcctOut" style="font-size:.9rem;padding:8px 14px;display:none">Log out</button></div>
     </div>
     <div id="acctStats" style="margin-top:8px;font-weight:700"></div>
     <div id="acctHistory" style="margin-top:6px;font-size:.85rem"></div>
     <div id="acctPanel" style="display:none;margin-top:10px">
-      <input id="acctEmail" type="email" placeholder="Email" autocomplete="email" style="padding:9px;border:2px solid #14213d;border-radius:9px;width:220px;max-width:100%">
-      <input id="acctPass" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="padding:9px;border:2px solid #14213d;border-radius:9px;width:180px;max-width:100%">
-      <input id="acctName" type="text" placeholder="Fighter name" maxlength="14" style="padding:9px;border:2px solid #14213d;border-radius:9px;width:150px;max-width:100%">
+      <input id="acctEmail" type="email" placeholder="Email" autocomplete="email" style="background:#fff;color:#14213d;padding:9px;border:2px solid #14213d;border-radius:9px;width:220px;max-width:100%">
+      <input id="acctPass" type="password" placeholder="Password (min 6 characters)" autocomplete="current-password" style="background:#fff;color:#14213d;padding:9px;border:2px solid #14213d;border-radius:9px;width:180px;max-width:100%">
+      <input id="acctName" type="text" placeholder="Fighter name" maxlength="14" style="background:#fff;color:#14213d;padding:9px;border:2px solid #14213d;border-radius:9px;width:150px;max-width:100%">
       <div style="margin-top:8px"><button class="bigbtn green" id="btnAcctSignup" style="font-size:.9rem;padding:8px 14px">Create account</button>
       <button class="bigbtn blue" id="btnAcctLogin" style="font-size:.9rem;padding:8px 14px">Log in</button></div>
       <div id="acctMsg" style="margin-top:6px;font-weight:700;min-height:1.2em"></div>
-      <div style="font-size:.8rem;color:#555">Cloud account = your name, level and match history follow you to any device (free, Supabase). If the cloud is unreachable you keep playing as a local guest — nothing is faked.</div>
+      <div style="font-size:.8rem;color:#cfe3ff">Cloud account = your name, level and match history follow you to any device (free, Supabase). If the cloud is unreachable you keep playing as a local guest — nothing is faked.</div>
     </div>
   </div>
 
@@ -1386,17 +1420,17 @@ function renderShop(){
   var bal = $('shopBalance'); if(bal) bal.textContent = '🪙 ' + (shopState.coins||0) + ' coins';
   var sk = $('shopSkins'); if(sk) sk.innerHTML = SHOP_SKINS.map(function(it){
     var owned = !!shopState.owned['skin:'+it.id], eq = shopState.equippedSkin===it.id;
-    return '<div style="border:2px solid #14213d;border-radius:10px;padding:8px 10px;min-width:150px;background:#fff">'
+    return '<div class="shopitem" style="border-radius:10px;padding:8px 10px">'
       + '<span style="display:inline-block;width:14px;height:14px;border-radius:4px;background:'+it.color+';border:1px solid #14213d"></span> <b>'+esc(it.name)+'</b><br>'
-      + '<span style="font-size:.82rem">'+esc(it.desc)+'</span><br><b>🪙 '+it.price+'</b> '
+      + '<span class="sub" style="font-size:.82rem">'+esc(it.desc)+'</span><br><b class="price">🪙 '+it.price+'</b> '
       + (eq ? '<button class="bigbtn green" disabled style="font-size:.8rem;padding:5px 10px">Equipped ✓</button>'
         : owned ? '<button class="bigbtn blue" data-skin="'+it.id+'" style="font-size:.8rem;padding:5px 10px">Equip</button>'
         : '<button class="bigbtn" data-buy-skin="'+it.id+'" style="font-size:.8rem;padding:5px 10px">Buy</button>') + '</div>';
   }).join('');
   var gn = $('shopGuns'); if(gn) gn.innerHTML = SHOP_GUNS.map(function(g){
     var owned = !!shopState.owned[g.id];
-    return '<div style="border:2px solid #14213d;border-radius:10px;padding:8px 10px;min-width:170px;background:#fff">'
-      + '<b>'+esc(g.name)+'</b><br><span style="font-size:.82rem">'+esc(g.desc)+' · DMG '+g.w.dmg+' · MAG '+g.w.mag+(g.w.auto?' · AUTO':'')+'</span><br><b>🪙 '+g.price+'</b> '
+    return '<div class="shopitem" style="border-radius:10px;padding:8px 10px">'
+      + '<b>'+esc(g.name)+'</b><br><span class="sub" style="font-size:.82rem">'+esc(g.desc)+' · DMG '+g.w.dmg+' · MAG '+g.w.mag+(g.w.auto?' · AUTO':'')+'</span><br><b class="price">🪙 '+g.price+'</b> '
       + (owned ? '<button class="bigbtn green" disabled style="font-size:.8rem;padding:5px 10px">Owned ✓</button>'
         : '<button class="bigbtn" data-buy-gun="'+g.id+'" style="font-size:.8rem;padding:5px 10px">Buy</button>') + '</div>';
   }).join('');
