@@ -398,7 +398,7 @@
 
   <div class="autoplay">
     <button id="btnAuto">▶ AUTO PLAY — QUICK MATCH</button>
-    <p>One tap and you are in: a 10-player match starts automatically in about 15–30 seconds. No room code, no setup. On phones, turn your phone sideways (landscape) for the big controls.</p>
+    <p>One tap and you are in: first it looks for a real player online (about 25 seconds) — found one, you play a <b>1v1 real match</b>; nobody around, a 10-player bot match starts instead. No room code, no setup. On phones, turn your phone sideways (landscape) for the big controls.</p>
   </div>
 
   <div class="modes">
@@ -430,9 +430,9 @@
       <button class="bigbtn red" id="btnSplit">Split-Screen</button>
     </div>
     <div class="mode">
-      <span class="tag" style="background:#4cc9f0">QUICK MATCH · 10 PLAYERS</span>
+      <span class="tag" style="background:#4cc9f0">QUICK MATCH · REAL PLAYERS</span>
       <h3>🏟️ Quick Match Lobby</h3>
-      <p>PUBG-style: tap Find Match and watch the lobby fill to 10 players. <b>Waiting slots are filled with bots (labelled BOT)</b> so your match starts in about 15–30 seconds instead of waiting forever.</p>
+      <p>PUBG-style: tap Find Match — first it searches for <b>real players</b> online (about 25 seconds). Found one? You play a <b>1v1 real match</b> together — online matches have no bots yet, just you two. Nobody around? <b>Bots (labelled BOT)</b> fill a 10-player lobby so your match still starts fast.</p>
       <button class="bigbtn blue" id="btnQuick">Find Match</button>
     </div>
     <div class="mode">
@@ -479,7 +479,7 @@
       </div>
       <div><b>Quick Match &amp; real matchmaking — the truth</b>
         <ul>
-          <li>Quick Match fills a 10-player lobby fast. Until real players are online, <b>empty slots are filled with bots, always labelled BOT</b> — never fake "real" strangers</li>
+          <li>Quick Match first searches for <b>real players</b> online (about 25 seconds). If one is found you play a <b>1v1 real match</b> in the same room (online matches have no bots yet — bot fill for online matches is a later update); if not, a 10-player bot match starts instead, with <b>bots always labelled BOT</b> — never fake "real" strangers</li>
           <li>True random matchmaking with strangers needs a <b>dedicated game server</b> running 24/7 <b>plus</b> many players online at the same time</li>
           <li>Vercel is static hosting only — it serves this page but cannot run a game server, so it cannot match strangers</li>
           <li>For now, the <b>room-code mode above is the free way</b> to play with real friends</li>
@@ -525,7 +525,7 @@
   <p style="font-weight:700" id="quickStatus">Searching for players<span class="searchdots"></span></p>
   <p style="font-weight:800;font-size:1.15rem"><span id="quickCount">1</span> / 10 players</p>
   <div id="quickSlots"></div>
-  <div class="warn" style="text-align:left;margin-top:14px">🤖 Honest note: this game has no central server and no big player base yet, so <b>slots still waiting when the search ends are filled with bots — every bot is labelled BOT</b>. Real friends join with room codes from the main menu. Your match starts in about 15–30 seconds.</div>
+  <div class="warn" style="text-align:left;margin-top:14px">🌐 Real matchmaking: Quick Match searches the Supabase queue for other real players first (about 25 seconds). If a real player is found you join the same PeerJS room automatically — no code to type — and play a <b>1v1 real match (no bots in online matches yet)</b>. If nobody is online, <b>bots fill a 10-player lobby — every bot is labelled BOT</b>. Real friends can also join with room codes from the main menu.</div>
   <div style="margin-top:16px"><button class="bigbtn ghost" id="btnCancelQuick">Cancel Search</button> <button class="bigbtn ghost" id="btnQuickMenu">← Main Menu</button></div>
 </div>
 
@@ -1470,7 +1470,13 @@ function botThink(p, dt, now){
        headshots int, best_streak int, result text, rank int, total_players int,
        created_at timestamptz default now())
    If the tables do not exist yet, cloud save fails openly and the game falls
-   back to a local profile (localStorage) — it never pretends a cloud login worked. */
+   back to a local profile (localStorage) — it never pretends a cloud login worked.
+   QUICK MATCH matchmaking table (create in Supabase SQL editor):
+     cube_strike_queue(id text PK, player_name text, mode text, map text,
+       status text, room_code text, host_id text, created_at timestamptz default now())
+   Rows are short-lived (waiting rows expire after ~45s) and are deleted when a
+   match starts or the player cancels. RLS must allow anon insert/select/update/
+   delete on this table — it is a public matchmaking queue, not private data. */
 var SB_URL = 'https://gnzhaebfqhlfenrwhjjg.supabase.co';
 var SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduemhhZWJmcWhsZmVucndoampnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwNzExNjQsImV4cCI6MjEwOTY0NzE2NH0.C5NdupLRkyDiqdM9k8cI7ThZM8Rk86goDss8hqoTRc4';
 var sb = null, acctUser = null, acctCloud = false, acctProfile = null;
@@ -1649,6 +1655,7 @@ function setPaused(v){
   if(!v && running && !isTouch) lockPointer();
 }
 function quitToMenu(){
+  cancelQuickSearch();
   paused = false; running = false;
   var o = $('pauseOverlay'); if(o) o.style.display = 'none';
   if(mode==='online') cleanupNet();
@@ -1782,7 +1789,7 @@ function startMatch(){
   raycaster = new THREE.Raycaster();
   highlights = { bestStreak:{name:'—',n:0}, headKing:{name:'—',n:0} };
   teamKills = [0,0];
-  currentMapId = resolveMapId(); buildMap(currentMapId);
+  currentMapId = (typeof forcedMapId!=='undefined' && forcedMapId && MAPS[forcedMapId]) ? forcedMapId : resolveMapId(); forcedMapId = null; buildMap(currentMapId);
   botChatT = rand(7,13);
   var cl=$('chatLog'); if(cl) cl.innerHTML='';
   setChatOpen(false);
@@ -2127,6 +2134,8 @@ function renderLobby(){
 function cleanupNet(){
   try{ if(peer) peer.destroy(); }catch(e){}
   peer=null; conns={}; hostConn=null; isHost=false; lobbyPlayers=[];
+  quickMatchHost=false; quickAutoJoin=false;
+  if(quickAutoStartTimer){ clearTimeout(quickAutoStartTimer); quickAutoStartTimer=null; }
 }
 function hostLeft(){
   cleanupNet(); running=false; mode='menu';
@@ -2146,11 +2155,23 @@ function handleNet(msg, fromPid){
       renderLobby();
       var snap = {t:'lobby', players:lobbyPlayers};
       netSend(snap); try{ conns[fromPid].send(snap); }catch(e){}
+      if(quickMatchHost && lobbyPlayers.length>=2 && !quickAutoStartTimer){
+        quickAutoStartTimer = setTimeout(function(){
+          if(!isHost || mode!=='online' || running) return;
+          var m = (typeof forcedMapId!=='undefined' && forcedMapId && MAPS[forcedMapId]) ? forcedMapId : resolveMapId();
+          forcedMapId = m;
+          buildOnlinePlayers(lobbyPlayers);
+          netSend({t:'start', players:lobbyPlayers, map:m});
+          startMatch();
+        }, 4000);
+        addFeed('🎮 Real player joined! Match starts in a few seconds…');
+      }
       break; }
     case 'lobby': lobbyPlayers = msg.players||[]; renderLobby(); break;
     case 'full': cleanupNet(); mode='menu'; showScreen('menu'); menuMsg('That room is full (4 players). Try another code!'); break;
     case 'start': {
       if(isHost) break;
+      if(msg.map && MAPS[msg.map]) forcedMapId = msg.map;
       buildOnlinePlayers(msg.players);
       startMatch();
       break; }
@@ -2195,15 +2216,16 @@ function buildOnlinePlayers(list){
     createPlayer(lp.id, lp.name, lp.colorIdx, {remote: lp.id!==localId});
   });
 }
-function startHost(){
+function startHost(code){
   if(typeof Peer==='undefined'){ menuMsg('Online library failed to load — check internet and refresh.'); return; }
   readName();
-  roomCode = genCode();
+  roomCode = code || genCode();
   isHost = true; mode='online'; endRecvFlag=false; matchType='ffa';
   peer = new Peer('cso-'+roomCode);
   peer.on('open', function(id){
     localId = id;
     lobbyPlayers = [{id:id, name:myName, colorIdx:0, host:true}];
+    if(quickMatchHost){ $('lobbyStatus').textContent = '🎮 Real player found! Waiting for them to connect…'; }
     showScreen('lobby'); renderLobby();
   });
   peer.on('connection', function(conn){
@@ -2218,7 +2240,7 @@ function startHost(){
     });
   });
   peer.on('error', function(err){
-    if(err.type==='unavailable-id'){ cleanupNet(); startHost(); }
+    if(err.type==='unavailable-id'){ cleanupNet(); startHost(roomCode); }
     else menuMsg('Connection error: '+err.type+'. Try again.');
   });
 }
@@ -2240,7 +2262,21 @@ function startJoin(code){
     hostConn.on('close', function(){ if(mode==='online') hostLeft(); });
   });
   peer.on('error', function(err){
-    if(err.type==='peer-unavailable'){ cleanupNet(); mode='menu'; menuMsg('Room "'+code+'" not found. Check the code — or host your own room!'); }
+    if(err.type==='peer-unavailable'){
+      if(quickAutoJoin && quickJoinRetries < 6){
+        quickJoinRetries++;
+        setTimeout(function(){ if(quickAutoJoin) startJoin(code); }, 2000);
+        return;
+      }
+      if(quickAutoJoin){
+        quickAutoJoin = false;
+        cleanupNet(); mode='quick'; showScreen('quick');
+        startQuickBots('Real player room could not be reached \u2014 bots filled the lobby.');
+        return;
+      }
+      quickAutoJoin = false;
+      cleanupNet(); mode='menu'; showScreen('menu'); menuMsg('Room "'+code+'" not found. Check the code — or host your own room!');
+    }
     else menuMsg('Connection error: '+err.type+'. Try again.');
   });
 }
@@ -2251,26 +2287,129 @@ function genCode(){
 }
 
 /* ================= quick match ================= */
+/* REAL matchmaking (2026-11-15): Quick Match first searches the Supabase queue
+   (cube_strike_queue) for another real player. The earliest waiter becomes the
+   host: it claims the other waiter, opens a PeerJS room with a fresh code, and
+   the joiner connects automatically — no code to type. If nobody is found in
+   ~25s, it falls back to the old bot-filled lobby and says so plainly.
+   Bots are NEVER shown as real players. Same-account laptop+mobile works
+   because pairing uses a per-tab player id, not the account name. */
 var QUICK_BOTS = ['ChotuGamer','SniperBhai','NoobKing','ChaiWala','RickshawRaja','GullyStar','MomoKing','ThandaCool','BiryaniBoss'];
 var quickTimers=[], quickRoster=[];
+var forcedMapId = null;               // map chosen by the quick-match host, sent in the 'start' message
+var quickMatchHost = false, quickAutoStartTimer = null, quickAutoJoin = false, quickJoinRetries = 0;
+var qm = { searching:false, rowId:null, poll:null, startedAt:0, map:'random', claimed:false };
+function qmPlayerId(){
+  var tab = null;
+  try{ tab = sessionStorage.getItem('cso_tab_id'); if(!tab){ tab = 'tab' + Math.random().toString(36).slice(2,10); sessionStorage.setItem('cso_tab_id', tab); } }catch(e){ tab = 'tab' + Math.random().toString(36).slice(2,10); }
+  var dev = 'dev';
+  try{ dev = localStorage.getItem('cso_device_id') || ('dev' + Math.random().toString(36).slice(2,10)); localStorage.setItem('cso_device_id', dev); }catch(e){}
+  return dev + ':' + tab;
+}
+function qmRowId(){ return 'q' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
 function renderQuickSlots(){
   var html='';
   for(var i=0;i<10;i++){
     var q=quickRoster[i];
     if(!q) html += '<div class="qslot empty"><span>⏳</span><span>Searching…</span></div>';
     else if(q.you) html += '<div class="qslot"><span class="dot" style="background:'+PALETTE_CSS[q.colorIdx%8]+';width:14px;height:14px;border-radius:4px;border:2px solid var(--line)"></span><span>'+esc(q.name)+'</span><span class="youbadge">YOU</span></div>';
+    else if(q.real) html += '<div class="qslot"><span class="dot" style="background:'+PALETTE_CSS[q.colorIdx%8]+';width:14px;height:14px;border-radius:4px;border:2px solid var(--line)"></span><span>'+esc(q.name)+'</span><span class="youbadge" style="background:#06d6a0">REAL PLAYER</span></div>';
     else html += '<div class="qslot"><span class="dot" style="background:'+PALETTE_CSS[q.colorIdx%8]+';width:14px;height:14px;border-radius:4px;border:2px solid var(--line)"></span><span>'+esc(q.name)+'</span><span class="botbadge">BOT</span></div>';
   }
   $('quickSlots').innerHTML = html;
   $('quickCount').textContent = quickRoster.length;
 }
 function clearQuickTimers(){ quickTimers.forEach(function(t){ clearTimeout(t); }); quickTimers=[]; }
+function qmDeleteRow(){
+  if(!qm.rowId || !sb) { qm.rowId = null; return; }
+  var id = qm.rowId; qm.rowId = null;
+  try{ sb.from('cube_strike_queue').delete().eq('id', id).then(function(){}); }catch(e){}
+}
+function cancelQuickSearch(){
+  if(qm.poll){ clearInterval(qm.poll); qm.poll = null; }
+  if(quickAutoStartTimer){ clearTimeout(quickAutoStartTimer); quickAutoStartTimer = null; }
+  qm.searching = false; qm.claimed = false; quickMatchHost = false; quickAutoJoin = false;
+  qmDeleteRow();
+  clearQuickTimers();
+}
+function qmSetStatus(t){ var el = $('quickStatus'); if(el) el.innerHTML = t; }
+async function qmPoll(){
+  if(!qm.searching || !sb) return;
+  var since = new Date(Date.now() - 45000).toISOString();
+  try{
+    // my own row: has the host claimed me?
+    var mine = await sb.from('cube_strike_queue').select('*').eq('id', qm.rowId).maybeSingle();
+    if(mine.data && mine.data.status === 'matched' && mine.data.room_code){
+      qm.searching = false; clearInterval(qm.poll); qm.poll = null;
+      qmSetStatus('🎮 Real player found! Joining their room…');
+      quickAutoJoin = true; quickJoinRetries = 0;
+      qmDeleteRow();
+      startJoin(mine.data.room_code);
+      return;
+    }
+    // waiting rows, oldest first
+    var res = await sb.from('cube_strike_queue').select('*').eq('status','waiting').gt('created_at', since).order('created_at', {ascending:true}).limit(10);
+    if(res.error || !res.data) return;
+    var rows = res.data;
+    var me = null, other = null;
+    rows.forEach(function(r){ if(r.id === qm.rowId) me = r; else if(!other) other = r; });
+    if(!me) return; // my row expired / was removed — keep waiting for timeout
+    if(!other) { qmSetStatus('🔍 Searching for real players… (' + Math.max(0, Math.ceil((25000 - (Date.now() - qm.startedAt))/1000)) + 's) — ' + rows.length + ' waiting'); return; }
+    // I am the earliest waiter (rows are oldest-first, so me before other) -> I host
+    if(rows[0].id !== qm.rowId) return; // someone older is host; they will claim me
+    var code = genCode();
+    var map = qm.map;
+    // claim the other player: only if still waiting (prevents double-claims)
+    var claim = await sb.from('cube_strike_queue').update({status:'matched', room_code:code, host_id:qmPlayerId()}).eq('id', other.id).eq('status','waiting').select();
+    if(!claim.data || !claim.data.length) return; // someone else claimed them first
+    await sb.from('cube_strike_queue').update({status:'matched', room_code:code, host_id:qmPlayerId()}).eq('id', qm.rowId);
+    qm.searching = false; clearInterval(qm.poll); qm.poll = null; qm.claimed = true;
+    quickRoster = [{name:myName, colorIdx:0, you:true}, {name:String(other.player_name||'Player').slice(0,14), colorIdx:1, real:true}];
+    renderQuickSlots();
+    qmSetStatus('🎮 Real player found! <b>' + esc(String(other.player_name||'Player')) + '</b> is joining…');
+    quickMatchHost = true; forcedMapId = (map && MAPS[map]) ? map : resolveMapId();
+    startHost(code);
+  }catch(e){ /* transient network error — keep polling until timeout */ }
+}
 function startQuick(){
   readName();
   mode='quick'; endRecvFlag=false; matchType='ffa';
+  quickMatchHost = false; quickAutoJoin = false; quickJoinRetries = 0; forcedMapId = null;
   quickRoster=[{name:myName, colorIdx:0, you:true}];
   showScreen('quick');
-  $('quickStatus').innerHTML='Searching for players<span class="searchdots"></span>';
+  qmSetStatus('🔍 Searching for real players…');
+  renderQuickSlots();
+  qm.map = resolveMapId();
+  if(!sb){
+    qmSetStatus('☁️ Cloud unreachable — starting a bot match…');
+    quickTimers.push(setTimeout(function(){ if(mode==='quick') startQuickBots('Cloud unreachable right now, so no real players could be found.'); }, 1200));
+    return;
+  }
+  qm.searching = true; qm.startedAt = Date.now(); qm.claimed = false; qm.rowId = qmRowId();
+  sb.from('cube_strike_queue').insert({id:qm.rowId, player_id:qmPlayerId(), player_name:myName, mode:'ffa', map:qm.map, status:'waiting', room_code:null, host_id:null}).then(function(res){
+    if(res.error){ // queue table missing / RLS not set up yet
+      qm.searching = false;
+      qmSetStatus('⚠️ Matchmaking is not set up yet — starting a bot match…');
+      quickTimers.push(setTimeout(function(){ if(mode==='quick') startQuickBots('Matchmaking table is not set up yet (run the SQL in Supabase) — bots filled the lobby.'); }, 1500));
+      return;
+    }
+    qm.poll = setInterval(qmPoll, 2000);
+    qmPoll();
+  });
+  // ~25s search, then bots
+  quickTimers.push(setTimeout(function(){
+    if(mode!=='quick' || running || qm.claimed || quickMatchHost || quickAutoJoin) return;
+    cancelQuickSearch();
+    startQuickBots('No real players online right now — bots filled the lobby.');
+  }, 25000));
+}
+function startQuickBots(note){
+  if(mode!=='quick') return;
+  cancelQuickSearch();
+  mode='quick'; endRecvFlag=false; matchType='ffa';
+  quickRoster=[{name:myName, colorIdx:0, you:true}];
+  showScreen('quick');
+  qmSetStatus('🤖 ' + (note || 'Bots are filling the lobby…'));
   renderQuickSlots();
   var names = QUICK_BOTS.slice();
   var delay = 1200;
@@ -2592,7 +2731,7 @@ $('btnSplit').addEventListener('click', function(){ startOffline('split'); });
 $('btnTDM').addEventListener('click', function(){ ensureAudio(); startTDM(); });
 $('btnQuick').addEventListener('click', function(){ startQuick(); });
 $('btnAuto').addEventListener('click', function(){ ensureAudio(); startQuick(); });
-$('btnCancelQuick').addEventListener('click', function(){ clearQuickTimers(); mode='menu'; showScreen('menu'); });
+$('btnCancelQuick').addEventListener('click', function(){ cancelQuickSearch(); mode='menu'; showScreen('menu'); });
 $('btnHost').addEventListener('click', function(){ menuMsg('Creating your room…'); startHost(); });
 $('btnJoin').addEventListener('click', function(){
   var code = $('joinCode').value.trim().toUpperCase();
