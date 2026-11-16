@@ -341,7 +341,7 @@
   /* ROOT CAUSE: #topbar inherits pointer-events:none from .hud, and #btnPause never
      set pointer-events:auto (unlike #btnScore / #btnChatDesk). Taps on it passed
      straight through to the canvas, so the pause handler never fired on touch. */
-  #btnPause{ pointer-events:auto !important; min-width:44px; min-height:36px; touch-action:manipulation; }
+  #btnPause,#btnFs{ pointer-events:auto !important; min-width:44px; min-height:36px; touch-action:manipulation; }
   /* ---------- Fire button mode ---------- */
   #btnFire{ position:absolute; right:18px; bottom:100px; width:84px; height:84px; min-height:84px; border-radius:50%;
     border:3px solid #fff; background:rgba(239,71,111,.75); color:#fff; font-family:'Bungee',cursive; font-size:1rem;
@@ -384,6 +384,7 @@
           <div class="pc-row"><span>⭐ Level <b id="lobbyLevel">1</b></span><span>🪙 <b id="lobbyCoins">0</b> coins</span><span>🗺️ <span id="lobbyMap">Neon Chai Town</span></span><span>👥 <b>10</b> players / match</span></div>
         </div>
         <button id="btnPlayLobby">▶ PLAY — QUICK MATCH</button>
+        <button class="bigbtn ghost" id="btnFsLobby" style="margin-top:8px">⛶ Fullscreen</button>
         <div style="font-weight:700;font-size:.85rem;color:#cfe3ff;text-align:center">10 players · real players + bots fill the lobby · first to 25 kills</div>
         <div id="lobbyModes">
           <button type="button" data-lobbymode="quick">🏟️ Quick Match<small>10 players</small></button>
@@ -653,7 +654,7 @@
 <!-- ================= GAME ================= -->
 <div id="game">
   <canvas id="minimap" width="120" height="120"></canvas>
-  <div class="hud" id="topbar"><span>⏱ <span id="timer">5:00</span></span><span id="teamScore" style="display:none"></span><span id="goalLabel">First to 25</span><span id="myScore">0 kills</span><button id="btnPause" aria-label="Pause" title="Pause (Esc)" style="margin-left:8px;background:rgba(10,15,30,.55);color:#fff;border:2px solid #fff;border-radius:8px;padding:2px 9px;font-weight:800;cursor:pointer">⏸</button></div>
+  <div class="hud" id="topbar"><span>⏱ <span id="timer">5:00</span></span><span id="teamScore" style="display:none"></span><span id="goalLabel">First to 25</span><span id="myScore">0 kills</span><button id="btnPause" aria-label="Pause" title="Pause (Esc)" style="margin-left:8px;background:rgba(10,15,30,.55);color:#fff;border:2px solid #fff;border-radius:8px;padding:2px 9px;font-weight:800;cursor:pointer">⏸</button><button id="btnFs" aria-label="Fullscreen" title="Fullscreen" style="margin-left:8px;background:rgba(10,15,30,.55);color:#fff;border:2px solid #fff;border-radius:8px;padding:2px 9px;font-weight:800;cursor:pointer">⛶</button></div>
   <div class="hud" id="feed"></div>
   <div class="hud" id="crosshair">+</div>
   <div class="hud" id="hitmark">✕</div>
@@ -2307,10 +2308,32 @@ function quitToMenu(){
   if(document.pointerLockElement) document.exitPointerLock();
   mode='menu'; showScreen('menu'); menuMsg('');
 }
+/* ---------- Fullscreen (v3.2): one tap = real fullscreen, lobby + in-match ---------- */
+function toggleFullscreen(){
+  try{
+    if(document.fullscreenElement || document.webkitFullscreenElement){
+      if(document.exitFullscreen) document.exitFullscreen();
+      else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
+    } else {
+      var el = document.documentElement;
+      if(el.requestFullscreen) el.requestFullscreen();
+      else if(el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    }
+  }catch(e){}
+}
+function syncFsButtons(){
+  var on = !!(document.fullscreenElement || document.webkitFullscreenElement);
+  var b = $('btnFs'); if(b) b.textContent = on ? '✕' : '⛶';
+  var l = $('btnFsLobby'); if(l) l.textContent = on ? '✕ Exit Fullscreen' : '⛶ Fullscreen';
+}
+document.addEventListener('fullscreenchange', syncFsButtons);
+document.addEventListener('webkitfullscreenchange', syncFsButtons);
 document.addEventListener('DOMContentLoaded', function(){
   var pb = $('btnPause');
   if(pb){ var lastPauseTap=0; var pauseNow=function(e){ if(e) e.preventDefault(); var n=Date.now(); if(n-lastPauseTap<350) return; lastPauseTap=n; if(running) setPaused(true); };
     pb.addEventListener('click', pauseNow); pb.addEventListener('touchstart', pauseNow, {passive:false}); }
+  var fs1 = $('btnFs'); if(fs1) fs1.addEventListener('click', function(e){ if(e) e.preventDefault(); toggleFullscreen(); });
+  var fs2 = $('btnFsLobby'); if(fs2) fs2.addEventListener('click', function(){ toggleFullscreen(); });
   var rs = $('btnResume'); if(rs) rs.addEventListener('click', function(){ setPaused(false); });
   var pm = $('btnPauseMenu'); if(pm) pm.addEventListener('click', quitToMenu);
   var pe = $('btnPauseEdit'); if(pe) pe.addEventListener('click', function(){ enterLayoutEdit(false); });
