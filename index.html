@@ -406,7 +406,7 @@
     <div id="shopMsg" style="font-weight:700;margin-top:6px;min-height:1.2em"></div>
     <div style="margin-top:8px;font-weight:800">🎨 Weapon skins — change your fighter's colour in-game</div>
     <div id="shopSkins" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
-    <div style="margin-top:10px;font-weight:800">🔫 New guns — different damage &amp; fire-rate, usable once bought (keys 1–5 / gun button cycles owned guns)</div>
+    <div style="margin-top:10px;font-weight:800">🔫 New guns — different damage &amp; fire-rate, usable once bought (keys 1–8 / gun button cycles owned guns)</div>
     <div id="shopGuns" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
     <div style="font-size:.8rem;color:#cfe3ff;margin-top:8px">Coins are earned in matches: 10 per kill + 50 win bonus + 20 per match. Skins &amp; guns are bought with coins only — real-money purchase is coming soon, there is no checkout here yet.</div>
   </div>
@@ -424,6 +424,12 @@
       <button type="button" data-map="neon" class="mapbtn">☕ Neon Chai Town</button>
       <button type="button" data-map="bazaar" class="mapbtn">🏜️ Desert Bazaar</button>
       <button type="button" data-map="night" class="mapbtn">🌃 Night Rooftop</button>
+    </div>
+    <div style="margin-top:10px;font-weight:800">⏱️ Round time</div>
+    <div class="seg" style="margin-top:6px">
+      <button type="button" data-round="180" class="roundbtn">3 MIN</button>
+      <button type="button" data-round="300" class="roundbtn">5 MIN</button>
+      <button type="button" data-round="600" class="roundbtn">10 MIN</button>
     </div>
     <div style="margin-top:10px;font-weight:800">✏️ Button layout (mobile)</div>
     <div class="seg" style="margin-top:6px">
@@ -519,14 +525,17 @@
         <ul>
           <li><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move, mouse to look</li>
           <li>Click to shoot · <kbd>Space</kbd> jump</li>
-          <li><kbd>1</kbd> Rifle · <kbd>2</kbd> Pistol · <kbd>3</kbd> Shotgun · <kbd>R</kbd> reload</li>
+          <li><kbd>1</kbd> Rifle · <kbd>2</kbd> Pistol · <kbd>3</kbd> Shotgun · <kbd>4</kbd> DMR · <kbd>5</kbd> Burst · <kbd>R</kbd> reload · <kbd>G</kbd> grenade 🧨</li>
           <li>Headshots do double damage — aim high!</li>
           <li><kbd>Tab</kbd> scoreboard · <kbd>T</kbd> taunt 😜</li>
         </ul>
       </div>
       <div><b>Win the match</b>
         <ul>
-          <li>First to <b>25 kills</b> wins, or most kills when the 5-minute timer ends</li>
+          <li>First to <b>25 kills</b> wins, or most kills when the round timer ends (pick 3, 5 or 10 minutes in Controls &amp; Map)</li>
+          <li><b>🧨 Grenades:</b> 2 per life (refilled when you respawn) — press <kbd>G</kbd> or the 🧨 button. They arc, pop on impact, and hurt every enemy nearby (90 damage at the centre). No self-damage, no friendly fire</li>
+          <li><b>🌉 Bridges &amp; sniper towers:</b> every map has a bridge and two gold sniper towers — just walk up the steps, no jumping needed. High ground sees the whole arena</li>
+          <li><b>🔫 New guns (free for everyone):</b> DMR (big damage, very precise, key <kbd>4</kbd>) and Burst rifle (3 pellets per shot, key <kbd>5</kbd>). The shop SMG, Sniper and LMG still cost coins</li>
           <li>Kill streaks (3, 5, 8…) get announced to everyone</li>
           <li>You respawn 3 seconds after being cubed</li>
           <li><b>Spawn protection:</b> for 3 seconds after (re)spawning you cannot take damage — a 🛡️ shield shows on you. Shooting ends it early, so hold fire if you want the full 3s</li>
@@ -653,6 +662,7 @@
       <button class="tbtn" id="btnCrouch" aria-label="Crouch" title="Crouch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 3h16"/><path d="M12 5v12"/><path d="M5 10l7 7 7-7"/></svg></button>
       <button class="tbtn" id="btnChat" aria-label="Chat" title="Chat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-8 8H4l2.3-2.9A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01" stroke-width="3" stroke-linecap="round"/></svg></button>
       <button class="tbtn" id="btnHeal" aria-label="Heal" title="Heal (H) — 3s, +50 HP"><span style="font-size:1.35rem;line-height:1">🩹</span><span class="cap">HEAL</span></button>
+      <button class="tbtn" id="btnGrenade" aria-label="Grenade" title="Grenade (G) — 2 per life"><span style="font-size:1.35rem;line-height:1">🧨</span><span class="cap">NADE</span></button>
       <button class="tbtn" id="btnTaunt" aria-label="Taunt" title="Taunt"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M8 14c1.2 1.8 2.6 2.6 4 2.6S14.8 15.8 16 14" stroke-linecap="round"/></svg></button>
     </div>
   </div>
@@ -830,14 +840,16 @@ var SFX = {
   hit:function(){ beep(700,.05,'square',.05); },
   kill:function(){ beep(520,.09,'square',.06); setTimeout(function(){beep(880,.12,'square',.06);},80); },
   hurt:function(){ beep(140,.12,'sawtooth',.06); },
-  reload:function(){ beep(440,.06,'square',.04); setTimeout(function(){beep(320,.05,'square',.04);},110); }
+  reload:function(){ beep(440,.06,'square',.04); setTimeout(function(){beep(320,.05,'square',.04);},110); },
+  throwNade:function(){ beep(300,.08,'square',.05); },
+  boom:function(d){ var v = (typeof d==='number') ? Math.max(.03, .14 - d*0.008) : .12; beep(90,.25,'sawtooth',v); setTimeout(function(){beep(55,.3,'sine',v);},60); }
 };
 
 /* ================= owner config ================= */
 var DONATE_URL = ''; // OWNER: paste your donation link here (e.g. Buy Me a Coffee / Ko-fi URL). Leave '' and the Donate button says the link is coming soon — never invent payment details.
 
 /* ================= CONTROLS SETTINGS + MAPS (2026-11-15) ================= */
-function csoSettingsLoad(){ try{ var v=JSON.parse(localStorage.getItem('cso_settings')||'null'); if(v) return v; }catch(e){} return {fireMode:'touch', map:'random'}; }
+function csoSettingsLoad(){ try{ var v=JSON.parse(localStorage.getItem('cso_settings')||'null'); if(v) return v; }catch(e){} return {fireMode:'touch', map:'random', roundTime:300}; }
 var csoSettings = csoSettingsLoad();
 function csoSettingsSave(){ try{ localStorage.setItem('cso_settings', JSON.stringify(csoSettings)); }catch(e){} }
 var MAPS = {
@@ -876,6 +888,11 @@ function setMapChoice(id){
   document.querySelectorAll('.mapbtn').forEach(function(b){ b.classList.toggle('on', b.getAttribute('data-map')===csoSettings.map); });
   if(csoSettings.map!=='random'){ currentMapId=csoSettings.map; updateMapLabels(); }
   var cm=$('controlsMsg'); if(cm) cm.textContent = 'Map: ' + (csoSettings.map==='random' ? 'Random — a different map each match!' : MAPS[csoSettings.map].name) + ' — saved on this device.';
+}
+function setRoundTime(sec){
+  csoSettings.roundTime = (sec===180||sec===600) ? sec : 300; csoSettingsSave();
+  document.querySelectorAll('.roundbtn').forEach(function(b){ b.classList.toggle('on', parseInt(b.getAttribute('data-round'),10)===csoSettings.roundTime); });
+  var cm=$('controlsMsg'); if(cm) cm.textContent = 'Round time: ' + (csoSettings.roundTime/60) + ' minutes — saved on this device.';
 }
 
 /* ================= MOVABLE BUTTON LAYOUT (2026-11-15) ================= */
@@ -962,8 +979,10 @@ document.addEventListener('DOMContentLoaded', function(){
   var ft=$('btnFireTouch'); if(ft) ft.addEventListener('click', function(){ setFireMode('touch'); });
   var fb2=$('btnFireButton'); if(fb2) fb2.addEventListener('click', function(){ setFireMode('button'); });
   document.querySelectorAll('.mapbtn').forEach(function(b){ b.addEventListener('click', function(){ setMapChoice(b.getAttribute('data-map')); }); });
+  document.querySelectorAll('.roundbtn').forEach(function(b){ b.addEventListener('click', function(){ setRoundTime(parseInt(b.getAttribute('data-round'),10)); }); });
   setFireMode(csoSettings.fireMode||'touch');
   setMapChoice(csoSettings.map||'random');
+  setRoundTime(csoSettings.roundTime||300);
   applyLayout();
 });
 
@@ -971,9 +990,11 @@ document.addEventListener('DOMContentLoaded', function(){
 var WEAPONS = {
   rifle:  { label:'RIFLE',   dmg:18, head:2.2, rate:120, mag:30, reloadT:1200, spread:0.014, pellets:1, auto:true },
   pistol: { label:'PISTOL',  dmg:26, head:2.0, rate:300, mag:12, reloadT:900,  spread:0.006, pellets:1, auto:false },
-  shotgun:{ label:'SHOTGUN', dmg:9,  head:1.6, rate:850, mag:6,  reloadT:1700, spread:0.085, pellets:7, auto:false }
+  shotgun:{ label:'SHOTGUN', dmg:9,  head:1.6, rate:850, mag:6,  reloadT:1700, spread:0.085, pellets:7, auto:false },
+  dmr:    { label:'DMR',     dmg:42, head:2.4, rate:550, mag:10, reloadT:1500, spread:0.004, pellets:1, auto:false },
+  burst:  { label:'BURST',   dmg:16, head:2.0, rate:420, mag:24, reloadT:1300, spread:0.012, pellets:3, auto:false }
 };
-var GUN_ORDER = ['rifle','pistol','shotgun'];
+var GUN_ORDER = ['rifle','pistol','shotgun','dmr','burst'];
 
 /* ================= PREMIUM SHOP (coins earned in matches — no real-money checkout) ================= */
 var SHOP_SKINS = [
@@ -993,7 +1014,7 @@ function shopLoad(){ try{ var v = JSON.parse(localStorage.getItem('cso_shop')||'
 var shopState = shopLoad();
 function shopSave(){ try{ localStorage.setItem('cso_shop', JSON.stringify(shopState)); }catch(e){} }
 function shopAddCoins(n){ shopState.coins = Math.max(0, (shopState.coins||0) + n); shopSave(); acctRender(); }
-function ownedGuns(){ var g = ['rifle','pistol','shotgun']; SHOP_GUNS.forEach(function(x){ if(shopState.owned[x.id]) g.push(x.id); }); return g; }
+function ownedGuns(){ var g = ['rifle','pistol','shotgun','dmr','burst']; SHOP_GUNS.forEach(function(x){ if(shopState.owned[x.id]) g.push(x.id); }); return g; }
 function skinById(id){ for(var i=0;i<SHOP_SKINS.length;i++) if(SHOP_SKINS[i].id===id) return SHOP_SKINS[i]; return null; }
 
 /* ================= global state ================= */
@@ -1020,6 +1041,10 @@ var TDM_TEAM_SIZE = 5;          // TDM: 5v5 (Alpha vs Bravo, 5 each)
 var HEAL_TIME = 3;              // medkit channel, seconds
 var HEAL_AMOUNT = 50;           // HP restored by one medkit
 var HEALS_PER_MATCH = 2;        // medkits per player per match (humans and bots alike)
+var GRENADES_PER_LIFE = 2;      // grenades per player per life (refilled on respawn)
+var GRENADE_DMG = 90;           // centre damage
+var GRENADE_RADIUS = 6.5;       // full damage within 3m, none past 6.5m
+var GRENADE_FUSE = 2.5;         // seconds max flight before it pops
 var matchType = 'ffa';        // 'ffa' | 'tdm'
 var teamKills = [0,0];
 var TEAM_NAMES = ['Alpha','Bravo'];
@@ -1034,6 +1059,7 @@ var WEAPON_ICONS = {
 };
 // shop guns reuse base icons (defined here, after WEAPON_ICONS exists)
 WEAPON_ICONS['smg'] = WEAPON_ICONS['rifle']; WEAPON_ICONS['sniper'] = WEAPON_ICONS['rifle']; WEAPON_ICONS['lmg'] = WEAPON_ICONS['shotgun'];
+WEAPON_ICONS['dmr'] = WEAPON_ICONS['rifle']; WEAPON_ICONS['burst'] = WEAPON_ICONS['rifle'];
 
 /* ================= PUBG LOBBY 3D — idle character in the main-menu lobby =================
    A second, lightweight Three.js scene (own renderer/canvas in #lobby3d). The cube
@@ -1132,13 +1158,97 @@ function onResize(){
   cam1.updateProjectionMatrix(); cam2.updateProjectionMatrix();
 }
 function box(x,y,z,w,h,d,color, collidable){
-  var m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshLambertMaterial({color:color}));
+  var m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshLambertMaterial({color:color, map:marbleTexture()}));
   m.position.set(x,y,z); (mapGroup||scene).add(m);
   if(collidable !== false){
     walls.push(m);
-    colliders.push({minX:x-w/2,maxX:x+w/2,minZ:z-d/2,maxZ:z+d/2});
+    colliders.push({minX:x-w/2,maxX:x+w/2,minZ:z-d/2,maxZ:z+d/2,top:y+h/2,bot:y-h/2});
   }
   return m;
+}
+
+/* ================= MARBLE LOOK + FLOOR (2026-11-16) =================
+   One shared white-marble canvas texture; the material colour tints it, so
+   every cube (buildings, crates, walls, player bodies) looks like coloured
+   marble without a texture per colour. */
+var marbleTexCache = null;
+function marbleTexture(){
+  if(marbleTexCache) return marbleTexCache;
+  var c=document.createElement('canvas'); c.width=c.height=256;
+  var x=c.getContext('2d');
+  x.fillStyle='#f7f5f2'; x.fillRect(0,0,256,256);
+  for(var i=0;i<10;i++){
+    var g=x.createRadialGradient(rand(0,256),rand(0,256),4,rand(0,256),rand(0,256),rand(30,80));
+    g.addColorStop(0,'rgba(220,220,230,0.25)'); g.addColorStop(1,'rgba(220,220,230,0)');
+    x.fillStyle=g; x.fillRect(0,0,256,256);
+  }
+  var veinCols=['rgba(150,150,170,0.55)','rgba(170,160,160,0.5)','rgba(140,150,180,0.45)','rgba(190,190,200,0.6)'];
+  for(var v=0;v<16;v++){
+    x.strokeStyle=pick(veinCols); x.lineWidth=rand(0.6,2.2); x.beginPath();
+    var px=rand(-20,276), py=rand(-20,276); x.moveTo(px,py);
+    for(var s=0;s<4;s++){ x.bezierCurveTo(px+rand(-60,60),py+rand(-60,60),px+rand(-60,60),py+rand(-60,60),px+rand(-90,90),py+rand(-90,90)); px+=rand(-40,40); py+=rand(-40,40); }
+    x.stroke();
+  }
+  for(var d=0;d<500;d++){ x.fillStyle='rgba(120,120,140,'+rand(0.05,0.18)+')'; x.fillRect(rand(0,256),rand(0,256),1.2,1.2); }
+  marbleTexCache = new THREE.CanvasTexture(c);
+  return marbleTexCache;
+}
+/* Floor: one 1024 canvas per map — tile grid + speckles + centre plaza ring.
+   The ground plane is 100x100, so the canvas maps 1:1 to metres. */
+var floorTexCache = {};
+function floorTexture(def){
+  if(floorTexCache[currentMapId]) return floorTexCache[currentMapId];
+  var S=1024, c=document.createElement('canvas'); c.width=c.height=S;
+  var x=c.getContext('2d');
+  function css(hex){ return '#'+('000000'+hex.toString(16)).slice(-6); }
+  x.fillStyle=css(def.ground); x.fillRect(0,0,S,S);
+  var T=S/8, i, j;
+  for(i=0;i<8;i++) for(j=0;j<8;j++){
+    x.fillStyle = ((i+j)%2===0) ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.045)';
+    x.fillRect(i*T,j*T,T,T);
+  }
+  x.strokeStyle='rgba(0,0,0,0.14)'; x.lineWidth=2;
+  for(var g2=0;g2<=8;g2++){ x.beginPath(); x.moveTo(g2*T,0); x.lineTo(g2*T,S); x.stroke(); x.beginPath(); x.moveTo(0,g2*T); x.lineTo(S,g2*T); x.stroke(); }
+  for(var d2=0;d2<900;d2++){ x.fillStyle='rgba(0,0,0,'+rand(0.03,0.1)+')'; x.fillRect(rand(0,S),rand(0,S),2,2); }
+  x.strokeStyle=css(def.road); x.lineWidth=10;
+  x.beginPath(); x.arc(S/2,S/2,78,0,7); x.stroke();
+  x.fillStyle=css(def.road); x.globalAlpha=0.22;
+  x.beginPath(); x.arc(S/2,S/2,66,0,7); x.fill(); x.globalAlpha=1;
+  var tex = new THREE.CanvasTexture(c);
+  floorTexCache[currentMapId]=tex; return tex;
+}
+/* ---- bridges + sniper towers (walkable — see collide()/groundHeight()) ----
+   Deck top 2.6m, steps rise 0.7m each (walk up, no jumping needed).
+   South bridge: full span. North bridge: two segments around the landmark
+   at (0,-22); each inner end has side stairs facing the centre. */
+function buildBridge(z, x1, x2, sideEnd){
+  var cx=(x1+x2)/2, len=x2-x1;
+  box(cx, 2.5, z, len, 0.2, 2, MAPS[currentMapId].wall);          // deck (top 2.6)
+  box(x1+1, 1.2, z, 0.6, 2.4, 1.8, 0x8a6d3b);                     // pillars
+  box(x2-1, 1.2, z, 0.6, 2.4, 1.8, 0x8a6d3b);
+  var s, w=2.2;
+  if(sideEnd!=='left'){ // steps at the left end, going outward (-x)
+    for(s=0;s<3;s++){ var topL=0.7*(3-s); box(x1-(s+1)*w+w/2, topL/2, z, w, topL, 2, 0xb08968); }
+  }
+  if(sideEnd!=='right'){ // steps at the right end, going outward (+x)
+    for(s=0;s<3;s++){ var topR=0.7*(3-s); box(x2+s*w+w/2, topR/2, z, w, topR, 2, 0xb08968); }
+  }
+  if(sideEnd==='left'){ // side stairs at the left end, facing the centre (+z)
+    for(s=0;s<3;s++){ var topSL=0.7*(3-s); box(x1, topSL/2, z+1+1.1+s*2.2, 2, topSL, 2.2, 0xb08968); }
+  }
+  if(sideEnd==='right'){ // side stairs at the right end, facing the centre (+z)
+    for(s=0;s<3;s++){ var topSR=0.7*(3-s); box(x2, topSR/2, z+1+1.1+s*2.2, 2, topSR, 2.2, 0xb08968); }
+  }
+}
+/* Sniper tower: gold platform (top 3.5m) with 4 steps down toward the centre
+   and a cover crate on the far corner. dir=-1: steps toward -z; dir=+1: +z. */
+function buildTower(tx, tz, dir){
+  box(tx, 3.4, tz, 4.5, 0.2, 4.5, 0xffd166);                      // platform (top 3.5)
+  for(var s=0;s<4;s++){
+    var top=2.8-0.7*s;
+    box(tx, top/2, tz + dir*(2.25+0.8+s*1.6), 2.5, top, 1.6, 0xb08968);
+  }
+  box(tx-1.2, 4.0, tz-dir*1.2, 1.6, 1, 1.6, 0xd9a066);            // cover crate
 }
 function buildMap(mapId){
   var def = MAPS[mapId] || MAPS.neon;
@@ -1149,12 +1259,20 @@ function buildMap(mapId){
   if(mapGroup && scene){ scene.remove(mapGroup); mapGroup.traverse(function(o){ if(o.geometry) o.geometry.dispose(); if(o.material){ if(o.material.map) o.material.map.dispose(); o.material.dispose(); } }); }
   mapGroup = new THREE.Group(); scene.add(mapGroup);
   walls = []; colliders = [];
-  var g = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshLambertMaterial({color:def.ground}));
+  var g = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshLambertMaterial({map:floorTexture(def)}));
   g.rotation.x = -Math.PI/2; mapGroup.add(g); walls.push(g);
   var r1 = new THREE.Mesh(new THREE.PlaneGeometry(100,10), new THREE.MeshLambertMaterial({color:def.road}));
   r1.rotation.x=-Math.PI/2; r1.position.y=0.01; mapGroup.add(r1); walls.push(r1);
   var r2 = new THREE.Mesh(new THREE.PlaneGeometry(10,100), new THREE.MeshLambertMaterial({color:def.road}));
   r2.rotation.x=-Math.PI/2; r2.position.y=0.012; mapGroup.add(r2); walls.push(r2);
+  // road details: dashed centre lines on both roads (centre plaza kept clear)
+  var dashMat = new THREE.MeshBasicMaterial({color:0xffffff});
+  var i2;
+  for(i2=-46;i2<=46;i2+=4){
+    if(Math.abs(i2)<7) continue;
+    var d1=new THREE.Mesh(new THREE.BoxGeometry(0.6,0.02,2.2), dashMat); d1.position.set(i2,0.03,0); mapGroup.add(d1);
+    var d2=new THREE.Mesh(new THREE.BoxGeometry(2.2,0.02,0.6), dashMat); d2.position.set(0,0.03,i2); mapGroup.add(d2);
+  }
   box(0,2,-50, 102,4,2, def.wall); box(0,2,50, 102,4,2, def.wall);
   box(-50,2,0, 2,4,102, def.wall); box(50,2,0, 2,4,102, def.wall);
   def.buildings.forEach(function(b){ box(b[0], b[3]/2, b[1], b[2], b[3], b[4], b[5]); });
@@ -1162,6 +1280,13 @@ function buildMap(mapId){
   if(def.landmark==='chai'){ box(0,1.5,-22, 4,3,4, 0xffffff); box(2.6,1.5,-22, 1.2,1.6,0.6, 0xffffff); }
   else if(def.landmark==='tent'){ box(0,2.5,-22, 8,5,8, 0xef476f); box(0,6,-22, 9,1,9, 0xffd166); box(0,7.5,-22, 1,3,1, 0xffd166); }
   else if(def.landmark==='tower'){ box(0,6,-22, 5,12,5, 0x1d2f52); box(0,12.5,-22, 6,1,6, 0x4cc9f0); box(0,14,-22, 2,2,2, 0xffd166); }
+  // bridges + sniper towers (same spots on all 3 maps — checked clear of
+  // buildings, crates and landmarks on neon, bazaar and night)
+  buildBridge(22, -18, 18, 'none');    // south bridge, full span
+  buildBridge(-22, -18, -5, 'right');  // north bridge, west segment
+  buildBridge(-22, 5, 16, 'left');     // north bridge, east segment (ends at 16, not 18: the (28,-28) corner building on bazaar/night reaches x=23, so longer steps would clip its corner)
+  buildTower(-24, 18, -1);             // sniper tower, north-west
+  buildTower(24, -18, 1);              // sniper tower, south-east
   updateMapLabels();
 }
 
@@ -1221,7 +1346,7 @@ function createPlayer(id, name, colorIdx, opts){
     pos:new THREE.Vector3(0,0,0), vel:new THREE.Vector3(), yaw:0, pitch:0,
     hp:100, alive:true, kills:0, deaths:0, streak:0, bestStreak:0, headshots:0,
     weapon:'rifle', ammo:freshAmmo(), reloading:0, lastShot:0,
-    heals:HEALS_PER_MATCH, healing:false, healProg:0,
+    heals:HEALS_PER_MATCH, grenades:GRENADES_PER_LIFE, healing:false, healProg:0,
     respawnT:0, spawnProtUntil:0, shieldMesh:null, onGround:true, botT:0, botTarget:null, botStrafe:1, shootCd:0, retargetT:0, lastAttacker:null,
     mesh:null, headMesh:null, bodyMesh:null, hpBar:null, _hpShown:-1
   };
@@ -1229,11 +1354,11 @@ function createPlayer(id, name, colorIdx, opts){
   var col = PALETTE[colorIdx % PALETTE.length];
   var skin = (id===localId && shopState.equippedSkin) ? skinById(shopState.equippedSkin) : null;
   var bodyCol = skin ? parseInt(skin.color.slice(1), 16) : col;
-  var body = new THREE.Mesh(new THREE.BoxGeometry(0.72,1.05,0.42), new THREE.MeshLambertMaterial({color:bodyCol}));
+  var body = new THREE.Mesh(new THREE.BoxGeometry(0.72,1.05,0.42), new THREE.MeshLambertMaterial({color:bodyCol, map:marbleTexture()}));
   body.position.y=0.95; body.userData.pid=id; body.userData.part='body';
   var head = new THREE.Mesh(new THREE.BoxGeometry(0.46,0.46,0.46), new THREE.MeshLambertMaterial({color:0xffd9b3}));
   head.position.y=1.78; head.userData.pid=id; head.userData.part='head';
-  var cap = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.14,0.5), new THREE.MeshLambertMaterial({color:bodyCol}));
+  var cap = new THREE.Mesh(new THREE.BoxGeometry(0.5,0.14,0.5), new THREE.MeshLambertMaterial({color:bodyCol, map:marbleTexture()}));
   cap.position.y=2.05;
   var gun = new THREE.Mesh(new THREE.BoxGeometry(0.12,0.12,0.7), new THREE.MeshLambertMaterial({color: skin ? bodyCol : 0x222831}));
   gun.position.set(0.3,1.25,-0.3);
@@ -1291,10 +1416,17 @@ function syncMesh(p){
     p.shieldMesh.visible = !!prot && (mode==='split' || p.id!==localId); }
 }
 function collide(p, nx, nz){
-  // circle vs AABB, radius .45
+  // circle vs AABB, radius .45 — height-aware: a box whose top is at/below your
+  // feet, or a small step (<=0.75m) above your feet, never blocks you
+  // horizontally (you walk up onto it); anything taller blocks as before.
+  // Boxes you can walk under (bridge decks) are skipped when your head clears
+  // their bottom.
   var r=0.45;
   for(var i=0;i<colliders.length;i++){
     var c=colliders[i];
+    if(p.pos.y >= c.top - 0.05) continue;          // standing on / above it
+    if(p.pos.y + 1.8 <= c.bot) continue;           // head below its bottom
+    if(c.top - p.pos.y <= 0.75) continue;          // small step: walk up
     if(nx+r>c.minX && nx-r<c.maxX && nz+r>c.minZ && nz-r<c.maxZ){
       // push out on smallest axis
       var dxl = Math.abs((nx+r)-c.minX), dxr = Math.abs(c.maxX-(nx-r));
@@ -1306,16 +1438,28 @@ function collide(p, nx, nz){
   }
   p.pos.x = clamp(nx,-48.5,48.5); p.pos.z = clamp(nz,-48.5,48.5);
 }
+function groundHeight(x, z, y){
+  // highest solid top under (x,z) that is at/below y+0.75 (walkable step-up);
+  // 0 = the arena floor.
+  var g = 0;
+  for(var i=0;i<colliders.length;i++){ var c=colliders[i];
+    if(x+0.3>c.minX && x-0.3<c.maxX && z+0.3>c.minZ && z-0.3<c.maxZ){
+      if(c.top<=y+0.75 && c.top>g) g=c.top;
+    }
+  }
+  return g;
+}
 function movePlayer(p, fwd, strafe, dt, speed){
   var s = Math.sin(p.yaw), c = Math.cos(p.yaw);
   var mx = (-s*fwd + c*strafe), mz = (-c*fwd - s*strafe);
   var len = Math.hypot(mx,mz)||1;
   var sp = (speed||7.2) * dt;
   collide(p, p.pos.x + mx/len*sp*(Math.hypot(mx,mz)?1:0), p.pos.z + mz/len*sp*(Math.hypot(mx,mz)?1:0));
-  // gravity / jump
+  // gravity / jump — land on the highest walkable top under your feet
   p.vel.y -= 22*dt;
   p.pos.y += p.vel.y*dt;
-  if(p.pos.y<=0){ p.pos.y=0; p.vel.y=0; p.onGround=true; }
+  var g = groundHeight(p.pos.x, p.pos.z, p.pos.y);
+  if(p.pos.y<=g){ p.pos.y=g; p.vel.y=0; p.onGround=true; }
 }
 function jump(p){ if(p.onGround && p.alive){ p.vel.y=8.2; p.onGround=false; } }
 
@@ -1469,6 +1613,81 @@ function switchWeapon(p, gun){
   p.weapon = gun; p.reloading = 0;
   if(p.id===localId||p.id===p2Id) updateHUD();
 }
+/* ================= GRENADES (2026-11-16) =================
+   G key / 🧨 button: lob a grenade (2 per life, refilled on respawn). It arcs,
+   pops on the first solid hit (floor, wall, bridge deck, tower roof) or after
+   2.5s, and hurts every ENEMY in the blast — 90 damage at the centre, fading
+   to 0 at 6.5m. No self-damage, no friendly fire (TDM). The thrower's client
+   applies the damage (same authority rule as bullets); other devices just
+   render the flight + boom from the 'grenade' message. Bots never throw. */
+var grenades = [];   // {mesh, vel, from, born}
+var explosions = []; // {mesh, light, born}
+function throwGrenade(p){
+  if(!p || !p.alive || !running || (p.grenades||0)<=0) return false;
+  p.grenades--;
+  var eye = eyeOf(p);
+  var dir = new THREE.Vector3(-Math.sin(p.yaw)*Math.cos(p.pitch), Math.sin(p.pitch), -Math.cos(p.yaw)*Math.cos(p.pitch));
+  var vel = dir.multiplyScalar(17); vel.y += 4.5;
+  spawnGrenade(eye, vel, p);
+  if(p.id===localId || p.id===p2Id){ SFX.throwNade(); updateHUD(); }
+  if(mode==='online' && p.id===localId) netSend({t:'grenade', x:eye.x, y:eye.y, z:eye.z, vx:vel.x, vy:vel.y, vz:vel.z, from:localId});
+  return true;
+}
+function spawnGrenade(pos, vel, fromP){
+  var mesh = new THREE.Mesh(new THREE.SphereGeometry(0.18, 10, 8), new THREE.MeshLambertMaterial({color:0x2b2d42}));
+  mesh.position.copy(pos); scene.add(mesh);
+  grenades.push({mesh:mesh, vel:vel.clone(), from:fromP, born:performance.now()});
+}
+function updateGrenades(now, dt){
+  for(var i=grenades.length-1;i>=0;i--){
+    var g=grenades[i];
+    g.vel.y -= 22*dt;
+    g.mesh.position.x += g.vel.x*dt;
+    g.mesh.position.y += g.vel.y*dt;
+    g.mesh.position.z += g.vel.z*dt;
+    var mp=g.mesh.position;
+    var hitGround = mp.y <= groundHeight(mp.x, mp.z, mp.y) + 0.15;
+    var hitWall = false;
+    if(!hitGround){
+      for(var c=0;c<colliders.length;c++){ var col=colliders[c];
+        if(mp.x>col.minX && mp.x<col.maxX && mp.z>col.minZ && mp.z<col.maxZ && mp.y<col.top && mp.y>col.bot){ hitWall=true; break; }
+      }
+    }
+    if(hitGround || hitWall || (now-g.born)/1000 > GRENADE_FUSE){
+      explodeGrenade(g);
+      scene.remove(g.mesh); g.mesh.geometry.dispose(); g.mesh.material.dispose();
+      grenades.splice(i,1);
+    }
+  }
+  // explosion visuals: expanding orange sphere + light, gone in 0.55s
+  for(var e=explosions.length-1;e>=0;e--){
+    var ex=explosions[e], age=(now-ex.born)/1000;
+    if(age>0.55){ scene.remove(ex.mesh); ex.mesh.geometry.dispose(); ex.mesh.material.dispose(); if(ex.light){ scene.remove(ex.light); } explosions.splice(e,1); }
+    else { var k=age/0.55; ex.mesh.scale.setScalar(1+k*7); ex.mesh.material.opacity=0.85*(1-k); if(ex.light) ex.light.intensity=3.5*(1-k); }
+  }
+}
+function explodeGrenade(g){
+  var pos=g.mesh.position.clone();
+  var mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 18, 12), new THREE.MeshBasicMaterial({color:0xff7b00, transparent:true, opacity:0.85, depthWrite:false}));
+  mesh.position.copy(pos); scene.add(mesh);
+  var light = new THREE.PointLight(0xff8c1a, 3.5, 18, 2); light.position.copy(pos); scene.add(light);
+  explosions.push({mesh:mesh, light:light, born:performance.now()});
+  var me0=players[localId];
+  if(me0){ var d0=pos.distanceTo(me0.pos); if(d0<14) SFX.boom(d0); }
+  // damage: only the thrower's client applies it (authority rule, like bullets)
+  var thrower=g.from;
+  if(!thrower) return;
+  if(mode==='online' && thrower.id!==localId) return;
+  for(var id in players){
+    var t=players[id];
+    if(!t.alive || t.id===thrower.id) continue;
+    if(isTeammate(thrower, t)) continue;
+    var d=t.pos.distanceTo(pos);
+    if(d>GRENADE_RADIUS) continue;
+    var dmg = d<=3 ? GRENADE_DMG : Math.round(GRENADE_DMG*(1-(d-3)/(GRENADE_RADIUS-3)));
+    if(dmg>0) applyHit(thrower, t, dmg, false);
+  }
+}
 function isTeammate(a, b){
   return matchType==='tdm' && a && b && a.team!==null && a.team!==undefined && a.team===b.team;
 }
@@ -1546,7 +1765,7 @@ function killPlayer(attacker, target, head){
   } else if(attacker.kills>=25) endMatch(attacker);
 }
 function respawn(p){
-  p.hp=100; p.alive=true; p.ammo=freshAmmo(); p.reloading=0;
+  p.hp=100; p.alive=true; p.ammo=freshAmmo(); p.reloading=0; p.grenades=GRENADES_PER_LIFE; // grenades ARE per-life: refilled on every respawn
   p.healing=false; p.healProg=0; // medkits are per-match, not per-life: count is NOT reset here
   p.spawnProtUntil = performance.now() + 3000; // SPAWN PROTECTION: 3s, no damage taken
   placeAtSpawn(p);
@@ -1900,9 +2119,10 @@ function updateHUD(){
   if(hf) hf.style.width = me.healing ? Math.min(100, (me.healProg/HEAL_TIME)*100)+'%' : '0%';
   if(ht){
     if(me.healing){ ht.textContent='🩹 Healing… '+Math.ceil(HEAL_TIME-me.healProg)+'s — don\'t shoot or take damage!'; ht.classList.add('healing'); }
-    else { ht.textContent='🩹 Medkits: '+me.heals+' — press H to heal (+'+HEAL_AMOUNT+' HP)'; ht.classList.remove('healing'); }
+    else { ht.textContent='🩹 Medkits: '+me.heals+' — press H to heal (+'+HEAL_AMOUNT+' HP) · 🧨 Grenades: '+me.grenades+' (G)'; ht.classList.remove('healing'); }
   }
   var hb=$('btnHeal'); if(hb) hb.style.opacity = (me.heals>0 && me.hp<100 && me.alive) ? '1' : '0.45';
+  var gb=$('btnGrenade'); if(gb) gb.style.opacity = (me.grenades>0 && me.alive) ? '1' : '0.45';
   $('weaponName').textContent = WEAPONS[me.weapon].label + (me.reloading>0 ? ' · RELOADING' : '');
   var wi = $('weaponIcon'); if(wi) wi.innerHTML = WEAPON_ICONS[me.weapon]||'';
   $('ammo').textContent = me.ammo[me.weapon];
@@ -1990,8 +2210,10 @@ function startMatch(){
   botChatT = rand(7,13);
   var cl=$('chatLog'); if(cl) cl.innerHTML='';
   setChatOpen(false);
-  matchTime = 300; running = true;
+  matchTime = csoSettings.roundTime || 300; $('timer').textContent = fmtTime(matchTime); running = true;
   decals.forEach(function(d){ scene.remove(d.mesh); d.mesh.material.dispose(); }); decals=[];
+  grenades.forEach(function(g){ scene.remove(g.mesh); }); grenades=[];
+  explosions.forEach(function(ex){ scene.remove(ex.mesh); if(ex.light) scene.remove(ex.light); }); explosions=[];
   if(muzzleSprite) muzzleSprite.visible=false; if(muzzleLight) muzzleLight.intensity=0;
   $('feed').innerHTML='';
   showScreen('game');
@@ -2002,7 +2224,7 @@ function startMatch(){
   Object.keys(players).forEach(function(id){ var p=players[id]; p.kills=0;p.deaths=0;p.streak=0;p.bestStreak=0;p.headshots=0;p.hp=100;p.alive=true; p.heals=HEALS_PER_MATCH; p.healing=false; p.healProg=0; respawn(p); });
   updateScore(); updateHUD();
   if(matchType==='tdm') showBanner('TEAM DEATHMATCH','Alpha vs Bravo — first team to 25 kills wins!');
-  else showBanner('FIGHT!','First to 25 kills — or most kills in 5 minutes wins!');
+  else showBanner('FIGHT!','First to 25 kills — or most kills in ' + fmtTime(matchTime) + ' wins!');
   addFeed('🏁 Match started on <b>'+esc(mapName())+'</b>!');
   if(document.activeElement && document.activeElement.blur) document.activeElement.blur(); // focused Play/Resume button must not eat Space/Enter in-game
   if(isTouch){ var th=$('tapHint'); if(th){ th.classList.add('show'); setTimeout(function(){ th.classList.remove('show'); }, 3400); } }
@@ -2201,6 +2423,7 @@ function gameLoop(){
   matchTime -= dt;
   $('timer').textContent = fmtTime(matchTime);
   updateSpawnProt();
+  updateGrenades(now, dt);
   if(matchTime<=0){ endMatch(null); render(); return; }
 
   var me = players[localId];
@@ -2449,6 +2672,13 @@ function handleNet(msg, fromPid){
         showMuzzleFlash(sp);
         var me1 = players[localId];
         SFX.distant(msg.gun||sp.weapon, me1 ? sp.pos.distanceTo(me1.pos) : 45);
+      }
+      break; }
+    case 'grenade': {
+      // render the thrower's grenade flight + boom locally; damage is applied
+      // by the thrower's client only (see explodeGrenade).
+      if(msg.from!==localId){
+        spawnGrenade(new THREE.Vector3(msg.x||0, msg.y||1.6, msg.z||0), new THREE.Vector3(msg.vx||0, msg.vy||0, msg.vz||0), players[msg.from]||null);
       }
       break; }
     case 'taunt': addFeed('😜 <b>'+esc(msg.name)+':</b> '+esc(msg.text), 'taunt'); break;
@@ -2765,7 +2995,7 @@ document.addEventListener('keydown', function(e){
   // MOUSE-STUCK FIX (focus steal): a button clicked to start/resume keeps focus;
   // Space/Enter would re-click it (e.g. Pause) instead of jumping/chatting.
   if(running && e.target && e.target.tagName==='BUTTON'){
-    if(['KeyW','KeyA','KeyS','KeyD','Space','Enter','KeyH','KeyR','KeyT','Tab'].indexOf(e.code)>=0) e.target.blur();
+    if(['KeyW','KeyA','KeyS','KeyD','Space','Enter','KeyH','KeyR','KeyT','KeyG','Tab'].indexOf(e.code)>=0) e.target.blur();
     if(e.code==='Space') e.preventDefault();
   }
   if(e.code==='Enter' && running && mode!=='split' && !chatOpen){ setChatOpen(true); if(!isTouch) setTimeout(function(){ var ct=$('chatText'); if(ct) ct.focus(); },30); return; }
@@ -2777,11 +3007,12 @@ document.addEventListener('keydown', function(e){
   if(e.code.indexOf('Digit')===0){ var og2=ownedGuns(), n2=parseInt(e.code.slice(5),10)-1; if(og2[n2]) switchWeapon(me, og2[n2]); }
   if(e.code==='KeyR') reload(me);
   if(e.code==='KeyH' && !e.repeat) startHeal(me);
+  if(e.code==='KeyG' && !e.repeat) throwGrenade(me);
   if(e.code==='Space'){ e.preventDefault(); if(!e.repeat) jump(me); }
   if(e.code==='KeyT' && !e.repeat) sendTaunt();
   if(mode==='split'){
     if(e.code==='Enter'){ p2FireHeld=true; var p2=players[p2Id]; if(p2 && !WEAPONS[p2.weapon].auto) tryShoot(p2, performance.now()); }
-    if(e.code==='Slash'){ var p2b=players[p2Id]; if(p2b){ var nx=GUN_ORDER[(GUN_ORDER.indexOf(p2b.weapon)+1)%3]; switchWeapon(p2b, nx); } }
+    if(e.code==='Slash'){ var p2b=players[p2Id]; if(p2b){ var nx=GUN_ORDER[(GUN_ORDER.indexOf(p2b.weapon)+1)%GUN_ORDER.length]; switchWeapon(p2b, nx); } }
     if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].indexOf(e.code)>=0) e.preventDefault();
   }
 });
@@ -2975,6 +3206,7 @@ function bindTouch(){
   barBtn('btnGun', function(){ var me=players[localId]; if(me){ var og=ownedGuns(); switchWeapon(me, og[(og.indexOf(me.weapon)+1)%og.length]); } });
   barBtn('btnTaunt', function(){ if(running) sendTaunt(); });
   barBtn('btnHeal', function(){ var mh=players[localId]; if(mh) startHeal(mh); });
+  barBtn('btnGrenade', function(){ var mg=players[localId]; if(mg) throwGrenade(mg); });
   var hw2=$('healWrap'); if(hw2) hw2.addEventListener('click', function(){ var mh2=players[localId]; if(mh2) startHeal(mh2); });
   var bc=$('btnCrouch');
   if(bc){
