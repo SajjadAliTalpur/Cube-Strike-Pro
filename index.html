@@ -410,8 +410,6 @@
   <div id="shopCard" class="collap" style="max-width:760px;margin:14px auto;padding:14px 16px;background:#14213d;color:#fff;border:2px solid #ffd166;border-radius:14px;text-align:left">
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px">
       <div class="collap-head"><span class="arrow">▸</span><b style="font-size:1.05rem">🛒 Premium Shop</b> <span id="shopBalance" style="font-weight:800;color:#ffd166"></span></div>
-      <div><button class="bigbtn" id="btnDonate" style="font-size:.9rem;padding:8px 14px">❤️ Donate</button>
-      <button class="bigbtn ghost" id="btnRealMoney" style="font-size:.9rem;padding:8px 14px">💳 Buy coins — coming soon</button></div>
     </div>
     <div class="collap-body">
     <div id="shopMsg" style="font-weight:700;margin-top:6px;min-height:1.2em"></div>
@@ -419,7 +417,7 @@
     <div id="shopSkins" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
     <div style="margin-top:10px;font-weight:800">🔫 New guns — different damage &amp; fire-rate, usable once bought (keys 1–8 / gun button cycles owned guns)</div>
     <div id="shopGuns" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:6px"></div>
-    <div style="font-size:.8rem;color:#cfe3ff;margin-top:8px">Coins are earned in matches: 10 per kill + 50 win bonus + 20 per match. Skins &amp; guns are bought with coins only — real-money purchase is coming soon, there is no checkout here yet.</div>
+    <div style="font-size:.8rem;color:#cfe3ff;margin-top:8px">Coins are earned in matches: 10 per kill + 50 win bonus + 20 per match. Skins &amp; guns are bought with coins only — no real money, no checkout.</div>
     </div>
   </div>
 
@@ -488,6 +486,17 @@
       <div id="acctMsg" style="margin-top:6px;font-weight:700;min-height:1.2em"></div>
       <div style="font-size:.8rem;color:#cfe3ff">Cloud account = your name, level and match history follow you to any device (free, Supabase). If the cloud is unreachable you keep playing as a local guest — nothing is faked.</div>
     </div>
+    </div>
+  </div>
+
+  <div id="devCard" class="collap" style="display:none;max-width:760px;margin:14px auto;padding:14px 16px;background:#14213d;color:#fff;border:2px solid #ffd166;border-radius:14px;text-align:left">
+    <div class="collap-head"><span class="arrow">▸</span><b style="font-size:1.05rem">📊 Developer Stats</b> <span style="font-weight:700;color:#cfe3ff">only you can see this</span></div>
+    <div class="collap-body">
+      <div style="margin-top:8px"><button class="bigbtn blue" id="btnDevRefresh" style="font-size:.9rem;padding:8px 14px">🔄 Refresh</button></div>
+      <div id="devStats" style="margin-top:8px;font-weight:700">Loading…</div>
+      <div id="devLive" style="margin-top:8px"></div>
+      <div id="devRecent" style="margin-top:8px;font-size:.85rem"></div>
+      <div style="font-size:.8rem;color:#cfe3ff;margin-top:8px">Counts every match (guests included). "Live now" = playing in the last 90 seconds. Times are Pakistan time (PKT). Needs the cube_strike_sessions table in Supabase — without it this panel says "not set up yet".</div>
     </div>
   </div>
 
@@ -566,8 +575,7 @@
           <li><b>TDM:</b> first team to 25 kills wins — Alpha (blue) vs Bravo (pink), bots split across both teams</li>
           <li><b>Spawn protection:</b> 3s of no damage after (re)spawning — 🛡️ shield shows on you. Shooting ends it early</li>
           <li><b>Account:</b> sign up with your fighter name + email + password in the My Account card and your name, level and match history follow you to any device. Log in needs only email + password — your name is fetched from your account. Without an account, history stays on this device only</li>
-          <li><b>Premium Shop:</b> earn 🪙 coins in matches (10 per kill + 50 win bonus + 20 per match) and spend them on weapon skins and new guns (SMG, Sniper, LMG). Real-money coin purchase is coming soon — no checkout here yet</li>
-          <li><b>Donate:</b> the ❤️ Donate button opens the owner's donation link — the owner sets their own link in the DONATE_URL setting; no payment details are built into the game</li>
+          <li><b>Premium Shop:</b> earn 🪙 coins in matches (10 per kill + 50 win bonus + 20 per match) and spend them on weapon skins and new guns (SMG, Sniper, LMG). Coins only — no real money, no checkout</li>
           <li><b>Pause / return:</b> press <kbd>Esc</kbd> or <kbd>P</kbd> (or the ⏸ button) to pause — Resume, or Main Menu to quit to the menu. Your account stays logged in</li>
         </ul>
       </div>
@@ -881,7 +889,6 @@ function showHsFlash(){
 }
 
 /* ================= owner config ================= */
-var DONATE_URL = ''; // OWNER: paste your donation link here (e.g. Buy Me a Coffee / Ko-fi URL). Leave '' and the Donate button says the link is coming soon — never invent payment details.
 
 /* ================= CONTROLS SETTINGS + MAPS (2026-11-15) ================= */
 function csoSettingsLoad(){ try{ var v=JSON.parse(localStorage.getItem('cso_settings')||'null'); if(v) return v; }catch(e){} return {fireMode:'touch', map:'random', roundTime:300}; }
@@ -1977,11 +1984,102 @@ function botThink(p, dt, now){
        status text, room_code text, host_id text, created_at timestamptz default now())
    Rows are short-lived (waiting rows expire after ~45s) and are deleted when a
    match starts or the player cancels. RLS must allow anon insert/select/update/
-   delete on this table — it is a public matchmaking queue, not private data. */
+   delete on this table — it is a public matchmaking queue, not private data.
+   DEVELOPER ANALYTICS table (run the cube_strike_sessions SQL in the Supabase
+   SQL editor — without it the Developer Stats panel shows "not set up yet"):
+     cube_strike_sessions(id uuid PK default gen_random_uuid(), player_id text,
+       player_name text, map text, mode text, started_at timestamptz default now(),
+       last_seen_at timestamptz default now(), ended_at timestamptz,
+       kills int default 0, deaths int default 0)
+   One row per match, for EVERY player (guests included — no login needed).
+   RLS must allow anon + authenticated insert/select/update. The game writes a
+   heartbeat every 30s while a match runs, so "live now" = ended_at IS NULL and
+   last_seen_at within the last 90 seconds. Only the developer (DEV_ADMIN_EMAIL
+   below) ever sees the stats panel. */
 var SB_URL = 'https://gnzhaebfqhlfenrwhjjg.supabase.co';
 var SB_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImduemhhZWJmcWhsZmVucndoampnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQwNzExNjQsImV4cCI6MjEwOTY0NzE2NH0.C5NdupLRkyDiqdM9k8cI7ThZM8Rk86goDss8hqoTRc4';
 var sb = null, acctUser = null, acctCloud = false, acctProfile = null;
+var DEV_ADMIN_EMAIL = 'horror72588@gmail.com'; // developer only — the Developer Stats panel shows only for this logged-in email
+var devSession = null; // {id, startedAt} for the current match's analytics row
 try{ if(window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SB_URL, SB_ANON); }catch(e){ sb = null; }
+
+/* ================= DEVELOPER ANALYTICS (Supabase cube_strike_sessions) ================
+   One row per match, for every player (guests included — no login needed). The
+   developer reads it in the Developer Stats panel (admin email only). Nothing
+   here is private: player names are already shown in-game. If the table does
+   not exist yet, every call fails silently — the game keeps working, the panel
+   just says "not set up yet". */
+function devIsAdmin(){ return !!(acctUser && acctUser.email && acctUser.email.toLowerCase() === DEV_ADMIN_EMAIL); }
+async function devSessionStart(){
+  devSession = null;
+  if(!sb) return;
+  try{
+    var r = await sb.from('cube_strike_sessions').insert({player_id:qmPlayerId(), player_name:myName||'Player', map:currentMapId||'', mode:matchType||'ffa'}).select('id').single();
+    if(r && r.data && r.data.id) devSession = {id:r.data.id, startedAt:Date.now()};
+  }catch(e){ devSession = null; }
+}
+async function devSessionBeat(){
+  if(!sb || !devSession || !running) return;
+  try{ await sb.from('cube_strike_sessions').update({last_seen_at:new Date().toISOString()}).eq('id', devSession.id); }catch(e){}
+}
+function devSessionEndBeacon(){
+  if(!devSession) return;
+  var me = players[localId];
+  var payload = {ended_at:new Date().toISOString(), last_seen_at:new Date().toISOString(), kills:me?me.kills||0:0, deaths:me?me.deaths||0:0};
+  try{
+    fetch(SB_URL + '/rest/v1/cube_strike_sessions?id=eq.' + devSession.id, {method:'PATCH', keepalive:true, headers:{'apikey':SB_ANON, 'Authorization':'Bearer ' + SB_ANON, 'Content-Type':'application/json', 'Prefer':'return=minimal'}, body:JSON.stringify(payload)});
+  }catch(e){}
+  devSession = null;
+}
+async function devSessionEnd(){
+  if(!devSession) return;
+  var s = devSession; devSession = null;
+  if(!sb) return;
+  var me = players[localId];
+  try{ await sb.from('cube_strike_sessions').update({ended_at:new Date().toISOString(), last_seen_at:new Date().toISOString(), kills:me?me.kills||0:0, deaths:me?me.deaths||0:0}).eq('id', s.id); }catch(e){}
+}
+setInterval(function(){ devSessionBeat(); }, 30000); // analytics heartbeat while a match runs
+window.addEventListener('pagehide', function(){ devSessionEndBeacon(); }); // tab closed mid-match: still close the session row
+function pktDayStartISO(){ // today 00:00 Pakistan time, as an ISO timestamp
+  var now = new Date(Date.now() + (300 + new Date().getTimezoneOffset())*60000);
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()) - 5*3600*1000).toISOString();
+}
+function devFmtDur(ms){ var s=Math.max(0,Math.round(ms/1000)); return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2); }
+function devFmtTimePKT(iso){ try{ return new Date(iso).toLocaleString('en-GB',{timeZone:'Asia/Karachi',hour:'2-digit',minute:'2-digit'}); }catch(e){ return ''; } }
+function devStatsCheck(){ // show the Developer Stats card only for the admin account
+  var c = $('devCard'); if(!c) return;
+  c.style.display = devIsAdmin() ? '' : 'none';
+  if(devIsAdmin()) devStatsLoad();
+}
+async function devStatsLoad(){
+  var el = $('devStats'); if(!el) return;
+  if(!sb){ el.textContent = '⚠️ Supabase is not connected, so no stats yet.'; return; }
+  var r;
+  try{ r = await sb.from('cube_strike_sessions').select('*').order('started_at',{ascending:false}).limit(500); }
+  catch(e){ el.textContent = '⚠️ Could not load stats.'; return; }
+  if(r.error){
+    el.textContent = '⚠️ Developer Stats is not set up yet — run the cube_strike_sessions SQL in Supabase (SQL Editor → paste → Run).';
+    var lv0=$('devLive'), rc0=$('devRecent'); if(lv0) lv0.innerHTML=''; if(rc0) rc0.innerHTML=''; return;
+  }
+  var rows = r.data || [];
+  var now = Date.now();
+  var dayStart = new Date(pktDayStartISO()).getTime();
+  var today = rows.filter(function(s){ return new Date(s.started_at).getTime() >= dayStart; });
+  var live = rows.filter(function(s){ return !s.ended_at && (now - new Date(s.last_seen_at).getTime()) < 90000; });
+  var uniqToday = {}; today.forEach(function(s){ uniqToday[s.player_id||s.player_name||'?']=1; });
+  var minsToday = 0; today.forEach(function(s){ var end = s.ended_at ? new Date(s.ended_at).getTime() : new Date(s.last_seen_at).getTime(); minsToday += Math.max(0, end - new Date(s.started_at).getTime()); });
+  var minsAll = 0; rows.forEach(function(s){ var end = s.ended_at ? new Date(s.ended_at).getTime() : new Date(s.last_seen_at).getTime(); minsAll += Math.max(0, end - new Date(s.started_at).getTime()); });
+  el.innerHTML = '📅 Today (PKT): <b>' + Object.keys(uniqToday).length + ' players</b> · ' + today.length + ' matches · ' + Math.round(minsToday/60000) + ' min played &nbsp;|&nbsp; 🕹️ All time (last 500): ' + rows.length + ' matches · ' + Math.round(minsAll/60000) + ' min';
+  var lv = $('devLive');
+  if(lv){
+    lv.innerHTML = live.length ? ('<b>🟢 Live now (' + live.length + '):</b> ' + live.map(function(s){ return esc(s.player_name||'Player') + ' — ' + esc(s.map||'') + ' ' + esc(s.mode||'') + ' (' + devFmtDur(now - new Date(s.started_at).getTime()) + ')'; }).join(' · ')) : '⚪ Nobody live right now.';
+  }
+  var rc = $('devRecent');
+  if(rc){
+    rc.innerHTML = today.length ? ('<b>Today\'s matches:</b><br>' + today.slice(0,15).map(function(s){ var end = s.ended_at ? new Date(s.ended_at).getTime() : new Date(s.last_seen_at).getTime(); return esc(s.player_name||'Player') + ' · ' + esc(s.map||'') + ' ' + esc(s.mode||'') + ' · ' + devFmtDur(end - new Date(s.started_at).getTime()) + ' · ' + (s.kills||0) + 'K/' + (s.deaths||0) + 'D · ' + devFmtTimePKT(s.started_at); }).join('<br>')) : 'No matches today yet.';
+  }
+}
+setInterval(function(){ if(devIsAdmin()){ var c=$('devCard'); if(c && c.style.display!=='none') devStatsLoad(); } }, 60000); // refresh stats once a minute while the panel is visible
 function acctLocalLoad(){
   try{ var p = JSON.parse(localStorage.getItem('cso_profile')||'null'); return p || {display_name:'Player', matches:0, kills:0, wins:0, best_streak:0}; }
   catch(e){ return {display_name:'Player', matches:0, kills:0, wins:0, best_streak:0}; }
@@ -2011,6 +2109,7 @@ function acctRender(){
   sh.innerHTML = h.length ? ('<b>Recent matches:</b> ' + h.slice(0,5).map(function(m){
     return esc(m.mode||'ffa') + ' ' + m.kills + 'K/' + m.deaths + 'D ' + esc(m.result||'') + ' (' + esc(m.date||'') + ')';
   }).join(' · ')) : 'No matches yet — play your first match!';
+  devStatsCheck(); // show the Developer Stats card only for the admin account
 }
 async function acctLoadCloudProfile(uid){
   if(!sb) return null;
@@ -2179,21 +2278,15 @@ function shopBuy(kind, id){
   msg.textContent = '🎉 Bought ' + it.name + '! ' + (kind==='skin' ? 'Tap Equip to wear it next match.' : 'It is ready — cycle guns with the gun button or keys 1–5.');
   renderShop(); acctRender();
 }
-function donate(){
-  var msg = $('shopMsg');
-  if(!DONATE_URL){ if(msg) msg.textContent = '❤️ Thanks for wanting to donate! The owner has not set the donation link yet — check back soon.'; return; }
-  window.open(DONATE_URL, '_blank');
-}
 document.addEventListener('DOMContentLoaded', function(){
   renderShop();
+  var dr = $('btnDevRefresh'); if(dr) dr.addEventListener('click', devStatsLoad);
   var sc = $('shopCard'); if(sc) sc.addEventListener('click', function(e){
     var b = e.target.closest('[data-buy-skin],[data-buy-gun],[data-skin]'); if(!b) return;
     if(b.hasAttribute('data-buy-skin')) shopBuy('skin', b.getAttribute('data-buy-skin'));
     else if(b.hasAttribute('data-buy-gun')) shopBuy('gun', b.getAttribute('data-buy-gun'));
     else if(b.hasAttribute('data-skin')){ shopState.equippedSkin = b.getAttribute('data-skin'); shopSave(); $('shopMsg').textContent = 'Equipped! Your fighter will wear it from your next match.'; renderShop(); }
   });
-  var dn = $('btnDonate'); if(dn) dn.addEventListener('click', donate);
-  var rm = $('btnRealMoney'); if(rm) rm.addEventListener('click', function(){ $('shopMsg').textContent = 'Real-money coin purchase is coming soon — for now, earn coins by playing matches!'; });
 });
 
 /* ================= PAUSE + return to main menu ================= */
@@ -2206,6 +2299,7 @@ function setPaused(v){
   setTimeout(updateClickToPlay, 120);
 }
 function quitToMenu(){
+  devSessionEnd(); // analytics: a match quit early still counts
   cancelQuickSearch();
   paused = false; running = false;
   var o = $('pauseOverlay'); if(o) o.style.display = 'none';
@@ -2389,6 +2483,7 @@ function startMatch(){
   var cl=$('chatLog'); if(cl) cl.innerHTML='';
   setChatOpen(false);
   matchTime = csoSettings.roundTime || 300; $('timer').textContent = fmtTime(matchTime); running = true;
+  devSessionStart(); // analytics: one session row per match
   decals.forEach(function(d){ scene.remove(d.mesh); d.mesh.material.dispose(); }); decals=[];
   grenades.forEach(function(g){ scene.remove(g.mesh); }); grenades=[];
   explosions.forEach(function(ex){ scene.remove(ex.mesh); if(ex.light) scene.remove(ex.light); }); explosions=[];
@@ -2414,6 +2509,7 @@ var lastCard = null; // local player's end-game score card data (name, stats, ra
 function endMatch(winner){
   if(!running) return;
   running = false;
+  devSessionEnd(); // analytics: close the session row
   document.body.classList.remove('playing-now');
   if(document.pointerLockElement) document.exitPointerLock();
   var list = sortedPlayers();
