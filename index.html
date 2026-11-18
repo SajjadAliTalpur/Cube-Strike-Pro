@@ -592,7 +592,6 @@
           <li>Quick Match first searches for <b>real players</b> online (about 25 seconds), then <b>bots fill the match to 10 players</b> (e.g. 2 real + 8 bots). <b>Host-authoritative:</b> only the host simulates bots (movement, shooting, damage) and broadcasts bot state to everyone via PeerJS — all devices see the same bots. <b>Bots are always labelled BOT</b> — never fake "real" strangers</li>
           <li><b>🩹 Healing:</b> press <kbd>H</kbd> (or tap the 🩹 button / the heal bar) to use a medkit — it takes <b>3 seconds</b> and restores <b>+50 HP</b>. You get <b>2 medkits per match</b>. Healing is interrupted if you <b>take damage or shoot</b> — the medkit is only used up when healing finishes. Bots get the same deal: 2 medkits each, they heal when hurt and far from a fight, and damage interrupts them too — no unfair advantage either way</li>
           <li>True random matchmaking with strangers needs a <b>dedicated game server</b> running 24/7 <b>plus</b> many players online at the same time</li>
-          <li>Vercel is static hosting only — it serves this page but cannot run a game server, so it cannot match strangers</li>
           <li>For now, the <b>room-code mode above is the free way</b> to play with real friends</li>
           <li><b>Chat is player-to-player:</b> tap the 💬 icon for Quick Chat presets or type your own message (Team / All in TDM). Messages in online rooms travel browser-to-browser via PeerJS — there is no chat server and nothing is stored. A simple filter replaces common abusive words with ***. In bot matches your typed messages show locally; bots never reply to free text, they only drop occasional quick-chat lines</li>
         </ul>
@@ -601,12 +600,6 @@
     </div>
   </div>
 
-  <footer>
-    <b>About earning:</b> hosting this game (for example on Vercel) is free but pays nothing by itself.
-    Games earn money when they are published on game portals like <b>CrazyGames</b> or <b>itch.io</b>, where
-    the portal runs ads and shares the revenue with the developer. That is the real route for this game —
-    there are no ads or payouts inside this page.
-  </footer>
 </div>
 
 <!-- ================= LOBBY ================= -->
